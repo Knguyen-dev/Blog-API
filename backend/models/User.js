@@ -23,16 +23,11 @@ const userSchema = new mongoose.Schema(
 			required: true,
 		},
 
-		firstName: {
-			type: String,
-			required: true,
-			maxLength: 50,
-		},
-		lastName: {
-			type: String,
-			required: true,
-			maxLength: 50,
-		},
+    fullName: {
+      type: String,
+      required: true,
+      maxLength: 64
+    },
 	},
 	{
 		toJSON: { virtuals: true },
@@ -45,8 +40,7 @@ userSchema.statics.signup = async function (
 	email,
 	username,
 	password,
-	firstName,
-	lastName
+	fullName
 ) {
 	// Hash password
 	const salt = await bcrypt.genSalt(10);
@@ -57,8 +51,7 @@ userSchema.statics.signup = async function (
 		email,
 		username,
 		password: hash,
-		firstName,
-		lastName,
+		fullName
 	});
 
 	return user;

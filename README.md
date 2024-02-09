@@ -34,3 +34,23 @@
 
 
 - 'knguyen44' and 'Password_123_' and 'knguyensky@gmail.com'
+
+# How can we do image storage:
+1. File system: Store images on web server file system. Downsides are 
+  storage limitations and if server goes down, then iamges could be lost.
+2. Cloud Storage: Store them to a cloud storage service such as Amazon S3, Google Cloud Storage, or Azure Blob Storage. When a user uploads an image through the React front end, it can be sent to the Node.js back end, which then handles the process of storing the image in the cloud storage. The image's URL or key can then be saved in the MongoDB database so that it can be retrieved and displayed when needed. This approach ensures efficient storage and retrieval of images while keeping the application responsive. This is one of the best ways as it involves horizontal scaling (adding more servers to handle load), instead of vertical scaling (upgrading hardware).
+3. Base64 encoding: Encode images as base64 string and store them directly in the database.
+4. CDN: A content delivery network can be used to store image. Images are stored on multiple
+  servers around the world.
+
+
+# Mui and Tailwind Integration tutorial
+- https://kir4n.hashnode.dev/mui-with-tailwind-css
+
+
+# BOOK MARK:
+- Currently working on sending back but also handling AuthContext and also the refresh and access
+  tokens in http only cookies, which is apparently the safest way.
+
+  1. https://stackoverflow.com/questions/57650692/where-to-store-the-refresh-token-on-the-client
+  2. https://medium.com/@sadnub/simple-and-secure-api-authentication-for-spas-e46bcea592ad

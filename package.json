@@ -1,0 +1,22 @@
+{
+	"name": "blog-api",
+	"version": "1.0.0",
+	"description": "- Create a blog fullstack blog application. Have a front end application for viewing and\r   editing posts. Let people read and comment on posts. Basically the blog should make it \r   so only you, imagine like the 'guardian' or 'the atlantic'. So I guess there should \r   be a section that allows users. Some inspirations to take from that are similar \r   are reddit, dogonews, ign, or something similar. It just has to involve posts, authors, comments,\r   etcetera. Just takes things one at a time.",
+	"main": "index.js",
+	"scripts": {
+		"client": "cd frontend && npm run dev",
+		"server": "cd backend && npm run dev",
+		"appStart": "concurrently \"npm run client \" \"npm run server\""
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"concurrently": "^8.2.2"
+	},
+	"dependencies": {
+		"@hookform/resolvers": "^3.3.4",
+		"react-hook-form": "^7.50.1",
+		"yup": "^1.3.3"
+	}
+}

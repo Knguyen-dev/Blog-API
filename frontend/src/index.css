@@ -1,0 +1,32 @@
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.root-layout {
+	min-height: 100vh;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+}
+
+/* Not Found Page */
+.not-found-page {
+	background-image: url("../public/night_background.jpg");
+	background-size: cover;
+	background-position: center;
+	background-attachment: fixed;
+	position: relative;
+	height: 100vh;
+	display: grid;
+	place-items: center;
+	color: white;
+	text-align: center;
+}

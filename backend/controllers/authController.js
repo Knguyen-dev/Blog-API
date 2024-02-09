@@ -73,22 +73,14 @@ const signupUser = [
 		})
 		.withMessage("Passwords must match!"),
 
-	body("firstName")
+	body("fullName")
 		.trim()
 		.escape()
 		.isLength({
 			min: 1,
-			max: 50,
+			max: 64,
 		})
-		.withMessage("First name must be within 1 to 50 characters"),
-	body("lastName")
-		.trim()
-		.escape()
-		.isLength({
-			min: 1,
-			max: 50,
-		})
-		.withMessage("Last name must be within 1 to 50 characters"),
+		.withMessage("Full name must be within 1 to 64 characters"),
 
 	asyncHandler(async (req, res, next) => {
 		// Sanitize and validate data
@@ -105,46 +97,48 @@ const signupUser = [
 		}
 
 		// At this point, data is valid, so save user into the database and return successful response
-		const { email, username, password, firstName, lastName } = req.body;
+		const { email, username, password, fullName } = req.body;
 		const user = await User.signup(
 			email,
 			username,
 			password,
-			firstName,
-			lastName
+			fullName
 		);
+
+    // Respond indicating it was a success!
 		res.status(200).json({ message: "User sign up successful!" });
 	}),
 ];
 
 /*
 + Logging in a user:
+- Route for logging or authenticating a user.
 
 
 
-- NOTE: When signing up a user, we had our logic for checking if the username 
+- NOTE: 
+  1. When signing up a user, we had our logic for checking if the username 
   was already taken in a custom validator. However, when we're doing our login
   logic, we placed our database checks in our static method inside the '/models/User'
   file. The only reason I'm doing it this way is because on the sign up form I want 
   to be able to show the error messages on their respective fields, while on the login
   form we're just going to show one error message. 
-  
-  - Sign Up: So in the signupUser logic we send back an object of errors, which we'll use to show the errors on each input
-  field in the form for the user. Of course, if anything goes wrong in connecting the user 
-  then the client will get back a status code 500 for a general error that they'll display.
 
-  - Login: In the loginUser logic, the errors and their messages are defined in "/models/User".
-    So if an error does happen then there will only be one error message 
-
+  2. For a login process, we don't do as much validation. The main validation is 
+    just checking if they filled in the fields, but also if their credentials 
+    are correct.
 
 
 */
-
-const loginUser = [
-	asyncHandler(async (req, res, next) => {
+const loginUser = asyncHandler(async (req, res, next) => {
 		const { username, password } = req.body;
+    if (!username || !password) {
+      const err = new Error("All fields must be filled!");
+      err.statusCode = 400;
+      return next(err)
+    }
 
-		// Try to login the user
+		// Try to login the user, if fails
 		const user = await User.login(username, password);
 
 		// At this point the user has been successfully logged in so create
@@ -152,6 +146,6 @@ const loginUser = [
 		const accessToken = createAccessToken({
 			id: user.id,
 		});
-		const refreshToken = createRefreshToken({});
-	}),
-];
+		const refreshToken = createRefreshToken({id: user.id});
+	})
+
