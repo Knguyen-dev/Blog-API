@@ -1,11 +1,16 @@
 import { Button, Divider, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
+
+import { useEffect } from "react";
+
+import useSignup from "../../hooks/useSignup";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import FormInputField from "./FormInputField";
-import FormPasswordField from "./FormPasswordField";
+
+import FormInputField from "../Input/FormInputField";
+import FormPasswordField from "../Input/FormPasswordField";
 
 const validationSchema = yup.object().shape({
 	email: yup
@@ -35,7 +40,7 @@ const validationSchema = yup.object().shape({
 	password: yup
 		.string()
 		.matches(
-			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,40}$/,
+			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])(?!.*\s).{8,40}$/,
 			"Password needs to be 8 to 40 characters, and must have one uppercase letter, lowercase letter, symbol, and one number."
 		),
 	confirmPassword: yup
@@ -53,7 +58,7 @@ const validationSchema = yup.object().shape({
   submits the form, all input fields that we registered will be validated.
 */
 export default function SignUpForm() {
-	const { control, handleSubmit } = useForm({
+	const { control, handleSubmit, setError } = useForm({
 		resolver: yupResolver(validationSchema),
 		defaultValues: {
 			email: "",
@@ -64,15 +69,49 @@ export default function SignUpForm() {
 		},
 	});
 
+	const { handleOpen } = useOutletContext();
+	const navigate = useNavigate();
+
+	const { formErrors, serverError, isLoading, signup } = useSignup();
+
 	/*
-  BOOK MARK: Now just set up logic for signing up a user, and also 
-    take into account server errors such as not connecting to the server.
-    Also need to take care of
+  - Render server side form errors when 'formErrors' change. So this 
+    would happen everytime we went through client-side validation
+    and actually made a request to the server. 
   
-  
+  - NOTE: The reason it's in an effect is because we want to display
+    the messages after submission, and after the render with the states 
+    are complete.
   */
-	const onSubmit = async (data) => {
-		console.log(data);
+
+	useEffect(() => {
+		if (formErrors) {
+			Object.keys(formErrors).forEach((fieldName) => {
+				setError(fieldName, {
+					type: "server",
+					message: formErrors[fieldName],
+				});
+			});
+		}
+	}, [formErrors, setError]);
+
+	const onSubmit = async (formData) => {
+		const success = await signup(
+			formData.email,
+			formData.username,
+			formData.password,
+			formData.confirmPassword,
+			formData.fullName
+		);
+
+		/*
+    - Conditionals:
+    - On success redirect the user to the login page and open the snackbar.
+    */
+		if (success) {
+			handleOpen();
+			return navigate("/auth/login");
+		}
 	};
 
 	return (
@@ -114,10 +153,13 @@ export default function SignUpForm() {
 					label="Confirm Password"
 				/>
 
-				<Button variant="contained" type="submit">
+				<Button variant="contained" disabled={isLoading} type="submit">
 					Sign Up
 				</Button>
 			</div>
+
+			{/* Rendering a potential server error */}
+			{serverError && <div className="error">{serverError}</div>}
 
 			<Divider className="tw-my-4" />
 

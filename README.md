@@ -32,9 +32,6 @@
 2. Site 2: https://blog-client-dovimaj.vercel.app/
 - Here's an easy site to copy off of.
 
-
-- 'knguyen44' and 'Password_123_' and 'knguyensky@gmail.com'
-
 # How can we do image storage:
 1. File system: Store images on web server file system. Downsides are 
   storage limitations and if server goes down, then iamges could be lost.
@@ -49,8 +46,21 @@
 
 
 # BOOK MARK:
-- Currently working on sending back but also handling AuthContext and also the refresh and access
-  tokens in http only cookies, which is apparently the safest way.
+- Currently working on how to refresh our access token. More particularly when to run our effect, how to detect when our jwt 
+has expired, and how to run it again. My idea is that on success of 
+getting an access token, we set a timer based on how long that access token is supposed to last.  Then after that timer we try for another access token. If the request fails, we don't set up that timer, and at that we should wait for the user to login.
+
+- Access Token: send them as json and store them in a react state so they're autolost 
+  when the user refreshes the page or leaves the site. So store them in a state
+  rather than localstorage or cookie
+- Refresh token: Send as an httpOnly cookie, which can't be accessed with javascript.
+
+- Test user: kbizzzyy 'P$ss0Ward0'
+
+  1. Dave Gray's jwt with cookies and axios: https://www.youtube.com/watch?v=nI8PYZNFtac&t=134s
+
 
   1. https://stackoverflow.com/questions/57650692/where-to-store-the-refresh-token-on-the-client
   2. https://medium.com/@sadnub/simple-and-secure-api-authentication-for-spas-e46bcea592ad
+
+

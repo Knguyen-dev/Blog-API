@@ -1,10 +1,12 @@
 import { Button, Divider, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import FormInputField from "./FormInputField";
-import FormPasswordField from "./FormPasswordField";
+import FormInputField from "../Input/FormInputField";
+import FormPasswordField from "../Input/FormPasswordField";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+
+import useLogin from "../../hooks/useLogin";
 
 const validationSchema = yup.object().shape({
 	username: yup.string().required("Please enter your username"),
@@ -20,8 +22,10 @@ export default function LoginForm() {
 		},
 	});
 
-	const onSubmit = (data) => {
-		console.log(data);
+	const { error, isLoading, login } = useLogin();
+
+	const onSubmit = async (data) => {
+		await login(data.username, data.password);
 	};
 
 	return (
@@ -44,10 +48,13 @@ export default function LoginForm() {
 					label="Password"
 				/>
 
-				<Button variant="contained" type="Submit">
+				<Button variant="contained" disabled={isLoading} type="Submit">
 					Login
 				</Button>
 			</div>
+
+			{/* Rendering a potential server error */}
+			{error && <div className="error">{error}</div>}
 
 			<Divider className="tw-my-4" />
 

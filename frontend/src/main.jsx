@@ -5,12 +5,15 @@ import "./index.css";
 
 import { StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { appTheme } from "./appTheme.js";
+import { AuthProvider } from "./contexts/AuthProvider.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
 		<StyledEngineProvider injectFirst>
 			<ThemeProvider theme={appTheme}>
-				<App />
+				<AuthProvider>
+					<App />
+				</AuthProvider>
 			</ThemeProvider>
 		</StyledEngineProvider>
 	</React.StrictMode>

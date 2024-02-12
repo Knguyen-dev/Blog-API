@@ -6,6 +6,8 @@
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+
+	--error-clr: #b91c1c;
 }
 
 .root-layout {
@@ -19,7 +21,7 @@ body {
 
 /* Not Found Page */
 .not-found-page {
-	background-image: url("../public/night_background.jpg");
+	background-image: url("/night_background.jpg");
 	background-size: cover;
 	background-position: center;
 	background-attachment: fixed;
@@ -29,4 +31,8 @@ body {
 	place-items: center;
 	color: white;
 	text-align: center;
+}
+
+.error {
+	@apply tw-p-3 tw-text-center tw-text-red-700 tw-bg-slate-100 tw-rounded-md;
 }
