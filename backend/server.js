@@ -5,24 +5,27 @@ const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userRouter");
-
+const connectDB = require("./config/database");
+const corsOption = require("./config/corsOption");
+const credentials = require("./middleware/credentials");
+const verifyJWT = require("./middleware/verifyJWT")
 
 const express = require("express");
 const app = express();
 
-
+app.use(credentials);
+app.use(cors(corsOption));
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(cors({
-  origin: "http://localhost:5173", // the origins allowed to access your express backend
-  credentials: true, // Accept credentials (cookies) sent by the client
-}))
 
-// Routes
+// Public routes
 app.use("/auth", authRouter);
+
+// Api (protected) routes
+app.use(verifyJWT);
 app.use("/users", userRouter);
 
 
@@ -44,23 +47,22 @@ app.use(function (req, res, next) {
 */
 app.use(function (err, req, res, next) {
 
-  console.log(err.message);
-	if (!err.statusCode) {
-		err.statusCode = 500;
-		err.message = "Something went wrong. Please try again later!";
-	}
+  console.log(err);
+
+  if (!err.statusCode) {
+    err.statusCode = 500
+    err.message = "Server Error!"
+  }
 
 	// Return the error as json
 	res.status(err.statusCode).json({ message: err.message });
 });
 
 
-
-// Connect to database and then start listening for requests.
-mongoose.connect(process.env.MONGO_URI).then(() => {
+// Connect to database and start server
+connectDB();
+mongoose.connection.once("open", () => {
   app.listen(process.env.PORT, () => {
     console.log(`Connected to DB & listening on port ${process.env.PORT}`)
   })
-}).catch((err) => {
-  console.log("Couldn't connect to db: ", err)
-}) 
+})

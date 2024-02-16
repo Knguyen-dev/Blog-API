@@ -8,7 +8,6 @@
 */
 
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 
 /*
@@ -22,31 +21,20 @@ const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
   const token = authHeader && authHeader.split(" ")[1]
   if (!token) {
-    const err = Error("Unauthorized");
-    err.statusCode = 401;
-    return next(err);
+    return res.status(401).json({message :"Unauthorized, you need to have an access token!"})
   }
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, asyncHandler(async (err, user) => {
     if (err) {
-      const err = Error("Forbidden");
-      err.statusCode = 403;
-      return next(err);
+      return res.status(401).json({message: "Unauthorized, access token you gave is invalid!"})
     }
 
 
     /*
-    - If there were no issues in verifying the token, create 
-      a userID property in our request object that we can access
-      in later middleware. Then call next() to move on to the 
-      next middleware.
-
-    - NOTE: if your users have 'roles' and you defined roles in your 
-      jwt payload, you'd do req.roles here also. Also note this, apparently
-      it's not recommended to verify the user against the database in this 
-      stage.
+    - NOTE: Access token has username and roles so put those in our request object
     */
-    req.userID = user.id;
+    req.username = user.username;
+    req.role = user.role;
     next();
   }))
 }

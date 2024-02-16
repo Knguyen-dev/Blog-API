@@ -1,15 +1,25 @@
 import useAuthContext from "./useAuthContext";
+import axios from "../api/axios";
+
+const endpoint = "/auth/refresh";
 
 export default function useRefreshToken() {
 	const { setAuth } = useAuthContext();
-
+	/*
+  - Call for the refresh token, which will set the global auth
+    state and return the new access token.
+  */
 	const refresh = async () => {
-		const response = await fetch("http://localhost:3000/auth/refresh", {
-			method: "GET",
-			credentials: "include",
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
+		try {
+			const response = await axios.get(endpoint, {
+				withCredentials: true,
+			});
+			setAuth(response.data);
+			return response.data.accessToken;
+		} catch (err) {
+			console.error("Failed to refresh 'access token': ", err);
+		}
 	};
+
+	return refresh;
 }

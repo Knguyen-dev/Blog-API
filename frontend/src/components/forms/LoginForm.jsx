@@ -5,8 +5,10 @@ import FormInputField from "../Input/FormInputField";
 import FormPasswordField from "../Input/FormPasswordField";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-
 import useLogin from "../../hooks/useLogin";
+
+// Effect for testing
+import { useEffect } from "react";
 
 const validationSchema = yup.object().shape({
 	username: yup.string().required("Please enter your username"),
@@ -21,8 +23,16 @@ export default function LoginForm() {
 			password: "",
 		},
 	});
-
 	const { error, isLoading, login } = useLogin();
+
+	// Auto logins for us when rendering LoginForm
+	useEffect(() => {
+		const preLogin = async () => {
+			await login("Mario70", "P$ssword_123");
+		};
+
+		preLogin();
+	}, [login]);
 
 	const onSubmit = async (data) => {
 		await login(data.username, data.password);

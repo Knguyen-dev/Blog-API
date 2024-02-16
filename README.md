@@ -43,22 +43,29 @@
 
 # Mui and Tailwind Integration tutorial
 - https://kir4n.hashnode.dev/mui-with-tailwind-css
-
+- NOTE: Though a popular and useful library, you can also use flowbite 
+  which is a lot more easy to integrate since that is based on tailwind styles.
 
 # BOOK MARK:
-- Currently working on how to refresh our access token. More particularly when to run our effect, how to detect when our jwt 
-has expired, and how to run it again. My idea is that on success of 
-getting an access token, we set a timer based on how long that access token is supposed to last.  Then after that timer we try for another access token. If the request fails, we don't set up that timer, and at that we should wait for the user to login.
+- Work on useAxiosPrivate, ProtectedRoute, role-based route protection likely.
+  I don't think we need 'useReducer' as we're not performing any complex operations
+  on the auth state, though I think the auth state should have username, email, and 
+  fullName as well. Maybe make auth state {accessToken, user: {...allUserProperties}}.
 
-- Access Token: send them as json and store them in a react state so they're autolost 
-  when the user refreshes the page or leaves the site. So store them in a state
-  rather than localstorage or cookie
-- Refresh token: Send as an httpOnly cookie, which can't be accessed with javascript.
+- Then next it would probably be designing the pages, which will probably be the 
+  hardest parts. For layouts I think taking inspiration from youtube or ign would 
+  be nice as they have the sidebar with topics, then the main content. But more realistically this is straight forward design: https://blog.100jsprojects.com/search?searchTerm=React.
 
-- Test user: kbizzzyy 'P$ss0Ward0'
 
-  1. Dave Gray's jwt with cookies and axios: https://www.youtube.com/watch?v=nI8PYZNFtac&t=134s
+  I think we should go for that sidebar and main-content, which we can use for search results and whatnot. Just try 
+  it out with the responsive drawer. If you do, put it in the BrowsePage. For the sidebar you can do general
+  topics. Don't worry about creating a 'specified blog' for a single topic
 
+  However, next I think creating a profile page, where you just see your account. You'd have a main 
+  content and then some tabs. It could be your home tab, just updating user stuff, editor tab where you create.
+
+
+- Still need to wokr out the kinks of logging in and signing out
 
   1. https://stackoverflow.com/questions/57650692/where-to-store-the-refresh-token-on-the-client
   2. https://medium.com/@sadnub/simple-and-secure-api-authentication-for-spas-e46bcea592ad

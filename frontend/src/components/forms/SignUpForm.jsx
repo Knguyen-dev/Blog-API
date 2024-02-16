@@ -1,14 +1,9 @@
 import { Button, Divider, Typography } from "@mui/material";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
-
-import { useEffect } from "react";
-
 import useSignup from "../../hooks/useSignup";
-
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-
 import FormInputField from "../Input/FormInputField";
 import FormPasswordField from "../Input/FormPasswordField";
 
@@ -72,31 +67,10 @@ export default function SignUpForm() {
 	const { handleOpen } = useOutletContext();
 	const navigate = useNavigate();
 
-	const { formErrors, serverError, isLoading, signup } = useSignup();
-
-	/*
-  - Render server side form errors when 'formErrors' change. So this 
-    would happen everytime we went through client-side validation
-    and actually made a request to the server. 
-  
-  - NOTE: The reason it's in an effect is because we want to display
-    the messages after submission, and after the render with the states 
-    are complete.
-  */
-
-	useEffect(() => {
-		if (formErrors) {
-			Object.keys(formErrors).forEach((fieldName) => {
-				setError(fieldName, {
-					type: "server",
-					message: formErrors[fieldName],
-				});
-			});
-		}
-	}, [formErrors, setError]);
+	const { error, isLoading, signup } = useSignup();
 
 	const onSubmit = async (formData) => {
-		const success = await signup(
+		const { success, data } = await signup(
 			formData.email,
 			formData.username,
 			formData.password,
@@ -106,11 +80,24 @@ export default function SignUpForm() {
 
 		/*
     - Conditionals:
-    - On success redirect the user to the login page and open the snackbar.
+    1. On success redirect the user to the login page and open the snackbar.
+      Here 'data' would be null.
+
+    2. Else, it wasn't a success. Could have been server-side validation
+      error so check if 'data' is defined to render out error messages.
+    3. Else, it wasn't a success and it didn't fail due to the user's input, 
+      so there was a server error. This error is updated in our error state.
     */
 		if (success) {
 			handleOpen();
 			return navigate("/auth/login");
+		} else if (data) {
+			Object.keys(data).forEach((fieldName) => {
+				setError(fieldName, {
+					type: "server",
+					message: data[fieldName],
+				});
+			});
 		}
 	};
 
@@ -159,7 +146,7 @@ export default function SignUpForm() {
 			</div>
 
 			{/* Rendering a potential server error */}
-			{serverError && <div className="error">{serverError}</div>}
+			{error && <div className="error">{error}</div>}
 
 			<Divider className="tw-my-4" />
 

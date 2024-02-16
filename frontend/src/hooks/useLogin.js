@@ -1,5 +1,7 @@
 import { useState } from "react";
 import useAuthContext from "./useAuthContext";
+import { axiosPrivate } from "../api/axios";
+const endpoint = "/auth/login";
 
 export default function useLogin() {
 	const [error, setError] = useState(null);
@@ -11,40 +13,39 @@ export default function useLogin() {
 		setError(null);
 
 		try {
-			const response = await fetch("http://localhost:3000/auth/login", {
-				method: "POST",
-				// Browser sends cookies on request, allowing server to set cookies in the response
-				credentials: "include",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					username,
-					password,
-				}),
+			const response = await axiosPrivate.post(endpoint, {
+				username,
+				password,
 			});
-			const json = await response.json();
 
 			/*
-      - If login successful, then update global state with 
-       json, representing our user. Our json should be 
-       an object that contains jwt access token.
-      - Else, update the error to the error message we got 
-        from the server. For the login endpoint, the error 
-        should be in form {message: 'some error message' }.
-      - catch block: If something went wrong whilst making the request.
+      - Set the auth state to what we got from the endpoint. We should 
+      be getting an object with the user's role, and access token.
       */
-			if (response.ok) {
-				setAuth(json);
-			} else {
-				setError(json.message);
-			}
+			setAuth(response.data);
 		} catch (err) {
-			setError("Something went wrong. Try again later!");
-		}
+			/*
+      - Could be a server-side validation error, some other server-side error, 
+        or a network error we'll. For the first two, we can set the error message
+        with the json data, but for the third we can default a hard-coded error message.
 
-		// Finished process, so stop isLoading.
-		setIsLoading(false);
+      1. If err.response exists, the server respodned with a status code that falls out 
+        of range 2xx
+      2. If err.request, then the request was made but no response was received.
+      3. Else, something happened in setting up the request that triggered an error.
+
+      + Credit: https://axios-http.com/docs/handling_errors
+      */
+			if (err.response) {
+				setError(err?.response?.data?.message || "Server error occurred!");
+			} else if (err.request) {
+				setError("Network error!");
+			} else {
+				setError("Something unexpected happened!");
+			}
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return { error, isLoading, login };

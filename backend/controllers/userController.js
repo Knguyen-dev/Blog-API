@@ -4,9 +4,14 @@ const {validationResult} = require("express-validator");
 const userValidator = require("../middleware/userValidators");
 const bcrypt = require('bcrypt');
 
+const getUsers = asyncHandler(async (req, res) => {
+  const users = await User.find().select("-password -__v");
+  res.status(200).json(users);
+})
+
 
 // + Get user via their user ID
-const getUserById = asyncHandler(async (req, res, next) => {
+const getUserById = asyncHandler(async (req, res) => {
   /*
   - Send back the user but exclude sensitive information. I mean we
     would send the info from server to client. Imagine if a 
@@ -59,9 +64,7 @@ const updateFullName = [
       guaranteed what form the error will be in.
     */
     if (Object.keys(errors).length != 0) {
-			const err = Error(errors.fullName);
-      err.statusCode = 400;
-      return next(err);
+      return res.status(400).json({message: errors.fullName})
 		}
 
     // Try to find a user with that ID
@@ -87,17 +90,13 @@ const updateUsername = [
 		}, {});
     
     /*
-    - If there were errors with the username, send it down our error handling pipeline.
-    This makes it match the errors thrown in User.changeUsername. Now on the front-end
-    know our errors are always in form {message: some_error_message }. 
+    - If there were errors with the username, send back the reason why we found an error
 
     - NOTE: Remember that userValidator.username also performs a database check, 
       verifying whether the username has already been taken or not.
     */
     if (Object.keys(errors).length != 0) {
-      const err = Error(errors.username);
-      err.statusCode = 400;
-      return next(err);
+      return res.status(400).json({message: errors.username})
 		}
     
     // Attempt to find our target user; covers whether they don't exist or id isn't valid.
@@ -118,6 +117,7 @@ const updateUsername = [
 
 
 module.exports = {
+  getUsers,
   getUserById, 
   updateFullName,
   updateUsername,

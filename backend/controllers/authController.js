@@ -7,18 +7,19 @@ const userValidator = require("../middleware/userValidators");
 /*
 + Functions for creating an access and refresh token:
 - Access token: Should last for 15 minutes
-- Refresh token: Should last for 3 days
+- Refresh token: Should last for 1 days
 
 - NOTE: For security reasons, we'll make it so the user has to log 
   in 3 days after they previously logged in. Also the payload 
   should probably just be the user.
 */
-function createAccessToken(payload) {
-	return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "60s" });
+function createAccessToken(user) {
+	return jwt.sign({username: user.username,
+      role: user.role,}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15min" });
 }
 
-function createRefreshToken(payload) {
-	return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1h" });
+function createRefreshToken(user) {
+	return jwt.sign({username: user.username}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1d" });
 }
 
 
@@ -95,22 +96,23 @@ const signupUser = [
 const loginUser = asyncHandler(async (req, res, next) => {
 		const { username, password } = req.body;
     if (!username || !password) {
-      const err = new Error("All fields must be filled!");
-      err.statusCode = 400;
-      return next(err)
+      return res.status(400).json({message: "All fields must be filled!" })
     }
 
-		// Try to login the user, if fails, then an error is thrown
+		// Try to login the user, if fails, an error is thrown, which will send back the error
+    // message in json to our client
 		const user = await User.login(username, password);
 
     /*
     - At this point the user has been successfully logged in so create
-		 the appropriate access and refresh tokens.
+		 the appropriate access and refresh tokens. Access token has the 
+    username and role, whilst the refresh token just has the username. 
+    The former is needed so that we can do server-side role validation, while
+    for the latter, we only need the username to identify who it is when we're 
+    refreshing.
     */
-		const accessToken = createAccessToken({
-			id: user.id,
-		});
-		const refreshToken = createRefreshToken({id: user.id});
+		const accessToken = createAccessToken(user);
+		const refreshToken = createRefreshToken(user);
 
     /*
     + Create a secure cookie on our response for our refresh token: 
@@ -141,11 +143,12 @@ const loginUser = asyncHandler(async (req, res, next) => {
       maxAge: 60 * 60 * 1000
     })
 
-    // Store the refresh token in the database
+    // Store/update the refresh token in the database
     user.refreshToken = refreshToken;
+    await user.save();
 
-    // Return the access token as json
-    res.status(200).json({accessToken})
+    // Return the access token and user back
+    res.status(200).json({user: {email: user.email, username: user.username, role: user.role, fullName: user.fullName }, accessToken})
 	}
 )
 
@@ -164,9 +167,7 @@ const refresh = asyncHandler(async (req, res, next) => {
   */
   const cookies = req.cookies; 
   if (!cookies?.jwt) {
-    const err = Error("Unauthorized");
-    err.statusCode = 401;
-    return next(err);
+    return res.status(401).json({message: "Unauthorized, you need to have the refresh token cookie to refresh!"})
   }
   const refreshToken = cookies.jwt;
 
@@ -176,25 +177,21 @@ const refresh = asyncHandler(async (req, res, next) => {
   then it's a valid token, but if it doesn't exist it could have been
   already revoked, tampered with, or just it wasn't a token issued by us.
   */
-  const foundUser = await User.findOne({refreshToken});
+  const foundUser = await User.findOne({refreshToken}).select("-password -__v -refreshToken");
   if (!foundUser) {
-    const err = Error("Forbidden");
-    err.statusCode = 403
-    return next(err)
+    return res.status(403).json({message: "Forbidden, we couldn't find a user with your refresh token"})
   }
 
   // Verify the token, this can check things usch as when token expires
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler (async (error, payload) => {
 
     if (error) {
-      const err = Error("Forbidden");
-      err.statusCode = 403
-      return next(err)
+      return res.status(403).json({message: "Forbidden, refresh token was invalid. Probably expired."})
     }
 
     // Else user exists and the refresh token is valid, so create and return the access token as json
-    const accessToken = createAccessToken({id: payload.id});
-    res.json({accessToken})
+    const accessToken = createAccessToken(foundUser);
+    res.json({user: foundUser, accessToken})
   }));
 })
 
@@ -206,13 +203,13 @@ const refresh = asyncHandler(async (req, res, next) => {
 const logoutUser = asyncHandler(async (req, res, next) => {
   const cookies = req.cookies;
 
-  // If 'cookies.jwt' doesn't exist, send back that nothing happened
+  // If 'cookies.jwt' doesn't exist, not an error but nothing really happened
   if (!cookies?.jwt) {
-    const err = Error("No Content");
-    err.statusCode = 204;
-    return next(err);
+    return res.status(204).json({message: "No cookies to clear!"});
   }
 
+  // Get refresh token
+  const refreshToken = cookies.jwt;
 
   /*
   - Cookie named 'jwt' exists so clear it. For this to work we 
@@ -225,7 +222,7 @@ const logoutUser = asyncHandler(async (req, res, next) => {
   })
 
   /*
-  - If user: Token was valid and issued by our system. Here we can clera the token
+  - If user: Token was valid and issued by our system. Here we can clear the token
     from the user's record and our database.
   - If not user: Token provided could have already been revoked from our system, could 
     be the token has been tampered with, or a different jwt token that wasn't issued by our 
@@ -233,7 +230,7 @@ const logoutUser = asyncHandler(async (req, res, next) => {
   */
   const user = await User.findOne({refreshToken});
   if (!user) {
-    return res.sendStatus(204);
+    return res.status(204).json({message: "Cookies were cleared, and no user was found with that refresh token!"});
   }
   
   

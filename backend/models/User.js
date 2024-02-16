@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const {DateTime} = require("luxon");
+const roles_list = require("../config/roles_list");
+
 const userSchema = new mongoose.Schema(
 	{
 		email: {
@@ -28,16 +30,29 @@ const userSchema = new mongoose.Schema(
       required: true,
       maxLength: 64
     },
+
     /*
-    - Storing refrehs tokens in the database allows hte server to revoke or 
+    - Roles: One role per user
+    1. user: can read data (The default value indicated in our signup function)
+    2. editor: Can write and editor posts, probably just their own though.
+    3. admin: Can read, edit, and even archive or delete posts.
+    */
+    role: {
+      type: Number,
+    },
+
+
+    /*
+    - Storing refresh tokens in the database allows hte server to revoke or 
       invalidate tokens before their natural expiration time. Useful in scenarios 
       where the user wants to logout or delete their account.
-    
     */
     refreshToken: {
       type: String,
       default: "",
-    }
+    },
+
+
 	},
 	{
 		toJSON: { virtuals: true },
@@ -48,15 +63,23 @@ const userSchema = new mongoose.Schema(
 
 /*
 + Sign up method: Saves user itno the database.
-- NOTE: Assumes all data has been validated. This also includes
+- NOTE: 
+  1. Assumes all data has been validated. This also includes
   checking if the username is unique.
+
+  2. You might be wondering why we're throwing errors with status codes.
+    We'll since we can't access the 'res' object here, we've set it up so 
+    that we'll throw errors that are going to be caught by asyncHandler. Then
+    those errors are going to be sent back as json in {message: "some error message"}
+    form. So whenever we can't access our res object, we can do this instead.
 
 */
 userSchema.statics.signup = async function (
 	email,
 	username,
 	password,
-	fullName
+	fullName,
+  role = roles_list.user
 ) {
 
 	// Hash password
@@ -68,7 +91,8 @@ userSchema.statics.signup = async function (
 		email,
 		username,
 		password: hash,
-		fullName
+		fullName,
+    role
 	});
 
 };
