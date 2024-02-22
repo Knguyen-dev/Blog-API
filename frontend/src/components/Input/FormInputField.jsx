@@ -30,6 +30,8 @@ export default function FormInputField({
 	label,
 	placeholder,
 	className,
+	fullWidth,
+	variant = "outlined",
 }) {
 	return (
 		<Controller
@@ -47,8 +49,9 @@ export default function FormInputField({
 					value={value}
 					label={label}
 					placeholder={placeholder}
-					variant="outlined"
+					variant={variant}
 					className={className}
+					fullWidth={fullWidth}
 				/>
 			)}
 		/>
@@ -61,4 +64,6 @@ FormInputField.propTypes = {
 	label: PropTypes.string,
 	placeholder: PropTypes.string,
 	className: PropTypes.string,
+	fullWidth: PropTypes.bool,
+	variant: PropTypes.string,
 };

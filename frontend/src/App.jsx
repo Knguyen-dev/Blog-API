@@ -10,27 +10,24 @@ import {
 import RootLayout from "./layouts/RootLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import AppLayout from "./layouts/AppLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 // Pages
 import NotFoundPage from "./pages/NotFoundPage";
+import NotAuthorizedPage from "./pages/NotAuthorizedPage";
+
 import BrowsePage from "./pages/BrowsePage";
-
-/*
-- Header/footer
-1. Home Page
-2. About Page
-3. Create post page (For editors/admins)
-4. Search results page
-
-
-*/
+import ProfilePage from "./pages/dashboard/ProfilePage";
+import ManagePostsPage from "./pages/dashboard/ManagePostsPage";
+import TeamPage from "./pages/dashboard/TeamPage";
 
 // Components
 import SignUpForm from "./components/forms/SignUpForm";
 import LoginForm from "./components/forms/LoginForm";
 import PersistLogin from "./components/PersistLogin";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-//
+// Contexts
 import useAuthContext from "./hooks/useAuthContext";
 
 function App() {
@@ -39,12 +36,11 @@ function App() {
 	const appRouter = createBrowserRouter(
 		createRoutesFromElements(
 			<Route path="/" element={<RootLayout />}>
-				{/* If the user is logged in, navigate to '/' route instead */}
-
+				{/* Wrap routes around PersistLogin component */}
 				<Route element={<PersistLogin />}>
 					<Route
-						path="/auth"
-						element={!auth ? <AuthLayout /> : <Navigate to="/" />}>
+						path="auth"
+						element={!auth.user ? <AuthLayout /> : <Navigate to="/" />}>
 						{/* 
           - NOTE: Going to '/auth/' itself is valid, however we don't want users to do that
             so in that case, we'll redirect them to the 'login' route if that happens.*/}
@@ -54,9 +50,48 @@ function App() {
 					</Route>
 					<Route path="/" element={<AppLayout />}>
 						<Route index element={<BrowsePage />} />
+
+						{/* Dashboard: Put protected route on the layout element since the layout requires us to 
+              access the 'auth' property.   */}
+						<Route
+							path="dashboard"
+							element={
+								<ProtectedRoute>
+									<DashboardLayout />
+								</ProtectedRoute>
+							}>
+							{/* Protected for users, which is covered by putting ProtectedRoute around DashboardLayout */}
+							<Route index element={<ProfilePage />} />
+
+							{/* Protected for editors and admins */}
+							<Route
+								path="manage-posts"
+								element={
+									<ProtectedRoute
+										allowedRoles={[
+											import.meta.env.VITE_ROLE_EDITOR,
+											import.meta.env.VITE_ROLE_ADMIN,
+										]}>
+										<ManagePostsPage />
+									</ProtectedRoute>
+								}
+							/>
+
+							{/* Protected for admins only */}
+							<Route
+								path="team"
+								element={
+									<ProtectedRoute
+										allowedRoles={[import.meta.env.VITE_ROLE_ADMIN]}>
+										<TeamPage />
+									</ProtectedRoute>
+								}
+							/>
+						</Route>
 					</Route>
 				</Route>
 
+				<Route path="unauthorized" element={<NotAuthorizedPage />} />
 				<Route path="*" element={<NotFoundPage />} />
 			</Route>
 		)

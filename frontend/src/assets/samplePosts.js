@@ -19,17 +19,18 @@ const samplePosts = [
 		timePosted: "2 days ago",
 		authorPfp:
 			"https://yt3.googleusercontent.com/ytc/AIf8zZRbe_lMBoOtB7H2760lRkgFVdQB3-iph4yGEFt8dQ=s176-c-k-c0x00ffffff-no-rj",
-		imageSrc:
+		image:
 			"https://assets-prd.ignimgs.com/2024/02/15/3e615c580c975861756151b1ee572db92502e73c213302c7-1707957131399.jpeg?crop=16%3A9&width=282&dpr=2",
 	},
 	{
-		title: 'New Game Announcement: "Mystery of the Ancients"',
+		title:
+			'New Game Announcement: "Mystery of the Ancients". What an amazing and cinematic experience for the needy!',
 		authorName: "GameNews2024",
 		numComments: 15,
 		timePosted: "5 hours ago",
 		authorPfp:
 			"https://yt3.googleusercontent.com/ytc/AIf8zZRbe_lMBoOtB7H2760lRkgFVdQB3-iph4yGEFt8dQ=s176-c-k-c0x00ffffff-no-rj",
-		imageSrc:
+		image:
 			"https://assets-prd.ignimgs.com/2024/02/15/3e615c580c975861756151b1ee572db92502e73c213302c7-1707957131399.jpeg?crop=16%3A9&width=282&dpr=2",
 	},
 	{
@@ -39,7 +40,7 @@ const samplePosts = [
 		timePosted: "1 day ago",
 		authorPfp:
 			"https://yt3.googleusercontent.com/ytc/AIf8zZRbe_lMBoOtB7H2760lRkgFVdQB3-iph4yGEFt8dQ=s176-c-k-c0x00ffffff-no-rj",
-		imageSrc:
+		image:
 			"https://assets-prd.ignimgs.com/2024/02/15/3e615c580c975861756151b1ee572db92502e73c213302c7-1707957131399.jpeg?crop=16%3A9&width=282&dpr=2",
 	},
 	{
@@ -49,7 +50,7 @@ const samplePosts = [
 		timePosted: "3 days ago",
 		authorPfp:
 			"https://yt3.googleusercontent.com/ytc/AIf8zZRbe_lMBoOtB7H2760lRkgFVdQB3-iph4yGEFt8dQ=s176-c-k-c0x00ffffff-no-rj",
-		imageSrc:
+		image:
 			"https://assets-prd.ignimgs.com/2024/02/15/3e615c580c975861756151b1ee572db92502e73c213302c7-1707957131399.jpeg?crop=16%3A9&width=282&dpr=2",
 	},
 	{
@@ -59,7 +60,7 @@ const samplePosts = [
 		timePosted: "1 week ago",
 		authorPfp:
 			"https://yt3.googleusercontent.com/ytc/AIf8zZRbe_lMBoOtB7H2760lRkgFVdQB3-iph4yGEFt8dQ=s176-c-k-c0x00ffffff-no-rj",
-		imageSrc:
+		image:
 			"https://assets-prd.ignimgs.com/2024/02/15/3e615c580c975861756151b1ee572db92502e73c213302c7-1707957131399.jpeg?crop=16%3A9&width=282&dpr=2",
 	},
 	{
@@ -69,7 +70,7 @@ const samplePosts = [
 		timePosted: "4 days ago",
 		authorPfp:
 			"https://yt3.googleusercontent.com/ytc/AIf8zZRbe_lMBoOtB7H2760lRkgFVdQB3-iph4yGEFt8dQ=s176-c-k-c0x00ffffff-no-rj",
-		imageSrc:
+		image:
 			"https://assets-prd.ignimgs.com/2024/02/15/3e615c580c975861756151b1ee572db92502e73c213302c7-1707957131399.jpeg?crop=16%3A9&width=282&dpr=2",
 	},
 	{
@@ -79,7 +80,7 @@ const samplePosts = [
 		timePosted: "6 hours ago",
 		authorPfp:
 			"https://yt3.googleusercontent.com/ytc/AIf8zZRbe_lMBoOtB7H2760lRkgFVdQB3-iph4yGEFt8dQ=s176-c-k-c0x00ffffff-no-rj",
-		imageSrc:
+		image:
 			"https://assets-prd.ignimgs.com/2024/02/15/3e615c580c975861756151b1ee572db92502e73c213302c7-1707957131399.jpeg?crop=16%3A9&width=282&dpr=2",
 	},
 	{
@@ -89,7 +90,7 @@ const samplePosts = [
 		timePosted: "2 days ago",
 		authorPfp:
 			"https://yt3.googleusercontent.com/ytc/AIf8zZRbe_lMBoOtB7H2760lRkgFVdQB3-iph4yGEFt8dQ=s176-c-k-c0x00ffffff-no-rj",
-		imageSrc:
+		image:
 			"https://assets-prd.ignimgs.com/2024/02/15/3e615c580c975861756151b1ee572db92502e73c213302c7-1707957131399.jpeg?crop=16%3A9&width=282&dpr=2",
 	},
 	{
@@ -99,7 +100,7 @@ const samplePosts = [
 		timePosted: "1 day ago",
 		authorPfp:
 			"https://yt3.googleusercontent.com/ytc/AIf8zZRbe_lMBoOtB7H2760lRkgFVdQB3-iph4yGEFt8dQ=s176-c-k-c0x00ffffff-no-rj",
-		imageSrc:
+		image:
 			"https://assets-prd.ignimgs.com/2024/02/15/3e615c580c975861756151b1ee572db92502e73c213302c7-1707957131399.jpeg?crop=16%3A9&width=282&dpr=2",
 	},
 	{
@@ -109,7 +110,7 @@ const samplePosts = [
 		timePosted: "5 days ago",
 		authorPfp:
 			"https://yt3.googleusercontent.com/ytc/AIf8zZRbe_lMBoOtB7H2760lRkgFVdQB3-iph4yGEFt8dQ=s176-c-k-c0x00ffffff-no-rj",
-		imageSrc:
+		image:
 			"https://assets-prd.ignimgs.com/2024/02/15/3e615c580c975861756151b1ee572db92502e73c213302c7-1707957131399.jpeg?crop=16%3A9&width=282&dpr=2",
 	},
 	{
@@ -119,7 +120,7 @@ const samplePosts = [
 		timePosted: "1 week ago",
 		authorPfp:
 			"https://yt3.googleusercontent.com/ytc/AIf8zZRbe_lMBoOtB7H2760lRkgFVdQB3-iph4yGEFt8dQ=s176-c-k-c0x00ffffff-no-rj",
-		imageSrc:
+		image:
 			"https://assets-prd.ignimgs.com/2024/02/15/3e615c580c975861756151b1ee572db92502e73c213302c7-1707957131399.jpeg?crop=16%3A9&width=282&dpr=2",
 	},
 ];

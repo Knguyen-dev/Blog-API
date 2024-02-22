@@ -1,33 +1,56 @@
 import PropTypes from "prop-types";
-import { Button } from "@mui/material";
+import { InputBase } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { styled } from "@mui/material/styles";
+
+const Search = styled("div")(({ theme }) => ({
+	position: "relative",
+	borderRadius: theme.shape.borderRadius,
+	backgroundColor: theme.palette.inputBg,
+	display: "flex",
+}));
+
+const SearchIconWrapper = styled("div")(({ theme }) => ({
+	padding: theme.spacing(0, 2),
+	height: "100%",
+	position: "absolute",
+	pointerEvents: "none",
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "center",
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+	color: "inherit",
+	"& .MuiInputBase-input": {
+		// Good for controlling vertical size of search bar
+		padding: theme.spacing(1.5, 1, 1.5, 0),
+		// vertical padding + font size from searchIcon
+		paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+	},
+
+	// Ensures that input stretches out to fill 'search container.
+	flex: "auto",
+}));
+
+/*
+- NOTE: You don't need to do useTheme() and pass in the theme prop to your components for 
+  your theme to work. As long as you passed in the theme prop to Mui's ThemeProvider, then 
+  you should be all good.
+*/
+
 export default function SearchBar({ onSubmit }) {
 	return (
 		<form onSubmit={onSubmit}>
-			<label
-				htmlFor="default-search"
-				className="tw-sr-only tw-text-sm tw-font-medium tw-text-gray-900 tw-dark:text-white">
-				Search
-			</label>
-			<div className="tw-relative">
-				<div className="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-start-0 tw-flex tw-items-center tw-ps-3">
+			<Search>
+				<SearchIconWrapper>
 					<SearchIcon />
-				</div>
-				<input
-					type="search"
-					id="default-search"
-					className="tw-block tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-bg-gray-50 tw-p-4 tw-ps-10 tw-text-sm tw-text-gray-900 tw-focus:border-blue-500 tw-focus:ring-blue-500 tw-dark:border-gray-600 tw-dark:bg-gray-700 tw-dark:text-white tw-dark:placeholder-gray-400 tw-dark:focus:border-blue-500 tw-dark:focus:ring-blue-500"
-					placeholder="Search Mockups, Logos..."
-					required
+				</SearchIconWrapper>
+				<StyledInputBase
+					placeholder="Search..."
+					inputProps={{ "aria-label": "search" }}
 				/>
-
-				<Button
-					type="submit"
-					variant="contained"
-					className="tw-absolute tw-bottom-2.5 tw-end-2.5">
-					Search
-				</Button>
-			</div>
+			</Search>
 		</form>
 	);
 }

@@ -12,13 +12,24 @@ import UploadIcon from "@mui/icons-material/Upload";
 import PersonIcon from "@mui/icons-material/Person";
 import { Box, Typography } from "@mui/material";
 
-import { useState, Fragment } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useLogout from "../../hooks/useLogout";
 
 import PropTypes from "prop-types";
 
+/*
+- Define the width of the menu. Then define a width for the text, and if the 
+  text goes over that width, then we truncate it. Of course feel free to play
+  around with truncateWidth to get the appearance you want
+
+*/
+const menuWidth = 275;
+const truncateWidth = menuWidth - 75;
+
 export default function AccountMenu({ user }) {
 	const logout = useLogout();
+	const navigate = useNavigate();
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
@@ -30,15 +41,25 @@ export default function AccountMenu({ user }) {
 		setAnchorEl(null);
 	};
 
-	console.log("User's Role: ", user.role);
-	console.log("Vite user role: ", import.meta.env.VITE_ROLE_USER);
+	/*
+  + Handles a tab click on a menu item. Accepts 'callback' which 
+    will be a tab item's own individual function. As a result 
+    we'll be able to run the code for an individual tab, whilst 
+    being able to close the account menu too.
+  */
+	const handleTabClick = (callback) => {
+		handleClose();
+		callback();
+	};
 
-	// Additional menu tabs after the
+	// Additional menu tabs after the header containing the user's information
 	const menuArr = [
 		[
 			{
 				icon: <PersonIcon fontSize="small" />,
 				text: "My Account",
+				id: 1,
+				onClick: () => navigate("/dashboard"),
 			},
 
 			/*
@@ -47,20 +68,48 @@ export default function AccountMenu({ user }) {
 			users.
       
       - NOTE: In .env files, our values will always be strings so if we're comparing 
-        numbers, we need to convert them like we did here, or do non-strict comparisons.
+        numbers, we need to convert them into int, or do non-strict comparisons.
+        So when their role is user, this expression evaluates to false so we'll have a 
+        tab object = false. This is why later when creating 'menuItems' we only look for 
+        tabObj with truthy values.
       */
 
-			user.role !== parseInt(import.meta.env.VITE_ROLE_USER) && {
+			user.role != import.meta.env.VITE_ROLE_USER && {
 				icon: <UploadIcon fontSize="small" />,
 				text: "Create Post",
+				id: 2,
+				onClick: () => navigate("/dashboard/manage-posts"),
 			},
 			{
 				icon: <Logout fontSize="small" />,
 				text: "Sign out",
 				onClick: logout,
+				id: 3,
 			},
 		],
 	];
+
+	// Create markup for interactive menu items
+	const menuItems = menuArr.map((sectionArr) => {
+		// Create markup the tabs in each section
+		let sectionContent = sectionArr.map((tabObj) => {
+			if (tabObj) {
+				return (
+					<MenuItem
+						key={tabObj.id}
+						onClick={() => handleTabClick(tabObj.onClick)}>
+						<ListItemIcon>{tabObj.icon}</ListItemIcon>
+						{tabObj.text}
+					</MenuItem>
+				);
+			}
+		});
+
+		// Append divider to the front of the array, which adds
+		// a top divider in front of the markup of each new section
+		sectionContent.unshift(<Divider />);
+		return sectionContent;
+	});
 
 	return (
 		<>
@@ -73,7 +122,13 @@ export default function AccountMenu({ user }) {
 						aria-controls={open ? "account-menu" : undefined}
 						aria-haspopup="true"
 						aria-expanded={open ? "true" : undefined}>
-						<Avatar>{user.username.slice(0, 1).toUpperCase()}</Avatar>
+						{/* 
+            - Neat thing is, if Avatar component has trouble loading the image, then 
+              Avatar component will fall back to the child elements. So here if 
+              we have problems loading hte image, then we'll use the initials.
+            
+            */}
+						<Avatar src={user.avatarSrc}>{user.avatarInitials}</Avatar>
 					</IconButton>
 				</Tooltip>
 			</Box>
@@ -87,7 +142,7 @@ export default function AccountMenu({ user }) {
 						elevation: 0,
 						// Styling the paper
 						sx: {
-							width: 275,
+							width: menuWidth,
 							overflow: "visible",
 							filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
 							mt: 1.5,
@@ -119,7 +174,7 @@ export default function AccountMenu({ user }) {
 					sx={{
 						pointerEvents: "none",
 					}}>
-					<Avatar>{user.username.slice(0, 1).toUpperCase()}</Avatar>
+					<Avatar src={user.avatarSrc}>{user.avatarInitials}</Avatar>
 					<Box sx={{ display: "flex", flexDirection: "column" }}>
 						{/* 
             - if you want typographies to wrap around, do whiteSpace: normal on sx
@@ -130,33 +185,21 @@ export default function AccountMenu({ user }) {
               define a width so that mui can detect it. If text goes over 200px, then
               then the rest will be truncated with ellipses.
             */}
-						<Typography variant="span" fontSize={16} noWrap sx={{ width: 200 }}>
+						<Typography
+							variant="span"
+							fontSize={16}
+							noWrap
+							sx={{ width: truncateWidth }}>
 							{user.fullName}
 						</Typography>
-						<Typography variant="span" noWrap sx={{ width: 200 }}>
+						<Typography variant="span" noWrap sx={{ width: truncateWidth }}>
 							{user.email}
 						</Typography>
 					</Box>
 				</MenuItem>
 
-				<Divider />
-
 				{/* Interactable tabs for the account menu */}
-				{menuArr.map((sectionArr, sectionIndex) => (
-					<Fragment key={sectionIndex}>
-						{sectionArr.map((tabObj, tabIndex) => (
-							<MenuItem
-								key={tabIndex}
-								onClick={tabObj.onClick && tabObj.onClick}>
-								<ListItemIcon>{tabObj.icon}</ListItemIcon>
-								{tabObj.text}
-							</MenuItem>
-						))}
-
-						{/* For all sections that aren't the last one, render a divider after it. */}
-						{sectionIndex !== menuArr.length - 1 && <Divider />}
-					</Fragment>
-				))}
+				{menuItems}
 			</Menu>
 		</>
 	);

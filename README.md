@@ -47,27 +47,25 @@
   which is a lot more easy to integrate since that is based on tailwind styles.
 
 # BOOK MARK:
-- Work on useAxiosPrivate, ProtectedRoute, role-based route protection likely.
-  I don't think we need 'useReducer' as we're not performing any complex operations
-  on the auth state, though I think the auth state should have username, email, and 
-  fullName as well. Maybe make auth state {accessToken, user: {...allUserProperties}}.
-
-- Then next it would probably be designing the pages, which will probably be the 
-  hardest parts. For layouts I think taking inspiration from youtube or ign would 
-  be nice as they have the sidebar with topics, then the main content. But more realistically this is straight forward design: https://blog.100jsprojects.com/search?searchTerm=React.
-
-
-  I think we should go for that sidebar and main-content, which we can use for search results and whatnot. Just try 
-  it out with the responsive drawer. If you do, put it in the BrowsePage. For the sidebar you can do general
-  topics. Don't worry about creating a 'specified blog' for a single topic
-
-  However, next I think creating a profile page, where you just see your account. You'd have a main 
-  content and then some tabs. It could be your home tab, just updating user stuff, editor tab where you create.
+- Work on fleshing out and commenting the forms. We have three forms one for changing avatar, which we 
+  don't even know how to store images yet, one for changing 'profile' information, and one for 
+  changing the password. These forms are more specialized for the account page as we have added
+  the ability to close these forms. So next we'll definitely be working on commenting, but also be working on both 
+  front end backend development. Also maybe we should also look into how to structure our project in regards to 
+  our '.env' file, and whether we should be having one or two. It makes sense to have one, for that 'role based authentication'
+  we do though. Also working on the responsiveness would likely be a good idea as well, in regards to our forms and layout
 
 
-- Still need to wokr out the kinks of logging in and signing out
+
+# Avatar Stuff:
+1. If we fail in deleting the old one, we should probably cancel the operations.
+  Should probably have the option of using an avatar or just using initials.
+  Should handle the case of showing a default image of avatar wasn't found.
+
+
 
   1. https://stackoverflow.com/questions/57650692/where-to-store-the-refresh-token-on-the-client
   2. https://medium.com/@sadnub/simple-and-secure-api-authentication-for-spas-e46bcea592ad
-
+  3. How to create youtube layout (tailwind typescript): https://youtu.be/ymGB1lqP1CM?si=BZv6QUEFMrVKE5Qf
+  4. TinyMCE V6 Docs: https://www.tiny.cloud/docs/tinymce/6/
 

@@ -27,11 +27,19 @@ export default function LoginForm() {
 
 	// Auto logins for us when rendering LoginForm
 	useEffect(() => {
-		const preLogin = async () => {
+		const loginRoleUser = async () => {
 			await login("Mario70", "P$ssword_123");
 		};
 
-		preLogin();
+		const loginRoleEditor = async () => {
+			await login("grandcreamfraiche", "P$ssword_123");
+		};
+
+		const loginRoleAdmin = async () => {
+			await login("kbizzzyycentral", "P$ssword_123");
+		};
+
+		loginRoleAdmin();
 	}, [login]);
 
 	const onSubmit = async (data) => {

@@ -3,15 +3,9 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 
-import {
-	StyledEngineProvider,
-	ThemeProvider,
-	CssBaseline,
-} from "@mui/material";
-
-import { appTheme } from "./appTheme.js";
+import { StyledEngineProvider } from "@mui/material";
 import { AuthProvider } from "./contexts/AuthProvider.jsx";
-
+import ColorModeProvider from "./contexts/ColorModeProvider.jsx";
 /*
 
 - CssBaseline: Component that helps normalize styles across different
@@ -26,12 +20,11 @@ import { AuthProvider } from "./contexts/AuthProvider.jsx";
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
 		<StyledEngineProvider injectFirst>
-			<ThemeProvider theme={appTheme}>
-				<CssBaseline />
+			<ColorModeProvider>
 				<AuthProvider>
 					<App />
 				</AuthProvider>
-			</ThemeProvider>
+			</ColorModeProvider>
 		</StyledEngineProvider>
 	</React.StrictMode>
 );

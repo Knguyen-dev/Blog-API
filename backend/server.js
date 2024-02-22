@@ -1,4 +1,6 @@
 require("dotenv").config();
+
+const path = require("path");
 const logger = require("morgan");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -13,19 +15,21 @@ const verifyJWT = require("./middleware/verifyJWT")
 const express = require("express");
 const app = express();
 
-app.use(credentials);
-app.use(cors(corsOption));
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public"))); // serve static assets such as our stored images on disk
+app.use(credentials); // credentials/cookies configuration
+app.use(cors(corsOption)); // cors configuration
+app.use(logger("dev")); // logs out requests in the console
+app.use(express.json());  // json from request body
+app.use(express.urlencoded({ extended: true })); // json from forms
+app.use(cookieParser()); // let's us access cookies from request object
+
 
 
 // Public routes
 app.use("/auth", authRouter);
 
 // Api (protected) routes
-app.use(verifyJWT);
+// app.use(verifyJWT);
 app.use("/users", userRouter);
 
 

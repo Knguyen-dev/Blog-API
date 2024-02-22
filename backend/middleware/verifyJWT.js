@@ -31,10 +31,10 @@ const verifyJWT = (req, res, next) => {
 
 
     /*
-    - NOTE: Access token has username and roles so put those in our request object
+    - Set the user property on the request object to represent the 
+      user that's currently making the request
     */
-    req.username = user.username;
-    req.role = user.role;
+    req.user = user;
     next();
   }))
 }

@@ -3,7 +3,13 @@ import useAuthContext from "../hooks/useAuthContext";
 import PropTypes from "prop-types";
 
 /*
-allowedRoles: An array of roles
++ ProtectedRoute: Component we use to wrap around our routes to protect them.
+  At minimum this makes it so a user has to be authenticated before being able 
+  to go to those routes. Then with our 'allowedRoles' array, even if they are 
+  authenticated, we can choose which roles are able to access that route!
+
+- allowedRoles: An array of roles. By default if nothing is passed, then it becomes 
+  an empty array.
 
 */
 
@@ -12,7 +18,7 @@ export default function ProtectedRoute({ allowedRoles = [], children }) {
 	const location = useLocation();
 
 	// If the user isn't authenticated, then redirect them.
-	if (!auth) {
+	if (!auth.user) {
 		return (
 			<Navigate
 				to="/auth/login"
@@ -28,11 +34,12 @@ export default function ProtectedRoute({ allowedRoles = [], children }) {
     included in the allowedRoles list, then they are also authorized.
 
   - NOTE: So isAuthorized will be true if either of these conditions are true. And
-    it will be false if both conditions are false.
+    it will be false if both conditions are false. Also we convert all roles 
+    to integers
   */
 	const isAuthorized =
-		allowedRoles.length === 0 || allowedRoles.includes(auth.user.role);
-
+		allowedRoles.length === 0 ||
+		allowedRoles.map((role) => parseInt(role)).includes(auth.user.role);
 	return isAuthorized ? children : <Navigate to="/unauthorized" />;
 }
 

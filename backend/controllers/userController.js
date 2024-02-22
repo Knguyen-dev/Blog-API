@@ -2,7 +2,9 @@ const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 const {validationResult} = require("express-validator");
 const userValidator = require("../middleware/userValidators");
-const bcrypt = require('bcrypt');
+const fileUpload = require("../middleware/fileUpload");
+const path = require("path");
+
 
 const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select("-password -__v");
@@ -21,22 +23,89 @@ const getUserById = asyncHandler(async (req, res) => {
     hash since that is sensitive info, and we're not sending back the index because
     honestly that doesn't really matter. 
   */
-  const user = await User.findUserByID(req.params.userID, "-password -__v");
+  const user = await User.findUserByID(req.params.id, "-password -__v");
 
   res.status(200).json(user);
 })
 
+
+
 // + Delete a user via their ID
 const deleteUserById = asyncHandler(async (req, res) => {
   // Attempt to find user by ID
-  const user = await User.findUserByID(req.params.userID);
+  const user = await User.findUserByID(req.params.id);
 
   // At this point a user was found so delete them
-  await User.findByIdAndDelete(rew.params.userID);
+  await User.findByIdAndDelete(req.params.id);
 
   // Indicate that user was successfully deleted
   res.status(200).json({message: "User successfully deleted!"});
 })
+
+
+
+
+
+
+/*
+- Logic for updating an avatar:
+
+- NOTE: Updating only means adding or changing the avatar.
+*/
+const updateAvatar = [  
+  // Attempt to save the image file for the avatar, if it exists
+  fileUpload.uploadFile.single("file"),
+
+  asyncHandler(async(req, res) => {
+    // Attempt to find a user with the parameter id
+    const user = await User.findUserByID(req.params.id);
+
+    /*
+    1. The user is changing avatars, so delete the old avatar 
+      from our disk.
+    - If there's an old avatar, then remove it. This is because the user 
+      could be changing avatars, in that case we can think of it was replacing
+      the old one with the new one. Or they are removing their avatar which 
+      means we are just deleting the old one.
+    */
+
+    if (user.avatar) {
+      const oldAvatarPath = path.join(__dirname, `../public/images/${user.avatar}`);
+      await fileUpload.deleteFromDisk(oldAvatarPath);
+    }
+
+    // Save the saved file name to the user in the database
+    // Then we'll be able to get this file later on the front end
+
+    user.avatar = req.file.filename;
+    await user.save();
+
+    // Send the user back in json 
+    return res.status(200).json({user}
+    );
+  })
+]
+
+const deleteAvatar = asyncHandler(async(req, res) => {
+  const user = await User.findUserByID(req.params.id);
+  // If the user has an existing avatar
+  if (user.avatar) {
+    // Delete avatar from disk
+    const oldAvatarPath = path.join(__dirname, `../public/images/${user.avatar}`)
+    await fileUpload.deleteFromDisk(oldAvatarPath);
+    // Delete avatar from user in the database
+    user.avatar = "";
+    await user.save();
+    res.status(200).json({user});
+  } else {
+    res.status(404).json({message: "No avatar available to delete!"});
+  }
+})
+
+
+
+
+
 
 
 /*
@@ -68,7 +137,7 @@ const updateFullName = [
 		}
 
     // Try to find a user with that ID
-    const user = await User.findUserByID(req.params.userID);
+    const user = await User.findUserByID(req.params.id);
 
     // At this point a user was found so update and save their info
     user.fullName = req.body.fullName;
@@ -100,7 +169,7 @@ const updateUsername = [
 		}
     
     // Attempt to find our target user; covers whether they don't exist or id isn't valid.
-    const user = await User.findUserByID(req.params.userID);
+    const user = await User.findUserByID(req.params.id);
 
     // At this point user exists and username is valid, so save changes
     user.username = req.body.username;
@@ -118,7 +187,9 @@ const updateUsername = [
 
 module.exports = {
   getUsers,
-  getUserById, 
+  getUserById,
+  updateAvatar,
+  deleteAvatar,
   updateFullName,
   updateUsername,
   deleteUserById

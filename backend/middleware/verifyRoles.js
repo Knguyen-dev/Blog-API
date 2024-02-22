@@ -17,7 +17,7 @@ const verifyRoles = (...allowedRoles) => {
       we'll let then access the resource, else no.
     */
 
-    const result = rolesArr.includes(req.role);
+    const result = rolesArr.includes(req.user.role);
 
     if (!result) {
       return next(err);

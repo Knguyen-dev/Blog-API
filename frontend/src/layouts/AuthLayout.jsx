@@ -42,7 +42,7 @@ export default function AuthLayout() {
 
 	return (
 		// For smaller sizes flex col, but above mobile it's flex row
-		<div className="tw-min-h-screen tw-flex tw-flex-col tw-justify-center tw-items-cente">
+		<div className="tw-min-h-screen tw-flex tw-flex-col tw-justify-center tw-items-center">
 			<Grid container className="tw-justify-center tw-items-center" spacing={2}>
 				<Grid item xs={8} md={4} className="tw-text-center">
 					<div>

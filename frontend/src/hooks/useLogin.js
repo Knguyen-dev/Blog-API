@@ -1,12 +1,14 @@
 import { useState } from "react";
 import useAuthContext from "./useAuthContext";
 import { axiosPrivate } from "../api/axios";
+import authActions from "../constants/authActions";
+
 const endpoint = "/auth/login";
 
 export default function useLogin() {
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
-	const { setAuth } = useAuthContext();
+	const { dispatch } = useAuthContext();
 
 	const login = async (username, password) => {
 		setIsLoading(true);
@@ -22,7 +24,7 @@ export default function useLogin() {
       - Set the auth state to what we got from the endpoint. We should 
       be getting an object with the user's role, and access token.
       */
-			setAuth(response.data);
+			dispatch({ type: authActions.login, payload: response.data });
 		} catch (err) {
 			/*
       - Could be a server-side validation error, some other server-side error, 

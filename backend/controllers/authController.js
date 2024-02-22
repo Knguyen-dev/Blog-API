@@ -147,8 +147,10 @@ const loginUser = asyncHandler(async (req, res, next) => {
     user.refreshToken = refreshToken;
     await user.save();
 
+
+
     // Return the access token and user back
-    res.status(200).json({user: {email: user.email, username: user.username, role: user.role, fullName: user.fullName }, accessToken})
+    res.status(200).json({user, accessToken})
 	}
 )
 
@@ -177,7 +179,7 @@ const refresh = asyncHandler(async (req, res, next) => {
   then it's a valid token, but if it doesn't exist it could have been
   already revoked, tampered with, or just it wasn't a token issued by us.
   */
-  const foundUser = await User.findOne({refreshToken}).select("-password -__v -refreshToken");
+  const foundUser = await User.findOne({refreshToken});
   if (!foundUser) {
     return res.status(403).json({message: "Forbidden, we couldn't find a user with your refresh token"})
   }
@@ -191,6 +193,7 @@ const refresh = asyncHandler(async (req, res, next) => {
 
     // Else user exists and the refresh token is valid, so create and return the access token as json
     const accessToken = createAccessToken(foundUser);
+
     res.json({user: foundUser, accessToken})
   }));
 })

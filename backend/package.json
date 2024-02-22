@@ -6,7 +6,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "nodemon server",
-    "loadDb": "node ./config/loadUsers"
+		"loadDb": "node ./config/loadUsers"
 	},
 	"keywords": [],
 	"author": "",
@@ -26,6 +26,7 @@
 		"jsonwebtoken": "^9.0.2",
 		"luxon": "^3.4.4",
 		"mongoose": "^8.1.1",
-		"morgan": "^1.10.0"
+		"morgan": "^1.10.0",
+		"multer": "^1.4.5-lts.1"
 	}
 }

@@ -1,4 +1,4 @@
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
@@ -56,9 +56,8 @@ const Drawer = styled(MuiDrawer, {
 	flexShrink: 0,
 	whiteSpace: "nowrap",
 	boxSizing: "border-box",
-
 	/*
-  - Target so that our sidebar is in the noraml flow.
+  - Target so that our sidebar is in the normal flow.
 
   - NOTE: Be sure to target the main classes like this. If you target 
     a dynamically created classname, such as ".39jcerj-mui-paper" or something
@@ -79,9 +78,14 @@ const Drawer = styled(MuiDrawer, {
 	}),
 }));
 
-export default function MiniDrawer({ open, sx, drawerWidth, drawerArr }) {
-	const theme = useTheme();
-
+export default function MiniDrawer({
+	open,
+	sx,
+	drawerWidth,
+	drawerArr,
+	handleTabClick,
+	activeTabID,
+}) {
 	const drawer = drawerArr.map((sectionObj, sectionIndex) => (
 		<Fragment key={sectionIndex}>
 			<List>
@@ -108,18 +112,17 @@ export default function MiniDrawer({ open, sx, drawerWidth, drawerArr }) {
 					</ListItem>
 				)}
 
-				{sectionObj.tabs.map((tabObj, tabIndex) => (
-					<ListItem
-						key={`${sectionIndex}-${tabIndex}`}
-						disablePadding
-						sx={{ display: "block" }}>
+				{sectionObj.tabs.map((tabObj) => (
+					<ListItem key={tabObj.id} disablePadding sx={{ display: "block" }}>
 						<ListItemButton
 							// Mess with the height to adjust the 'spacing between the list items
 							sx={{
 								height: 48,
 								justifyContent: open ? "initial" : "center",
 								px: 2.5,
-							}}>
+							}}
+							onClick={() => handleTabClick(tabObj)}
+							selected={activeTabID === tabObj.id}>
 							<ListItemIcon
 								sx={{
 									minWidth: 0,
@@ -143,7 +146,6 @@ export default function MiniDrawer({ open, sx, drawerWidth, drawerArr }) {
 	return (
 		<Drawer
 			variant="permanent"
-			theme={theme}
 			open={open}
 			sx={sx} // this typically defines our responsive styles
 			/*
@@ -163,4 +165,6 @@ MiniDrawer.propTypes = {
 	sx: PropTypes.object,
 	drawerWidth: PropTypes.number,
 	drawerArr: PropTypes.array,
+	handleTabClick: PropTypes.func,
+	activeTabID: PropTypes.number,
 };

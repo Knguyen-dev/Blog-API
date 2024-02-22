@@ -67,7 +67,6 @@ export default function useAxiosPrivate() {
 					prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 					return axiosPrivate(prevRequest);
 				}
-
 				/*
         - Means that in our axiosPrivate request, we weren't rejected due to a bad access token
           or our request was already retried (.sent === true). If this was true then just return

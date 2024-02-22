@@ -52,10 +52,28 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
+    // User's profile picture
+    avatar: String,
+
 
 	},
 	{
-		toJSON: { virtuals: true },
+    /*
+    + Now when calling toObject, our virtual properties are retained.
+      As a result, we keep our virtual properties when 
+      converting to json.
+    
+    1. toObject: Converts a Mongoose document into a plain JavaScript object.
+    2. toJSON: Converts a Mongoose document into a JSON string. You
+      may want to override this method like we've done here and directly
+      control what we is returned when a document is turned into a json string.
+
+    - Takeaway: So when we do res.json(user), we actually call our userSchema.methods.toJSON() function. 
+      In this function we use the important toObject to actually create the javascript object. 
+      And then toJSON handles stuff such as deleting certain fields and whatnot. 
+      This is all done automatically like we've defined in our code.
+    */
+		toObject: { virtuals: true },
 		timestamps: true,
 	}
 );
@@ -116,6 +134,25 @@ userSchema.statics.login = async function (username, password) {
 };
 
 /*
+- Situation: When sending back a user as json, we don't want to include fields such as 
+  'password' or 'refreshToken', and any critically sensitive data such as that. We want
+  a clean way to do this automatically when the User object is converted and sent as JSON.
+
+- Solution: Define a schema.mehods.toJSON. We turn our User model instance into a 
+  javascript object. THen we delete some fields we don't want to include. So here we 
+  delete password, refreshToken, and the '__v' which has something to do with indexes in
+  mongoDB. These info is either critical or irrelevant to the frontend, so we don't need it.
+*/
+userSchema.methods.toJSON = function() {
+  const userObj = this.toObject();
+  delete userObj.password; // omit sensitive info such as password and refresh token
+  delete userObj.refreshToken;
+  delete userObj.avatar; // avatar is only used on the backend, avatarSrc will have used in its place on the frontend
+  delete userObj.__v; // not needed on frontend
+  return userObj;
+}
+
+/*
 - Static method for finding a user. It handles checking whether the ID is valid,
   the selection of fields, and the sending of errors if the user wasn't found. 
   Finally it returns the user.
@@ -153,6 +190,32 @@ userSchema.statics.findUserByID = async function(userID, selectOptions = null) {
 
 userSchema.virtual("formatted_creation_date").get(function() {
   return DateTime.fromJSDate(this.createdAt).toLocaleString(DateTime.DATE_MED)
+})
+
+// Returns the url link for getting the avatar. Virtual property so it's very flexible.
+userSchema.virtual("avatarSrc").get(function() {
+  return `http://localhost:${process.env.PORT}/images/${this.avatar}`;
+})
+
+userSchema.virtual("avatarInitials").get(function() {
+
+  // Split the name into an array based on spaces, which represent sections of the name
+  const nameArr = this.fullName.split(" ");
+  let initials = ""
+
+  // Get the first letter of the first section of the name, represents our starting initial.
+  initials += nameArr[0][0];
+
+  // If they have more than one part to their name, then we can get 
+  // a second letter for their initials. We do nameArr.length - 1 to target the last section of 
+  // their name. As a result we aim to get their first and last initials.
+  if (nameArr.length > 1) {
+      initials += nameArr[nameArr.length - 1][0]
+  }
+  
+  // Return the uppercased version of the initials.
+  return initials.toUpperCase();   
+
 })
 
 
