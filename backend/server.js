@@ -29,7 +29,7 @@ app.use(cookieParser()); // let's us access cookies from request object
 app.use("/auth", authRouter);
 
 // Api (protected) routes
-// app.use(verifyJWT);
+app.use(verifyJWT);
 app.use("/users", userRouter);
 
 
@@ -51,7 +51,7 @@ app.use(function (req, res, next) {
 */
 app.use(function (err, req, res, next) {
 
-  console.log(err);
+  console.log("Error Caught: ", err.message);
 
   if (!err.statusCode) {
     err.statusCode = 500

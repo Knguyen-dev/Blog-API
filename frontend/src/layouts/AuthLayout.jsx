@@ -21,25 +21,7 @@ import { Outlet } from "react-router-dom";
   setting functions through Outlet context. 
 */
 
-import SimpleSnackbar from "../components/notifications/SimpleSnackbar";
-import { useState } from "react";
-
 export default function AuthLayout() {
-	const [open, setOpen] = useState(false);
-
-	// Opens snackbar
-	const handleOpen = () => {
-		setOpen(true);
-	};
-
-	// Closes snackbar
-	const handleClose = (event, reason) => {
-		if (reason === "clickaway") {
-			return;
-		}
-		setOpen(false);
-	};
-
 	return (
 		// For smaller sizes flex col, but above mobile it's flex row
 		<div className="tw-min-h-screen tw-flex tw-flex-col tw-justify-center tw-items-center">
@@ -51,19 +33,9 @@ export default function AuthLayout() {
 					</div>
 				</Grid>
 				<Grid item xs={8} md={4}>
-					<Outlet context={{ handleOpen }} />
+					<Outlet />
 				</Grid>
 			</Grid>
-
-			{/* Snackbar for the auth layout. Currently just shows when user registration is successful */}
-			<SimpleSnackbar
-				open={open}
-				handleClose={handleClose}
-				autoHideDuration={5000}
-				message="User registration successful!"
-				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-				severity="success"
-			/>
 		</div>
 	);
 }

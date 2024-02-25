@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useAuthContext from "./useAuthContext";
-import { axiosPrivate } from "../api/axios";
-import authActions from "../constants/authActions";
+import { axiosPrivate } from "../../api/axios";
+import authActions from "../../constants/authActions";
 
 const endpoint = "/auth/login";
 
@@ -10,15 +10,12 @@ export default function useLogin() {
 	const [isLoading, setIsLoading] = useState(false);
 	const { dispatch } = useAuthContext();
 
-	const login = async (username, password) => {
+	const login = async (formData) => {
 		setIsLoading(true);
 		setError(null);
 
 		try {
-			const response = await axiosPrivate.post(endpoint, {
-				username,
-				password,
-			});
+			const response = await axiosPrivate.post(endpoint, formData);
 
 			/*
       - Set the auth state to what we got from the endpoint. We should 
@@ -35,11 +32,12 @@ export default function useLogin() {
         of range 2xx
       2. If err.request, then the request was made but no response was received.
       3. Else, something happened in setting up the request that triggered an error.
+        Here it's probably a code error in the front end code.
 
       + Credit: https://axios-http.com/docs/handling_errors
       */
 			if (err.response) {
-				setError(err?.response?.data?.message || "Server error occurred!");
+				setError(err.response?.data?.message || "Server error occurred!");
 			} else if (err.request) {
 				setError("Network error!");
 			} else {

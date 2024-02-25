@@ -163,13 +163,20 @@ userSchema.methods.toJSON = function() {
   querying the database via id, and then checking if the database found anything.
 
   2. If selectOptions is null, mongoose will include all fields.
+
+
+  3. Status code 404 is reserved for bad user id and no user found. Whlist 
+    we use status code 400 to indicate that we found invalid input in a user's 
+    input data. These status codes sometimes return error objects in different forms,
+    and we can predict what kind of error data we'll get on the front end if we follow
+    these rules.
 */
 userSchema.statics.findUserByID = async function(userID, selectOptions = null) {
 
   // Check if the document ID provided is valid
   if (!mongoose.Types.ObjectId.isValid(userID)) {
     const err = Error("Invalid user ID!")
-    err.statusCode = 400
+    err.statusCode = 404
     throw err;
   }
 
@@ -180,7 +187,7 @@ userSchema.statics.findUserByID = async function(userID, selectOptions = null) {
   // If no user was found with that ID
   if (!user) {
     const err = Error("User not found!")
-    err.statusCode = 400
+    err.statusCode = 404
     throw err;
   }
 
@@ -192,9 +199,20 @@ userSchema.virtual("formatted_creation_date").get(function() {
   return DateTime.fromJSDate(this.createdAt).toLocaleString(DateTime.DATE_MED)
 })
 
-// Returns the url link for getting the avatar. Virtual property so it's very flexible.
+
+/*
++ Returns the url link for getting the avatar. 
+
+- NOTE: Virtual property so it's very flexible. We should only return the 
+  string when avatar is defined. Else we return nothing. As a result, when 
+  we return the user as json, if there is no avatar, that avatarSrc field won't 
+  be defined, which not only reduces bloat on our user object, but helps the frontend
+  prevent any requests to the backend for images that have been deleted or don't exist.
+*/
 userSchema.virtual("avatarSrc").get(function() {
-  return `http://localhost:${process.env.PORT}/images/${this.avatar}`;
+  if (this.avatar) {
+    return `http://localhost:${process.env.PORT}/images/${this.avatar}`;
+  }
 })
 
 userSchema.virtual("avatarInitials").get(function() {

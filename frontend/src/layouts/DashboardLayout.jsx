@@ -16,7 +16,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import GroupsIcon from "@mui/icons-material/Groups";
 
-import useAuthContext from "../hooks/useAuthContext";
+import useAuthContext from "../hooks/user/useAuthContext";
 import { useState, useEffect } from "react";
 
 export default function DashboardLayout() {

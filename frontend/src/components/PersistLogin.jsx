@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
-import useRefreshToken from "../hooks/useRefreshToken";
-import useAuthContext from "../hooks/useAuthContext";
+import useRefreshToken from "../hooks/user/useRefreshToken";
+import useAuthContext from "../hooks/user/useAuthContext";
 
 /*
 - We'd wrap this around the routes that need authentication. 
@@ -28,7 +28,6 @@ export default function PersistLogin() {
 		let isMounted = true;
 
 		const verifyRefreshToken = async () => {
-			console.log("Persisting Login!");
 			try {
 				await refresh();
 			} catch (err) {

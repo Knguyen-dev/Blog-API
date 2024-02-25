@@ -1,8 +1,9 @@
-import { Button, Typography, Box, Avatar } from "@mui/material";
+import { Button, Box, Avatar } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-
 import { useState } from "react";
-import useChangeAvatar from "../../hooks/useChangeAvatar";
+import useChangeAvatar from "../../hooks/user/useChangeAvatar";
+
+import DeleteAvatarDialog from "../dialog/DeleteAvatarDialog";
 
 /*
 + Handling an image form
@@ -48,16 +49,11 @@ export default function AvatarForm() {
 
 	const onSubmit = async (e) => {
 		e.preventDefault();
-
 		await changeAvatar(file);
 	};
 
 	return (
 		<form onSubmit={onSubmit}>
-			<Typography variant="h5" component="h2" sx={{ textAlign: "center" }}>
-				Upload your pfp!
-			</Typography>
-
 			<Box sx={{ display: "flex", justifyContent: "center", marginY: 2 }}>
 				<Avatar sx={{ height: 125, width: 125 }} src={imagePreview} />
 			</Box>
@@ -65,10 +61,7 @@ export default function AvatarForm() {
 			<Box
 				sx={{
 					display: "flex",
-					flexDirection: { xs: "column", sm: "row" },
-					gap: 3,
-					justifyContent: "center",
-					alignItems: "center",
+					flexDirection: "column",
 				}}>
 				<input
 					type="file"
@@ -78,13 +71,25 @@ export default function AvatarForm() {
 					onChange={handleFileChange}
 					required
 				/>
-				<Button
-					variant="contained"
-					type={"submit"}
-					disabled={isLoading}
-					startIcon={<CloudUploadIcon />}>
-					Submit
-				</Button>
+
+				<Box
+					sx={{
+						display: "flex",
+						marginTop: 2,
+						justifyContent: "space-between",
+					}}>
+					<DeleteAvatarDialog
+						isLoading={isLoading}
+						changeAvatar={changeAvatar}
+					/>
+					<Button
+						variant="contained"
+						type={"submit"}
+						disabled={isLoading}
+						startIcon={<CloudUploadIcon />}>
+						Submit
+					</Button>
+				</Box>
 			</Box>
 
 			{error && (

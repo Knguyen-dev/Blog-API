@@ -16,13 +16,15 @@ export default function SimpleSnackbar({
 	message,
 	anchorOrigin,
 	severity,
+	handleExited,
 }) {
 	return (
 		<Snackbar
 			open={open}
 			autoHideDuration={autoHideDuration}
 			onClose={handleClose}
-			anchorOrigin={anchorOrigin}>
+			anchorOrigin={anchorOrigin}
+			TransitionProps={{ onExited: handleExited }}>
 			<Alert
 				onClose={handleClose}
 				severity={severity}
@@ -41,4 +43,5 @@ SimpleSnackbar.propTypes = {
 	message: PropTypes.string,
 	anchorOrigin: PropTypes.object,
 	severity: PropTypes.string,
+	handleExited: PropTypes.func,
 };

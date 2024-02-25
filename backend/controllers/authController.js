@@ -3,6 +3,8 @@ const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const userValidator = require("../middleware/userValidators");
+const getErrorMap = require("../middleware/getErrorMap");
+
 
 /*
 + Functions for creating an access and refresh token:
@@ -14,15 +16,57 @@ const userValidator = require("../middleware/userValidators");
   should probably just be the user.
 */
 function createAccessToken(user) {
-	return jwt.sign({username: user.username,
-      role: user.role,}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15min" });
+	return jwt.sign({id: user.id,
+      role: user.role}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
 }
 
 function createRefreshToken(user) {
-	return jwt.sign({username: user.username}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1d" });
+	return jwt.sign({id: user.id}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1d" });
 }
 
+/*
++ Refresh endpoint: Endpoint for refreshing an access token
+*/
+const refresh = asyncHandler(async (req, res) => {
+  /*
+  1. Assuming cookieParser middleware is used, access the cookies of our 
+  request object.
+  2. If "cookies" exists and ".jwt" property is falsy, return error. This happens when cookies is 
+    null or cookies.jwt is null. We just this conditional syntax because, if cookies 
+    is null, trying to do cookies.jwt will result in a JavaScript error since you can't
+    read the properties of a null value. By doing this we can just work around having to 
+    deal with that javascript error or write a long conditional.  
+  */
+  const cookies = req.cookies; 
+  if (!cookies?.jwt) {
+    return res.status(401).json({message: "Unauthorized, you need to have the refresh token cookie to refresh!"})
+  }
+  const refreshToken = cookies.jwt;
 
+
+  /*
+  - Ensure that the token has been provided or issued by our system. If it exists
+  then it's a valid token, but if it doesn't exist it could have been
+  already revoked, tampered with, or just it wasn't a token issued by us.
+  */
+  const foundUser = await User.findOne({refreshToken});
+  if (!foundUser) {
+    return res.status(403).json({message: "Forbidden, we couldn't find a user with your refresh token"})
+  }
+
+  // Verify the token, this can check things usch as when token expires
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler (async (error) => {
+
+    if (error) {
+      return res.status(403).json({message: "Forbidden, refresh token was invalid. Probably expired."})
+    }
+
+    // Else user exists and the refresh token is valid, so create and return the access token as json
+    const accessToken = createAccessToken(foundUser);
+
+    res.json({user: foundUser, accessToken})
+  }));
+})
 
 /*
 + Signing up a user:
@@ -31,7 +75,6 @@ function createRefreshToken(user) {
 - NOTE: Since we have an error object that has messages corresponding to 
   specific fields, it'd be easier to send back the 'errors' object so that
   the front end form can display errors for respective fields. 
-
 */
 const signupUser = [
   userValidator.email,
@@ -42,18 +85,25 @@ const signupUser = [
 	
 	asyncHandler(async (req, res, next) => {
 		// Sanitize and validate data
-		const errors = validationResult(req).errors.reduce((errorMap, e) => {
-			return {
-				...errorMap,
-				[e.path]: e.msg,
-			};
-		}, {});
+		const errors = getErrorMap(req);
+
+    // If input fails basic syntax rules, send back an object of errors.
 		if (Object.keys(errors).length != 0) {
 			return res.status(400).json(errors);
 		}
-
+    
 		// At this point, data is valid, so save user into the database and return successful response
 		const { email, username, password, fullName } = req.body;
+
+    // Check if a user with this username already exists in the database, if so 
+    // modify errors object and return it.
+    const existingUser = await User.findOne({username});
+    if (existingUser) {
+      errors.username = "Username was already taken!";
+      return res.status(400).json(errors);
+    }
+
+    // Everything should be valid, so proceed with user signup
 		await User.signup(
 			email,
 			username,
@@ -140,63 +190,19 @@ const loginUser = asyncHandler(async (req, res, next) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      maxAge: 60 * 60 * 1000
+      maxAge: 24 * 60 * 60 * 1000
     })
 
     // Store/update the refresh token in the database
     user.refreshToken = refreshToken;
     await user.save();
 
-
-
     // Return the access token and user back
     res.status(200).json({user, accessToken})
 	}
 )
 
-/*
-+ Refresh endpoint: Endpoint for refreshing an access token
-*/
-const refresh = asyncHandler(async (req, res, next) => {
-  /*
-  1. Assuming cookieParser middleware is used, access the cookies of our 
-  request object.
-  2. If "cookies" exists and ".jwt" property is falsy, return error. This happens when cookies is 
-    null or cookies.jwt is null. We just this conditional syntax because, if cookies 
-    is null, trying to do cookies.jwt will result in a JavaScript error since you can't
-    read the properties of a null value. By doing this we can just work around having to 
-    deal with that javascript error or write a long conditional.  
-  */
-  const cookies = req.cookies; 
-  if (!cookies?.jwt) {
-    return res.status(401).json({message: "Unauthorized, you need to have the refresh token cookie to refresh!"})
-  }
-  const refreshToken = cookies.jwt;
 
-
-  /*
-  - Ensure that the token has been provided or issued by our system. If it exists
-  then it's a valid token, but if it doesn't exist it could have been
-  already revoked, tampered with, or just it wasn't a token issued by us.
-  */
-  const foundUser = await User.findOne({refreshToken});
-  if (!foundUser) {
-    return res.status(403).json({message: "Forbidden, we couldn't find a user with your refresh token"})
-  }
-
-  // Verify the token, this can check things usch as when token expires
-  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler (async (error, payload) => {
-
-    if (error) {
-      return res.status(403).json({message: "Forbidden, refresh token was invalid. Probably expired."})
-    }
-
-    // Else user exists and the refresh token is valid, so create and return the access token as json
-    const accessToken = createAccessToken(foundUser);
-
-    res.json({user: foundUser, accessToken})
-  }));
-})
 
 /*
 + Logging out: Endpoint for logging out the user. We'll clear the jwt 

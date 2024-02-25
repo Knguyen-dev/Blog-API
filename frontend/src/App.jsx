@@ -28,7 +28,7 @@ import PersistLogin from "./components/PersistLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Contexts
-import useAuthContext from "./hooks/useAuthContext";
+import useAuthContext from "./hooks/user/useAuthContext";
 
 function App() {
 	const { auth } = useAuthContext();
@@ -40,10 +40,17 @@ function App() {
 				<Route element={<PersistLogin />}>
 					<Route
 						path="auth"
-						element={!auth.user ? <AuthLayout /> : <Navigate to="/" />}>
+						element={
+							!auth.user ? <AuthLayout /> : <Navigate to="/dashboard" />
+						}>
 						{/* 
-          - NOTE: Going to '/auth/' itself is valid, however we don't want users to do that
-            so in that case, we'll redirect them to the 'login' route if that happens.*/}
+          - NOTE: 
+            1. Going to '/auth/' itself is valid, however we don't want users to do that
+            so in that case, we'll redirect them to the 'login' route if that happens.
+            2. If the user isn't authenticated, allow them to go to the pages where they sign 
+              up or log in. However if they are authenticated and they try to go to this route,
+              navigate them to their user dashboard!
+            */}
 						<Route index element={<Navigate to="login" />} />
 						<Route path="signup" element={<SignUpForm />} />
 						<Route path="login" element={<LoginForm />} />

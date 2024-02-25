@@ -1,7 +1,7 @@
 import { axiosPrivate } from "../api/axios";
 import { useEffect } from "react";
-import useRefreshToken from "./useRefreshToken";
-import useAuthContext from "./useAuthContext";
+import useRefreshToken from "./user/useRefreshToken";
+import useAuthContext from "./user/useAuthContext";
 
 /*
 + useAxiosPrivate: A hook that will return our axiosPrivate instance
@@ -70,7 +70,10 @@ export default function useAxiosPrivate() {
 				/*
         - Means that in our axiosPrivate request, we weren't rejected due to a bad access token
           or our request was already retried (.sent === true). If this was true then just return
-          an error as a promise, which we'll plan to catch
+          an error as a promise, which we'll plan to catch. Typically if we fail to refresh our 
+          access token, that means our refresh token has expired, so at this point you'd need to 
+          prompt the user to re-authenticate and re-enter their credentials.
+
         */
 				return Promise.reject(err);
 			}

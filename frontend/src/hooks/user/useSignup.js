@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "../api/axios";
+import axios from "../../api/axios";
 
 const endpoint = "/auth/signup";
 
@@ -33,13 +33,7 @@ export default function useSignup() {
   - catch block: Something went wrong simply trying to connect to the server from
     our client application.
   */
-	const signup = async (
-		email,
-		username,
-		password,
-		confirmPassword,
-		fullName
-	) => {
+	const signup = async (formData) => {
 		// Set loading to true and reset server errors
 		setIsLoading(true);
 		setError(null);
@@ -47,32 +41,37 @@ export default function useSignup() {
 		let data = null;
 
 		try {
-			await axios.post(endpoint, {
-				email,
-				username,
-				password,
-				confirmPassword,
-				fullName,
-			});
+			const response = await axios.post(endpoint, formData);
 
 			// Should be a status 200, so at this point we're successful.
 			success = true;
+
+			// On success, we'll return the success message that was set up by the server!
+			data = response.data;
 		} catch (err) {
 			/*
-      - If status 400: Set the data, which are the form error messages.
-      - Else, something other than the form validation went wrong.
-
-      - NOTE: Why optional chaining? Well in the case we can't connect
-        to the server (network error), response is null. So we don't want to get a javascript
-        error whilst checking because it could be network error or a server error.
+      - Conditionals:
+      1. If err.response: A server error happened. If it's status code 
+        400, then the error happened due to server-side validation.
+        We get back an error object defining errors for each field. We want to return this as 'data' so we can do setError in our sign up form. 
+        Else, regardless of status code we should get an error object
+        in form {message: some_error_message}. For this type of error, we want to 
+        set the error state on the hook, which will later allow us to display these 
+        types of errors differently on the form.
+      2. Else if (err.request): A network error, so set the error state of the hook
+      3. Else: Something went wrong on the client side when setting up the request.
+        This is usually due to a programming error or something similar.
       */
-			if (err?.response?.status === 400) {
-				data = err.response.data;
+			if (err.response) {
+				if (err.response.status === 400) {
+					data = err.response.data;
+				} else {
+					setError(err.response.data?.message || "Server error occurred!");
+				}
+			} else if (err.request) {
+				setError("Network error!");
 			} else {
-				setError(
-					err?.response?.data?.message ||
-						"Something went wrong. Try again later!"
-				);
+				setError("Something unexpected happened!");
 			}
 		} finally {
 			// Regardless, indicate we aren't loading anymore

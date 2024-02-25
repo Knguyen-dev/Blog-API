@@ -6,27 +6,20 @@ import {
 	Box,
 	Divider,
 } from "@mui/material";
-import { useState } from "react";
 
-import useAuthContext from "../../hooks/useAuthContext";
-import useLogout from "../../hooks/useLogout";
+import useAuthContext from "../../hooks/user/useAuthContext";
+import useLogout from "../../hooks/user/useLogout";
 
-import FormDialog from "../../components/dialog/FormDialog";
-import AvatarForm from "../../components/forms/AvatarForm";
-
-import EditProfileForm from "../../components/forms/EditProfileForm";
-import ChangePasswordForm from "../../components/forms/ChangePasswordForm";
+import EditAvatarDialog from "../../components/dialog/EditAvatarDialog";
+import EditEmailDialog from "../../components/dialog/EditEmailDialog";
+import EditFullNameDialog from "../../components/dialog/EditFullNameDialog";
+import EditUsernameDialog from "../../components/dialog/EditUsernameDialog";
+import ChangePasswordDialog from "../../components/dialog/ChangePasswordDialog";
+import DeleteAccountDialog from "../../components/dialog/DeleteAccountDialog";
 
 export default function ProfilePage() {
 	const { auth } = useAuthContext();
 	const logout = useLogout();
-
-	const [editProfile, setEditProfile] = useState(false); // for displaying and hiding edit profile form
-	const [changePassword, setChangePassword] = useState(false); // for displaying and hiding change password form
-
-	const [open, setOpen] = useState(false); // For triggering formDialog (modal) on the avatar form
-	const handleOpen = () => setOpen(true); // For opening and closing avatar form modal
-	const handleClose = () => setOpen(false);
 
 	return (
 		<div className="tw-flex tw-flex-col tw-gap-y-5">
@@ -34,25 +27,13 @@ export default function ProfilePage() {
 				{/* Avatar Section*/}
 				<Box className="tw-flex xs:max-sm:tw-flex-col tw-items-center tw-justify-center tw-gap-x-5">
 					<Avatar
-						sx={{
-							width: 75,
-							height: 75,
-							fontSize: 48,
-
-							// Margin bottom on extra small screens, but nothing on small and above
-							marginBottom: { xs: 2, sm: 0 },
-						}}
+						className="tw-h-20 tw-w-20 xs:max-sm:tw-mb-1 tw-text-4xl"
 						src={auth.user.avatarSrc}>
 						{auth.user.avatarInitials}
 					</Avatar>
-					<div className="tw-flex tw-flex-col">
+					<div className="tw-flex tw-flex-col tw-items-center tw-gap-y-1">
 						<Typography variant="h5">{auth.user.fullName}</Typography>
-						<Button
-							variant="outlined"
-							className="tw-mt-2 tw-self-center"
-							onClick={handleOpen}>
-							Edit Avatar
-						</Button>
+						<EditAvatarDialog />
 					</div>
 				</Box>
 				<Divider className="tw-my-5" />
@@ -62,32 +43,30 @@ export default function ProfilePage() {
 						<Typography variant="h4">My account</Typography>
 					</header>
 
-					<main className="tw-flex tw-flex-col tw-gap-y-2">
-						{editProfile ? (
-							// If user is editing their profile
-							<EditProfileForm
-								username={auth.user.username}
-								email={auth.user.email}
-								name={auth.user.fullName}
-								handleCloseForm={() => setEditProfile(false)}
-							/>
-						) : (
-							// Else display all action buttons and info for this section
-							<Box>
-								<Box className="tw-mb-5">
-									<Typography>Username: {auth.user.username} </Typography>
-									<Typography>Email: {auth.user.email}</Typography>
-									<Typography>Full Name: {auth.user.fullName}</Typography>
-								</Box>
-
-								<Button
-									variant="outlined"
-									className="tw-self-start"
-									onClick={() => setEditProfile(true)}>
-									Edit
-								</Button>
+					<main className="tw-flex tw-flex-col tw-gap-y-4">
+						<Box>
+							<Box className="tw-flex tw-justify-between tw-items-center">
+								<Typography className="tw-font-bold">Username</Typography>
+								<EditUsernameDialog user={auth.user} />
 							</Box>
-						)}
+							<Typography>{auth.user.username}</Typography>
+						</Box>
+
+						<Box>
+							<Box className="tw-flex tw-justify-between tw-items-center">
+								<Typography className="tw-font-bold">Email</Typography>
+								<EditEmailDialog user={auth.user} />
+							</Box>
+							<Typography> {auth.user.email} </Typography>
+						</Box>
+
+						<Box>
+							<Box className="tw-flex tw-justify-between tw-items-center">
+								<Typography className="tw-font-bold">Name</Typography>
+								<EditFullNameDialog user={auth.user} />
+							</Box>
+							<Typography> {auth.user.fullName} </Typography>
+						</Box>
 					</main>
 				</Box>
 				<Divider className="tw-my-5" />
@@ -98,25 +77,14 @@ export default function ProfilePage() {
 					</header>
 					<main>
 						<Box>
-							{/* If user is changing password, then display the form */}
-							{changePassword ? (
-								<ChangePasswordForm
-									handleCloseForm={() => setChangePassword(false)}
-								/>
-							) : (
-								// Else display all available action buttons in this section
-								<Box className="tw-flex tw-flex-col tw-items-start tw-gap-y-2">
-									<Button
-										variant="outlined"
-										className="tw-self-start"
-										onClick={() => setChangePassword(true)}>
-										Change Password
-									</Button>
-									<Button variant="outlined" color="info" onClick={logout}>
-										Sign out
-									</Button>
-								</Box>
-							)}
+							<ChangePasswordDialog />
+							<Button
+								variant="outlined"
+								color="info"
+								className="tw-mt-2"
+								onClick={logout}>
+								Sign out
+							</Button>
 						</Box>
 					</main>
 				</Box>
@@ -127,16 +95,10 @@ export default function ProfilePage() {
 						<Typography variant="h4">Account Removal</Typography>
 					</header>
 					<main>
-						<Button variant="outlined" color="warning">
-							Delete Account
-						</Button>
+						<DeleteAccountDialog />
 					</main>
 				</Box>
 			</Container>
-
-			<FormDialog open={open} handleClose={handleClose}>
-				<AvatarForm />
-			</FormDialog>
 		</div>
 	);
 }

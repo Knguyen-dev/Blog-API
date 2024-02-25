@@ -22,12 +22,7 @@ const userValidator = {
 		.isAlphanumeric()
 		.withMessage(
 			"Username has to be within 1 to 32 characters and alphanumeric!"
-		).custom(async (username) => {
-			const user = await User.findOne({ username });
-			if (user) {
-        throw new Error('Username was already taken!');
-			}
-		}),
+		),
   password: body("password")
 		.trim()
     .custom(password => {

@@ -47,21 +47,23 @@
   which is a lot more easy to integrate since that is based on tailwind styles.
 
 # BOOK MARK:
-- Work on fleshing out and commenting the forms. We have three forms one for changing avatar, which we 
-  don't even know how to store images yet, one for changing 'profile' information, and one for 
-  changing the password. These forms are more specialized for the account page as we have added
-  the ability to close these forms. So next we'll definitely be working on commenting, but also be working on both 
-  front end backend development. Also maybe we should also look into how to structure our project in regards to 
-  our '.env' file, and whether we should be having one or two. It makes sense to have one, for that 'role based authentication'
-  we do though. Also working on the responsiveness would likely be a good idea as well, in regards to our forms and layout
 
+  2. Still need to secure our forms and apply best practices. Apparently Dave Gray has 
+  some good videos on that.
 
+3. Users can do '/dashboard/team', which will render the dashboard for a split second
+  and then the unauthorized page. This is because while the dashboard layout 
+  can be rendered. Create a ProtectDashboard component, or you could try wrapping 
+  protected route and dashboard around every route (which is probably not good). 
 
-# Avatar Stuff:
-1. If we fail in deleting the old one, we should probably cancel the operations.
-  Should probably have the option of using an avatar or just using initials.
-  Should handle the case of showing a default image of avatar wasn't found.
+4. Secure the api end. We have jwt protection, but a user with a jwt can still try to 
+  modify and mess with the accounts of other users. Users and editors should only
+  be able to modify themselves. However, admins should be able to modify anyone. 
 
+6. Now we should get started on working with TinyMCE, which is the rich text
+  editor we're trying to use. Here we'll start designing the page for 
+  creating posts. We'll probably just get started on the 'design and appearance'
+  rather than actually working with posts.
 
 
   1. https://stackoverflow.com/questions/57650692/where-to-store-the-refresh-token-on-the-client

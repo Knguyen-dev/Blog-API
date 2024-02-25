@@ -1,48 +1,42 @@
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Box, Button } from "@mui/material";
+import { Button, Box, Typography } from "@mui/material";
 import FormPasswordField from "../Input/FormPasswordField";
-import useChangePassword from "../../hooks/user/useChangePassword";
-import PropTypes from "prop-types";
+import useDeleteAccount from "../../hooks/user/useDeleteAccount";
 import useSnackbar from "../../hooks/useSnackbar";
 
-import {
-	passwordSchema,
-	confirmPasswordSchema,
-} from "../../constants/validationSchemas";
+import PropTypes from "prop-types";
+import { confirmPasswordSchema } from "../../constants/validationSchemas";
 
 const validationSchema = yup.object().shape({
-	// Old/Current Password
-	oldPassword: yup.string().required("Please enter your current password"),
-
-	// New Password
-	password: passwordSchema,
+	password: yup.string().required("Please enter your current password"),
 	confirmPassword: confirmPasswordSchema,
 });
 
-export default function ChangePasswordForm() {
+export default function DeleteAccountForm() {
 	const { control, handleSubmit, setError } = useForm({
 		resolver: yupResolver(validationSchema),
 		defaultValues: {
-			oldPassword: "",
 			password: "",
 			confirmPassword: "",
 		},
 	});
-
+	const { error, isLoading, deleteAccount } = useDeleteAccount();
 	const { showSnackbar } = useSnackbar();
 
-	const { error, isLoading, changePassword } = useChangePassword();
-
 	const onSubmit = async (formData) => {
-		const { success, data } = await changePassword(formData);
+		const { success, data } = await deleteAccount(formData);
+
+		// If successful, handle showing the snackbar
 		if (success) {
 			showSnackbar({
 				message: data.message,
 				severity: "success",
 			});
 		} else if (data) {
+			// Else if unsuccessful and data is defined (failed due to server validation)
+			// Then set the error fields.
 			Object.keys(data).forEach((fieldName) => {
 				setError(fieldName, {
 					type: "server",
@@ -54,13 +48,13 @@ export default function ChangePasswordForm() {
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}>
-			<Box sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}>
-				<FormPasswordField
-					id="oldPassword"
-					name="oldPassword"
-					control={control}
-					label="Old Password"
-				/>
+			{/* Form input fields */}
+			<Box
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					rowGap: 2,
+				}}>
 				<FormPasswordField
 					id="password"
 					name="password"
@@ -74,23 +68,30 @@ export default function ChangePasswordForm() {
 					label="Confirm Password"
 				/>
 
-				{/* Render general errors*/}
-				{error && <Box className="error">{error}</Box>}
+				{/* Conditionally render other errors (server, unexpected, etc.)*/}
+				{error && (
+					<Box className="error">
+						<Typography>{error}</Typography>
+					</Box>
+				)}
 
 				<Box
 					sx={{
 						display: "flex",
 						justifyContent: "end",
-						marginTop: 1,
 					}}>
-					<Button variant="contained" type="submit" disabled={isLoading}>
-						Submit
+					<Button
+						variant="contained"
+						color="warning"
+						type="submit"
+						disabled={isLoading}>
+						Delete
 					</Button>
 				</Box>
 			</Box>
 		</form>
 	);
 }
-ChangePasswordForm.propTypes = {
+DeleteAccountForm.propTypes = {
 	handleCloseForm: PropTypes.func,
 };

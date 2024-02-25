@@ -6,15 +6,13 @@ import "./index.css";
 import { StyledEngineProvider } from "@mui/material";
 import { AuthProvider } from "./contexts/AuthProvider.jsx";
 import ColorModeProvider from "./contexts/ColorModeProvider.jsx";
+import { SnackbarProvider } from "./contexts/SnackbarProvider.jsx";
 /*
 
 - CssBaseline: Component that helps normalize styles across different
   browsers. Essentially applies minimal set of CSS styles to establish
   a consistent baseline/foudnation for all browsers. It resets styles, applies 
   base styles, and avoids browser specific styles.
-
-
-
 */
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -22,7 +20,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 		<StyledEngineProvider injectFirst>
 			<ColorModeProvider>
 				<AuthProvider>
-					<App />
+					<SnackbarProvider>
+						<App />
+					</SnackbarProvider>
 				</AuthProvider>
 			</ColorModeProvider>
 		</StyledEngineProvider>

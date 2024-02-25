@@ -11,6 +11,6 @@ export const axiosPrivate = axios.create({
 	withCredentials: true, // allow cookies to be sent and set
 	baseURL: BASE_URL,
 	headers: {
-		"Content-Type": "application/json", // indicatse that we are sending json
+		"Content-Type": "application/json", // By default we're sending json
 	},
 });

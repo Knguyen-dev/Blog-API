@@ -2,7 +2,7 @@ import { Typography, Fab, Grid, Tooltip, Button, Divider } from "@mui/material";
 import SearchBar from "./Input/SearchBar";
 import ContrastIcon from "@mui/icons-material/Contrast";
 import AccountMenu from "./menus/AccountMenu";
-import useAuthContext from "../hooks/useAuthContext";
+import useAuthContext from "../hooks/user/useAuthContext";
 import useColorContext from "../hooks/useColorContext";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";

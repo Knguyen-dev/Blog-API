@@ -12,12 +12,13 @@ router.get("/:id", userController.getUserById)
 
 
 // Then for requests that affect user accounts, ensure the person
-// making the request can only modify their own account; Good for production
+// making the request can only modify their own account; 
+// However we should also see whether a user is an admin to do that
 // router.use(verifyOwnAccount);
 
 
 // Delete user by id: DELETE /users/:id
-router.delete("/:id", userController.deleteUserById);
+router.delete("/:id", userController.deleteUser);
 
 
 /*
@@ -31,24 +32,31 @@ router.delete("/:id", userController.deleteUserById);
   rest of the resource's properties.
 */
 
-// Update avatar
+// Update avatar and deleting the avatar
 router.patch("/:id/avatar", userController.updateAvatar);
+router.delete("/:id/avatar", userController.deleteAvatar);
 
-
-// Update username, email, and full name
-// router.patch("/:id")
-
-// Update password; when finished we log out the user.
-// router.patch("/:id/password")
-
-
-
-
-// Update a user's fullName
+router.patch("/:id/username", userController.updateUsername);
+router.patch("/:id/email", userController.updateEmail);
 router.patch("/:id/fullName", userController.updateFullName);
 
-// Update a user's username
-router.patch("/:id/username", userController.updateUsername);
+/*
+- Updating the password for a logged in user:
+1. We should have old and new password in the body. 
+2. User id in the params and auth token in the header.
+3. Then on client side, when it gets confirmation that password 
+  change was successful, it will make a request to log out the user.
+*/
+router.patch("/:id/password", userController.changePassword);
+
+
+
+
+
+// When a user wants to change their password; 
+// This shouldn't be confused with resetting a password
+// /:id/password
+
 
 
 

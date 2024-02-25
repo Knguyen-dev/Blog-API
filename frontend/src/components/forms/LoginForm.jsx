@@ -1,15 +1,16 @@
 import { Button, Divider, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import FormInputField from "../Input/FormInputField";
 import FormPasswordField from "../Input/FormPasswordField";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import useLogin from "../../hooks/useLogin";
+import useLogin from "../../hooks/user/useLogin";
 
 // Effect for testing
 import { useEffect } from "react";
 
+// Only validation we need here is just making sure the user has entered actual values
 const validationSchema = yup.object().shape({
 	username: yup.string().required("Please enter your username"),
 	password: yup.string().required("Please enter your password"),
@@ -25,25 +26,37 @@ export default function LoginForm() {
 	});
 	const { error, isLoading, login } = useLogin();
 
+	const navigate = useNavigate();
+	const location = useLocation();
+
 	// Auto logins for us when rendering LoginForm
 	useEffect(() => {
 		const loginRoleUser = async () => {
-			await login("Mario70", "P$ssword_123");
+			await login({ username: "Mario70", password: "P$ssword_123" });
 		};
 
 		const loginRoleEditor = async () => {
-			await login("grandcreamfraiche", "P$ssword_123");
+			await login({ username: "grandcreamfraiche", password: "P$ssword_123" });
 		};
 
 		const loginRoleAdmin = async () => {
-			await login("kbizzzyycentral", "P$ssword_123");
+			await login({ username: "kbizzzyycentral", password: "P$ssword_123" });
 		};
 
-		loginRoleAdmin();
+		// loginRoleAdmin();
 	}, [login]);
 
-	const onSubmit = async (data) => {
-		await login(data.username, data.password);
+	const onSubmit = async (formData) => {
+		// Attempt to login, on success our route handling will automatically redirect us.
+		// Else on fail, our error will be shown on the form.
+		await login(formData);
+
+		// If from isn't defined, we go to the home page
+		// But the idea is to take them to the route they wanted to go to
+		// before they were redirected
+		const from = location.state?.from || "/";
+
+		navigate(from, { replace: true });
 	};
 
 	return (
@@ -98,7 +111,7 @@ export default function LoginForm() {
 						to="/auth/forgotPassword"
 						className="tw-no-underline hover:tw-underline">
 						password
-					</Link>{" "}
+					</Link>
 					?
 				</Typography>
 			</div>

@@ -13,6 +13,9 @@ const roles_list = require("../config/roles_list");
 - As a result, with this middleware, we'll check if the id of the user making
   the request matches the 'id' parameter. This is good for those /users/:id endpoints
   to ensure the user is changing their own account infomration.
+
+- NOTE: We should make an exception for admins. They should be allowed to edit 
+  anyone, even other admins I guess.
 */
   
 

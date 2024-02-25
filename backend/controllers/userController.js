@@ -1,9 +1,11 @@
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
-const {validationResult} = require("express-validator");
 const userValidator = require("../middleware/userValidators");
 const fileUpload = require("../middleware/fileUpload");
 const path = require("path");
+const bcrypt = require("bcrypt");
+const { body } = require("express-validator");
+const getErrorMap = require("../middleware/getErrorMap");
 
 
 const getUsers = asyncHandler(async (req, res) => {
@@ -23,33 +25,69 @@ const getUserById = asyncHandler(async (req, res) => {
     hash since that is sensitive info, and we're not sending back the index because
     honestly that doesn't really matter. 
   */
-  const user = await User.findUserByID(req.params.id, "-password -__v");
+  const user = await User.findUserByID(req.params.id);
 
   res.status(200).json(user);
 })
 
 
 
-// + Delete a user via their ID
-const deleteUserById = asyncHandler(async (req, res) => {
-  // Attempt to find user by ID
-  const user = await User.findUserByID(req.params.id);
 
-  // At this point a user was found so delete them
-  await User.findByIdAndDelete(req.params.id);
+/*
++ Delete a user: Handles deleting a user's account. For this to pass, the 
+  user must enter their password and confirm their password.
 
-  // Indicate that user was successfully deleted
-  res.status(200).json({message: "User successfully deleted!"});
-})
+1. Delete the user's avatar.
+2. Delete the user from the database.
 
+- NOTE: This function will probably get more changes as we 
+  go on with making posts as well. For example, we'd have to delete all
+  of the pictures associated with those posts that are on disk. Then 
+  after we can delete the post documents from the database.
 
+*/
+const deleteUser = [
+  body("password").isLength({min: 1}).withMessage("Please enter your current password!"),
+  userValidator.confirmPassword,
+  asyncHandler(async (req, res) => {
+    const errors = getErrorMap(req);
 
+    
+    if (Object.keys(errors).length !== 0) {
+      return res.status(400).json({errors});
+    }
 
+    // Attempt to find user by ID
+    const user = await User.findUserByID(req.params.id);
+
+    // Verify that the entered in password hashes to one in database
+    const isMatch = await bcrypt.compare(req.body.password, user.password);
+    if (!isMatch) {
+      errors.password = "Current password is incorrect!";
+      return res.status(400).json(errors);
+    }
+
+    /*
+    - Everything is good, so start the deletion process.
+    1. If the user has an avatar, delete it, so remove it from disk
+    2. Delete the user from the database. We can use their id.
+    */
+
+    if (user.avatar) {
+      const avatarPath = path.join(__dirname, `../public/images/${user.avatar}`);
+      await fileUpload.deleteFromDisk(avatarPath);
+    }
+
+    await User.findByIdAndDelete(req.params.id);
+
+    // Indicate that user was successfully deleted
+    res.status(200).json({message: "Account successfully deleted!"});
+  })
+]
 
 
 /*
 - Logic for updating an avatar:
-
 - NOTE: Updating only means adding or changing the avatar.
 */
 const updateAvatar = [  
@@ -102,95 +140,158 @@ const deleteAvatar = asyncHandler(async(req, res) => {
   }
 })
 
-
-
-
-
-
-
-/*
-+ Update full name: Update the full name of the user
-*/
-const updateFullName = [
-  userValidator.fullName,
-
-  asyncHandler(async (req, res, next) => {
-    const errors = validationResult(req).errors.reduce((errorMap, e) => {
-			return {
-				...errorMap,
-				[e.path]: e.msg,
-			};
-		}, {});
-    
-    /*
-    - If there were any errors with fullName, pass it down the error handling
-      pipeline we got. By doing this instead of res.status(400).json(...) we're 
-      able to match the errors thrown in User.findUserByID. In the sense that 
-      any error http response will have json in form {messsage: some_error_message}
-      or however we've defined the json in our error handling in server.js
-    
-    - This makes it easy for our frontend to display an error message as we've
-      guaranteed what form the error will be in.
-    */
-    if (Object.keys(errors).length != 0) {
-      return res.status(400).json({message: errors.fullName})
-		}
-
-    // Try to find a user with that ID
-    const user = await User.findUserByID(req.params.id);
-
-    // At this point a user was found so update and save their info
-    user.fullName = req.body.fullName;
-    await user.save();
-
-    res.status(200).json({message: "User successfully updated!"});
-  })
-]
-
-// Update the username of a user
 const updateUsername = [
   userValidator.username,
-  asyncHandler(async (req,res,next) => {
-    const errors = validationResult(req).errors.reduce((errorMap, e) => {
-			return {
-				...errorMap,
-				[e.path]: e.msg,
-			};
-		}, {});
+  asyncHandler(async(req, res) => {
+    const errors = getErrorMap(req);
     
-    /*
-    - If there were errors with the username, send back the reason why we found an error
-
-    - NOTE: Remember that userValidator.username also performs a database check, 
-      verifying whether the username has already been taken or not.
-    */
+    // If it failed basic syntax checks, send back error message in json
     if (Object.keys(errors).length != 0) {
-      return res.status(400).json({message: errors.username})
+      return res.status(400).json({message: errors.username});
 		}
-    
-    // Attempt to find our target user; covers whether they don't exist or id isn't valid.
-    const user = await User.findUserByID(req.params.id);
 
-    // At this point user exists and username is valid, so save changes
+    /*
+    + Conditionals:
+    1. There's an existing user and the id of the user we're updating 
+        doesn't match the user we found. Meaning the inputted username was already taken by a another user.
+    2. existingUser exists, and their username matches the username passed in the request body. This means
+      the account username being updated, will be replaced with the same username, which will do nothing. 
+      Return an error saying that the updated username they submit must be different from their current username.
+
+    - NOTE: We use optional chaining here because existingUser could be null, but 
+      in the case where it isn't null, we want to check the existingUser 'username' property
+      so that we can send back the right error message.
+    */    
+    const existingUser = await User.findOne({username: req.body.username});
+    if (existingUser && existingUser?.id !== req.params.id) {
+      return res.status(400).json({message: `Username '${req.body.username}' already taken!`});
+    } else if (existingUser?.username === req.body.username) {
+      return res.status(400).json({message: `Updated username must be different from the current account's username!`});
+    }
+
+    // At this point the username syntax is valid, and it's available in the database
+    // Now get the user that we're updating via the endpoint
+    const user = await User.findUserByID(req.params.id);
     user.username = req.body.username;
     await user.save();
 
-    // Username successfully changed, so respond indicating a success
-    res.status(200).json({message: "User's username successfully updated!"});
-})]
+    // Return updated user as json
+    return res.status(200).json(user);
+  })
+]
 
+const updateEmail = [
+  userValidator.email,
+  asyncHandler(async (req, res) => {
+    const errors = getErrorMap(req);
 
+    // If email fails to pass basic syntax rules, send back error message in json
+    if (Object.keys(errors).length != 0) {
+      return res.status(400).json({message: errors.email});
+		}
+   
+    // Attempt to find user
+    const user = await User.findUserByID(req.params.id); 
 
+    // If the emails of the found user is the same as the one sent in the request, return an error response
+    if (user.email === req.body.email) {
+      return res.status(400).json({message: `Updated email must be different from the current account's email!`});
+    }
 
+    // At this point, it's a new email, so apply and save changes to the user
+    user.email = req.body.email;
+    await user.save();
 
+    // Return the updated user after success
+    return res.status(200).json(user);
+  })
+]
 
+const updateFullName = [
+  userValidator.fullName,
+  asyncHandler(async(req, res) => {
+    const errors = getErrorMap(req);
+
+    // If fullName fails to pass basic syntax rules, send back error message in json
+    if (Object.keys(errors).length != 0) {
+      return res.status(400).json({message: errors.fullName});
+		}
+
+    // Find user
+    const user = await User.findUserByID(req.params.id);
+
+    // If the emails of the found user is the same as the one sent in the request, return an error response
+    if (user.fullName === req.body.fullName) {
+      return res.status(400).json({message: `Updated name must be different from the current account's name!`});
+    }
+
+    // Apply changes and save user since it's a new name
+    user.fullName = req.body.fullName;
+    await user.save();
+
+    // Return updated user as json
+    return res.status(200).json(user);
+  })
+]
+
+const changePassword = [
+  /*
+  - Validate old password, new password, and confirmed password 
+    for basic syntax.
+  */
+  body("oldPassword").isLength({min: 1}).withMessage("Please enter in your old password!"),
+  userValidator.password,
+  userValidator.confirmPassword,
+
+  asyncHandler(async (req, res) => {
+    const errors = getErrorMap(req);
+
+    // If password fields fail basic syntax checks, return error object
+    if (Object.keys(errors).length != 0) {
+      return res.status(400).json({errors});
+		}
+
+    const user = await User.findUserByID(req.params.id);
+
+    // Check if the old password they entered matches the password on the account
+    const match = await bcrypt.compare(req.body.oldPassword, user.password);
+    if (!match) {
+      errors.oldPassword = "Old password you entered was incorrect!"
+      return res.status(400).json(errors);
+    }
+
+    // Everything passes so hash and save the user's new password
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    user.password = hashedPassword;
+    await user.save();
+
+    /*
+    1. A password change should log out the user, so log out the user on the 
+      backend by removing their refresh token 'cookie.
+    2. Indicate that password change was successful.
+    
+    - NOTE: Then on the client side, the application would make a request 
+      to the logout endpoint to log out the user, which will clear their 
+      refresh token cookie. In a RESTful API, redirects aren't typically used
+      in the same way that front end apps do it. Instead of redirects on the server-side,
+      the client is responsible for making those individual requests in tandem.
+
+      RESTful is stateless, as each request from the client must contain all info 
+      necessary. The server doesn't need to store data, and each request is a complete/independent
+      transaction. Basically one isolated request per interaction.
+    */
+    res.status(200).json({message: "Password change successful!"});
+  })
+]
 
 module.exports = {
   getUsers,
   getUserById,
+  deleteUser,
   updateAvatar,
   deleteAvatar,
-  updateFullName,
   updateUsername,
-  deleteUserById
+  updateEmail,
+  updateFullName,
+  changePassword,
 }
