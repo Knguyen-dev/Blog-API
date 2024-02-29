@@ -7,17 +7,12 @@
   are reddit, dogonews, ign, or something similar. It just has to involve posts, authors, comments,
   etcetera. Just takes things one at a time.
 
-
-
 # Models:
 - Posts should have an author, title, description, content. Also 
   each post should have the comments associated with that post.
   A timestamp as well to when it was first published.
   Finally we should be able to toggle in our database whether or 
   not a post is designated as published (visible) or unpublished.
-
-
-
 
 # Credits:
 
@@ -46,28 +41,35 @@
 - NOTE: Though a popular and useful library, you can also use flowbite 
   which is a lot more easy to integrate since that is based on tailwind styles.
 
+# Rate Limiting:
+- For personal projects, express-rate-limiter gets the job done and can is a good 
+  fit for your application. However, for larger scale applications it's common practice
+  to have an nginx server running in front of your node server. This nginx server 
+  acts as a 'reverse proxy'
+
 # BOOK MARK:
 
-  2. Still need to secure our forms and apply best practices. Apparently Dave Gray has 
-  some good videos on that.
+1. Found out the real. Issue apparently axios changed the content type 
+  of prevRequest, but now that we changed it back, it works. 
 
-3. Users can do '/dashboard/team', which will render the dashboard for a split second
-  and then the unauthorized page. This is because while the dashboard layout 
-  can be rendered. Create a ProtectDashboard component, or you could try wrapping 
-  protected route and dashboard around every route (which is probably not good). 
+2. Now we need need rate limiters for our requests. How many times can a user 
+  change their avatar. How many times can a user change their username. So
+  yes rate limits on the modification of users and other things.
 
-4. Secure the api end. We have jwt protection, but a user with a jwt can still try to 
-  modify and mess with the accounts of other users. Users and editors should only
-  be able to modify themselves. However, admins should be able to modify anyone. 
+  
+  
 
-6. Now we should get started on working with TinyMCE, which is the rich text
+
+3. Now we should get started on working with TinyMCE, which is the rich text
   editor we're trying to use. Here we'll start designing the page for 
   creating posts. We'll probably just get started on the 'design and appearance'
   rather than actually working with posts.
 
 
-  1. https://stackoverflow.com/questions/57650692/where-to-store-the-refresh-token-on-the-client
-  2. https://medium.com/@sadnub/simple-and-secure-api-authentication-for-spas-e46bcea592ad
-  3. How to create youtube layout (tailwind typescript): https://youtu.be/ymGB1lqP1CM?si=BZv6QUEFMrVKE5Qf
-  4. TinyMCE V6 Docs: https://www.tiny.cloud/docs/tinymce/6/
 
+# Credits:
+1. https://stackoverflow.com/questions/57650692/where-to-store-the-refresh-token-on-the-client
+2. https://medium.com/@sadnub/simple-and-secure-api-authentication-for-spas-e46bcea592ad
+3. How to create youtube layout (tailwind typescript): https://youtu.be/ymGB1lqP1CM?si=BZv6QUEFMrVKE5Qf
+4. TinyMCE V6 Docs: https://www.tiny.cloud/docs/tinymce/6/
+5. React forms and jwt: https://www.youtube.com/watch?v=brcHK3P6ChQ&list=PL0Zuz27SZ-6PRCpm9clX0WiBEMB70FWwd

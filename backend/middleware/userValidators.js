@@ -1,6 +1,6 @@
-const User = require("../models/User");
 const {body} = require("express-validator");
-const bcrypt = require("bcrypt");
+const roles_list = require("../config/roles_list");
+
 
 const userValidator = {
   email: body("email")
@@ -52,7 +52,25 @@ const userValidator = {
 			min: 1,
 			max: 64,
 		})
-		.withMessage("Full name must be within 1 to 64 characters")
+		.withMessage("Full name must be within 1 to 64 characters"),
+
+  role: body("role")
+    .trim()
+    .escape()
+    .custom( role => {
+      role = parseInt(role); // convert role to number
+      return Object.values(roles_list).includes(role);
+    }).withMessage("Role is not valid!"),
+
+  employeeRole: body("role")
+    .trim()
+    .escape()
+    .custom( role => {
+      role = parseInt(role); // convert role to number
+
+      // Employees must have a valid role, and it can't be 'user' role.
+      return Object.values(roles_list).includes(role) && role!== roles_list.user;
+    }).withMessage("Employee must have a valid employee role!"),
 }
   
 module.exports = userValidator;

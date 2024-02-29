@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "../../api/axios";
-
 const endpoint = "/auth/signup";
 
 export default function useSignup() {
@@ -9,6 +8,12 @@ export default function useSignup() {
     with the server. Can include having troubles connecting to the server, or the server 
     sending back json saying something (could be an issue connecting to database). 
   2. isLoading: Determines if the signup process is still being processed.
+    This is used to disable the signup button while the we wait for a response 
+    for the server.
+
+  3. signupDisabled: State that tracks when we should disable the signup
+    button due to a '429' or when the user was making too many requests 
+    to the server!
 
   - NOTE: Of course you could simply return 'data' and if !success you can
     overwrite the form errors there, but I found it a little cleaner to have 
@@ -18,6 +23,21 @@ export default function useSignup() {
   */
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
+	const [signupDisabled, setSignupDisabled] = useState(false);
+
+	// + Effect: Re-enable signup button after 60 seconds.
+	useEffect(() => {
+		let timer;
+		if (signupDisabled) {
+			timer = setTimeout(() => {
+				setSignupDisabled(false); // Re-enable signup button after 60 seconds
+			}, 60000); // 60 seconds in milliseconds
+		}
+
+		return () => {
+			clearTimeout(timer);
+		};
+	}, [signupDisabled]);
 
 	/*
   - Four cases:
@@ -36,24 +56,23 @@ export default function useSignup() {
 	const signup = async (formData) => {
 		// Set loading to true and reset server errors
 		setIsLoading(true);
+
 		setError(null);
 		let success = false;
 		let data = null;
 
 		try {
-			const response = await axios.post(endpoint, formData);
+			await axios.post(endpoint, formData);
 
 			// Should be a status 200, so at this point we're successful.
 			success = true;
-
-			// On success, we'll return the success message that was set up by the server!
-			data = response.data;
 		} catch (err) {
 			/*
       - Conditionals:
       1. If err.response: A server error happened. If it's status code 
         400, then the error happened due to server-side validation.
         We get back an error object defining errors for each field. We want to return this as 'data' so we can do setError in our sign up form. 
+        Else we could have gotten a '429' so disable our signup button and get the error message.
         Else, regardless of status code we should get an error object
         in form {message: some_error_message}. For this type of error, we want to 
         set the error state on the hook, which will later allow us to display these 
@@ -65,6 +84,9 @@ export default function useSignup() {
 			if (err.response) {
 				if (err.response.status === 400) {
 					data = err.response.data;
+				} else if (err.response.status === 429) {
+					setSignupDisabled(true);
+					setError(err.response.data.message);
 				} else {
 					setError(err.response.data?.message || "Server error occurred!");
 				}
@@ -82,5 +104,5 @@ export default function useSignup() {
 		return { success, data };
 	};
 
-	return { error, isLoading, signup };
+	return { error, isLoading, signup, signupDisabled };
 }

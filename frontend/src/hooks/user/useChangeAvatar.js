@@ -13,7 +13,9 @@ export default function useChangeAvatar() {
 
 	const endpoint = `/users/${auth.user._id}/avatar`;
 
-	// Makes a patch request to update the avatar
+	/*
+  - Makes a patch request to update the avatar. 
+  */
 	const updateAvatar = (file) => {
 		const formData = new FormData();
 		formData.append("file", file);

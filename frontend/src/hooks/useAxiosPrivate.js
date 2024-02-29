@@ -11,10 +11,16 @@ import useAuthContext from "./user/useAuthContext";
   interceptors, which will make it ready for essentially immediate use.
   
   
-- NOTE: Adding the interceptors inside a component body could lead to 
+- NOTE: 
+  1. Adding the interceptors inside a component body could lead to 
   inconsistent behavior, allowing duplicate interceptors, while 
   putting it inside an effect gives us an easy way to control the 
   modification of our axiosPrivate instance. 
+
+  2. When working with Axios, it seems that when we retry requests with 
+    FormData object, that object won't be available in the next request.
+    It's annoying, but a safe way to get around this is to ensure that 
+    the access token is valid before we make the request.
 
 */
 
@@ -23,13 +29,8 @@ export default function useAxiosPrivate() {
 	const { auth } = useAuthContext();
 
 	useEffect(() => {
-		/*
-    - If authorization header isn't defined, define it with the current
-      access token we got.
-    
-    */
 		const requestIntercept = axiosPrivate.interceptors.request.use(
-			(request) => {
+			async (request) => {
 				if (!request.headers["Authorization"]) {
 					request.headers["Authorization"] = `Bearer ${auth.accessToken}`;
 				}
@@ -47,6 +48,17 @@ export default function useAxiosPrivate() {
 			async (err) => {
 				// get the previous request that was made
 				const prevRequest = err?.config;
+
+				/*
+        - If we were sending FormData object, it's probably a multipart/form-data. 
+          However, for some the reason the content type is not maintained for 'multipart/form-data'.
+
+        - NOTE: If you don't do this, then on the retry you'll experience an error as 
+          your request won't contain the FormData object with that file you sent.
+        */
+				if (prevRequest.data instanceof FormData) {
+					prevRequest.headers["Content-Type"] = "multipart/form-data";
+				}
 
 				/*
         - If we got a 401 (access token invalid) or .sent property isn't true (haven't retried the request)

@@ -74,7 +74,7 @@ export default function AccountMenu({ user }) {
         tabObj with truthy values.
       */
 
-			user.role != import.meta.env.VITE_ROLE_USER && {
+			user.role !== parseInt(import.meta.env.VITE_ROLE_USER) && {
 				icon: <UploadIcon fontSize="small" />,
 				text: "Create Post",
 				id: 2,

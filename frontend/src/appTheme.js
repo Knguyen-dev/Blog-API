@@ -21,7 +21,48 @@ const colors = {
 	},
 };
 
-export const getTheme = (colorMode = "light") => {
+/*
+- Objects should go over the 'components' key
+
+*/
+const disableEffects = {
+	// Disables button ripples
+	MuiButtonBase: {
+		defaultProps: {
+			disableRipple: true,
+		},
+	},
+
+	// Disable all transitions and animations
+	MuiCssBaseline: {
+		styleOverrides: {
+			"*, *::before, *::after": {
+				transition: "none !important",
+				animation: "none !important",
+			},
+		},
+	},
+};
+
+const appTransitions = {
+	easing: {
+		easeIn: "cubic-bezier(0.4, 0, 1, 1)",
+		easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
+		easeOut: "cubic-bezier(0.0, 0, 0.2, 1)",
+		sharp: "cubic-bezier(0.4, 0, 0.6, 1)",
+	},
+	duration: {
+		shortest: 150,
+		shorter: 200,
+		short: 250,
+		standard: 300,
+		complex: 375,
+		enteringScreen: 250,
+		leavingScreen: 250,
+	},
+};
+
+export const getTheme = (preferences) => {
 	const theme = createTheme({
 		breakpoints: {
 			values: {
@@ -33,31 +74,25 @@ export const getTheme = (colorMode = "light") => {
 				"2xl": 1536,
 			},
 		},
-		transitions: {
-			easing: {
-				easeIn: "cubic-bezier(0.4, 0, 1, 1)",
-				easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
-				easeOut: "cubic-bezier(0.0, 0, 0.2, 1)",
-				sharp: "cubic-bezier(0.4, 0, 0.6, 1)",
-			},
-			duration: {
-				shortest: 150,
-				shorter: 200,
-				short: 250,
-				standard: 300,
-				complex: 375,
-				enteringScreen: 250,
-				leavingScreen: 250,
-			},
+
+		components: {
+			// Conditionally disable effects (transitions/animations) based on preference
+			...(!preferences.animations ? disableEffects : {}),
 		},
+
+		transitions: {
+			// However if transitions are allowed, insert in our custom transitions values.
+			...(preferences.animations ? appTransitions : {}),
+		},
+
 		palette: {
-			mode: colorMode,
+			mode: preferences.darkMode ? "dark" : "light",
 
 			/*
       - NOTE: Using spread operator so object is spread inside palette 
         object. So in the end we'd have palette: {mode: colorMode, headerBg: some_value, inputBg: some_value, etc.}
       */
-			...(colorMode === "light" ? colors.lightMode : colors.darkMode),
+			...(preferences.darkMode ? colors.darkMode : colors.lightMode),
 		},
 	});
 	return responsiveFontSizes(theme);

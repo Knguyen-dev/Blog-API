@@ -2,40 +2,38 @@ const router = require("express").Router();
 const verifyRoles = require("../middleware/verifyRoles");
 const roles_list = require("../config/roles_list");
 const userController = require("../controllers/userController");
-const verifyOwnAccount = require("../middleware/verifyOwnAccount");
-const { verify } = require("jsonwebtoken");
-// 
+const userPerms = require("../middleware/permissions/userPerms");
+const userLimiter = require("../middleware/limiters/userLimiter");
+/*
+- No one other than admins should really be focused on getting the information
+  of all users, or getting the information of all users.
+*/
 router.get("/", verifyRoles(roles_list.admin), userController.getUsers);
 
-// Get a user by id; make it so we should be an administrator to do this
+
+
+
+// Plan to use this for the user profile page to see another user's profile.
+// Though, we'll probably want the client side route to be "/dashboard/some_username" when
+// it's another user
 router.get("/:id", userController.getUserById)
 
-
-// Then for requests that affect user accounts, ensure the person
-// making the request can only modify their own account; 
-// However we should also see whether a user is an admin to do that
-// router.use(verifyOwnAccount);
+// Route for deleting users; apply canDeleteUser to that route only
+router.delete("/:id", userPerms.canDeleteUser, userController.deleteUser);
 
 
-// Delete user by id: DELETE /users/:id
-router.delete("/:id", userController.deleteUser);
+
+// Limit amount of requests for editing a user account
+router.use(userLimiter.editUserLimiter)
 
 
-/*
-+ PUT vs PATCH requests:
+// Route for updating user's role, specifically for administrators only
+router.patch("/:id/role", verifyRoles(roles_list.admin), userController.changeRole);
 
-1. PUT: Used when updating an entire resource or replacing it with 
-  a new version.I f you send the same PUT multiple times, the results 
-  should be the same as it were if it was only sent once (Idempotent).
-2. PATCH: Used when doing partial modifications to a resource. Good 
-  when updating specific fields without affecting the 
-  rest of the resource's properties.
-*/
-
-// Update avatar and deleting the avatar
+// Routes for updating and editing users; apply canEditUser to all of the below routes
+router.use("/:id", userPerms.canEditUser);
 router.patch("/:id/avatar", userController.updateAvatar);
 router.delete("/:id/avatar", userController.deleteAvatar);
-
 router.patch("/:id/username", userController.updateUsername);
 router.patch("/:id/email", userController.updateEmail);
 router.patch("/:id/fullName", userController.updateFullName);
@@ -48,16 +46,6 @@ router.patch("/:id/fullName", userController.updateFullName);
   change was successful, it will make a request to log out the user.
 */
 router.patch("/:id/password", userController.changePassword);
-
-
-
-
-
-// When a user wants to change their password; 
-// This shouldn't be confused with resetting a password
-// /:id/password
-
-
 
 
 

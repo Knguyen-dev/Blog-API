@@ -17,7 +17,7 @@ const getErrorMap = require("../middleware/getErrorMap");
 */
 function createAccessToken(user) {
 	return jwt.sign({id: user.id,
-      role: user.role}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+      role: user.role}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15min" });
 }
 
 function createRefreshToken(user) {
@@ -95,24 +95,27 @@ const signupUser = [
 		// At this point, data is valid, so save user into the database and return successful response
 		const { email, username, password, fullName } = req.body;
 
-    // Check if a user with this username already exists in the database, if so 
-    // modify errors object and return it.
-    const existingUser = await User.findOne({username});
-    if (existingUser) {
-      errors.username = "Username was already taken!";
-      return res.status(400).json(errors);
+    try {
+      // Everything should be valid, so proceed with user signup
+      const user = await User.signup(
+        email,
+        username,
+        password,
+        fullName
+      );
+      
+      // Respond indicating it was a success!
+      res.status(200).json(user);
+    } catch (err) {
+      // If we get an error with a status code 400, we know it's an issue with the username
+      if (err.statusCode === 400) {
+        errors.username = err.message;
+        res.status(400).json(errors);
+      } else {
+        // Else throw an error so that it's caught by express-async-handler
+        throw err;
+      }
     }
-
-    // Everything should be valid, so proceed with user signup
-		await User.signup(
-			email,
-			username,
-			password,
-			fullName
-		);
-
-    // Respond indicating it was a success!
-		res.status(200).json({ message: "User sign up successful!" });
 	}),
 ];
 
@@ -143,7 +146,7 @@ const signupUser = [
 
 
 */
-const loginUser = asyncHandler(async (req, res, next) => {
+const loginUser = asyncHandler(async (req, res) => {
 		const { username, password } = req.body;
     if (!username || !password) {
       return res.status(400).json({message: "All fields must be filled!" })
@@ -249,9 +252,30 @@ const logoutUser = asyncHandler(async (req, res, next) => {
   res.status(200).json({message: "Refresh token cleared and user was logged out"});
 })
 
+
+const checkToken = (req, res) => {
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  const token = authHeader && authHeader.split(" ")[1]
+  if (!token) {
+    return res.status(401).json({message :"Unauthorized, you need to have an access token!"})
+  }
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, asyncHandler(async (err, user) => {
+    if (err) {
+      return res.status(401).json({message: "Invalid access token!"})
+    }
+
+    return res.status(200).json({message: "Good token!"})
+  }
+  ))
+}
+
+
+
 module.exports = {
   signupUser,
   loginUser,
   refresh,
   logoutUser,
+  checkToken
 }

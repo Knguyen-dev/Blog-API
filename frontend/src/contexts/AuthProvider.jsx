@@ -39,8 +39,6 @@ const AuthProvider = ({ children }) => {
 		accessToken: null,
 	});
 
-	console.log("Auth Provider: ", auth);
-
 	return (
 		<AuthContext.Provider value={{ auth, dispatch }}>
 			{children}

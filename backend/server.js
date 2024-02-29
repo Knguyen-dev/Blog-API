@@ -7,6 +7,8 @@ const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userRouter");
+const employeeRouter = require("./routes/employeeRouter");
+
 const connectDB = require("./config/database");
 const corsOption = require("./config/corsOption");
 const credentials = require("./middleware/credentials");
@@ -31,6 +33,10 @@ app.use("/auth", authRouter);
 // Api (protected) routes
 app.use(verifyJWT);
 app.use("/users", userRouter);
+app.use("/employees", employeeRouter);
+
+
+
 
 
 // Catch all route for our api

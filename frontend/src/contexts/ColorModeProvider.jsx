@@ -15,19 +15,48 @@ import PropTypes from "prop-types";
 
 export const ColorContext = createContext();
 
-export default function ColorModeProvider({ children }) {
-	/*
-  - mode: Get the colorMode, from local storage. We ensure that the storedMode
-    is either 'dark' or 'light' before returning it. If the stored mode isn't 'dark' and 'light'
-    , then we default to 'dark'. Of course set the localStorage and then return the state value.
-  */
-	const [mode, setMode] = useState(() => {
-		let storedMode = localStorage.getItem("colorMode");
-		if (storedMode !== "dark" && storedMode !== "light") {
-			storedMode = "dark";
+const DEFAULT_PREFERENCES = {
+	darkMode: true,
+	animations: false,
+};
+
+// Map of all the possible values for the user's preferneces
+const VALID_PREFERENCES = {
+	darkMode: [true, false],
+	animations: [true, false],
+};
+
+const validatePreferences = (preferences) => {
+	// Loop through the preferences and make sure the keys and values are valid values
+	// If one of them isn't then we'll throw an error, causing us to default to default settings
+	for (const key in preferences) {
+		if (!VALID_PREFERENCES[key].includes(preferences[key])) {
+			throw new Error(
+				`"${key}" is not a valid value for "${DEFAULT_PREFERENCES[key].default}"!`
+			);
 		}
-		localStorage.setItem("colorMode", storedMode);
-		return storedMode;
+	}
+};
+
+export default function ColorModeProvider({ children }) {
+	const [preferences, setPreferences] = useState(() => {
+		try {
+			const storedPreferences = JSON.parse(localStorage.getItem("preferences"));
+
+			// If storedPreferences exists, check if it's valid, if so return it as state
+			if (storedPreferences) {
+				validatePreferences(storedPreferences);
+				localStorage.setItem("preferences", JSON.stringify(storedPreferences));
+				return storedPreferences;
+			}
+		} catch (err) {
+			console.error("Error loading user preferences: " + err.message);
+		}
+
+		// Here, stored preferences wasn't valid or didn't exist in local storage
+		// so use our default preferences. Set in localStorage and return it as state.
+		localStorage.setItem("preferences", JSON.stringify(DEFAULT_PREFERENCES));
+		return DEFAULT_PREFERENCES;
 	});
 
 	/*
@@ -50,23 +79,29 @@ export default function ColorModeProvider({ children }) {
     value to something invalid, so in those cases we default to dark mode, which matches
     how we default to 'dark' mode in our initial state.
   */
-	const colorMode = useMemo(
+	const themeControl = useMemo(
 		() => ({
 			toggleColorMode: () =>
-				setMode((prev) => {
-					const newMode = prev === "dark" ? "light" : "dark";
-					localStorage.setItem("colorMode", newMode);
-					return newMode;
+				setPreferences((prev) => {
+					const newPreferences = {
+						...prev,
+						darkMode: !prev.darkMode,
+					};
+					localStorage.setItem("preferences", JSON.stringify(newPreferences));
+					return newPreferences;
 				}),
 		}),
 		[]
 	);
 
-	const theme = useMemo(() => getTheme(mode), [mode]);
+	const theme = useMemo(() => getTheme(preferences), [preferences]);
+
+	// Then you'd change the function name from colorMode to probably
+	// 'themeModule' or something similar
 
 	return (
 		// Spread the colorMode object, and pass back our mode also
-		<ColorContext.Provider value={{ ...colorMode, mode }}>
+		<ColorContext.Provider value={{ ...themeControl, preferences }}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
 				{children}

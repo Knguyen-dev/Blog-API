@@ -22,26 +22,15 @@ export default function ResponsiveDrawer({
 	/*
   1. mobileOpen: Tracks when the Drawer is showing on the mobile 
     screens.
-  2. setIsClosing: Tracks when we the drawer 'is closing' or is 
-    in the process of closing. again for the mobile drawer.
-
   */
 	const [mobileOpen, setMobileOpen] = useState(false);
-	const [isClosing, setIsClosing] = useState(false);
 
 	const handleDrawerClose = () => {
-		setIsClosing(true);
 		setMobileOpen(false);
 	};
 
-	const handleDrawerTransitionEnd = () => {
-		setIsClosing(false);
-	};
-
 	const handleDrawerToggle = () => {
-		if (!isClosing) {
-			setMobileOpen(!mobileOpen);
-		}
+		setMobileOpen(!mobileOpen);
 	};
 
 	let drawer = (
@@ -112,7 +101,6 @@ export default function ResponsiveDrawer({
 			<Drawer
 				variant="temporary"
 				open={mobileOpen}
-				onTransitionEnd={handleDrawerTransitionEnd}
 				onClose={handleDrawerClose}
 				ModalProps={{
 					keepMounted: true, // Better open performance on mobile.

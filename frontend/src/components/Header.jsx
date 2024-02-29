@@ -16,7 +16,7 @@ const CustomHeader = styled("header")(({ theme }) => ({
 
 export default function Header() {
 	const { auth } = useAuthContext();
-	const { mode, toggleColorMode } = useColorContext();
+	const { preferences, toggleColorMode } = useColorContext();
 	const navigate = useNavigate();
 	const theme = useTheme();
 
@@ -44,7 +44,8 @@ export default function Header() {
 				<Grid item xs={12} md={4}>
 					<div className="tw-flex xs:max-md:tw-justify-center tw-justify-end tw-items-center tw-gap-x-6">
 						{/* If authenticated render the menu, else redner sign in button */}
-						<Tooltip title={`Appearance: ${mode}`}>
+						<Tooltip
+							title={`Appearance: ${preferences.darkMode ? "Dark" : "Light"}`}>
 							<Fab size="small" onClick={toggleColorMode}>
 								<ContrastIcon />
 							</Fab>

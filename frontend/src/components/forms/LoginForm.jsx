@@ -1,5 +1,5 @@
 import { Button, Divider, Typography } from "@mui/material";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import FormInputField from "../Input/FormInputField";
 import FormPasswordField from "../Input/FormPasswordField";
@@ -24,10 +24,7 @@ export default function LoginForm() {
 			password: "",
 		},
 	});
-	const { error, isLoading, login } = useLogin();
-
-	const navigate = useNavigate();
-	const location = useLocation();
+	const { error, isLoading, login, loginDisabled } = useLogin();
 
 	// Auto logins for us when rendering LoginForm
 	useEffect(() => {
@@ -50,13 +47,6 @@ export default function LoginForm() {
 		// Attempt to login, on success our route handling will automatically redirect us.
 		// Else on fail, our error will be shown on the form.
 		await login(formData);
-
-		// If from isn't defined, we go to the home page
-		// But the idea is to take them to the route they wanted to go to
-		// before they were redirected
-		const from = location.state?.from || "/";
-
-		navigate(from, { replace: true });
 	};
 
 	return (
@@ -79,7 +69,10 @@ export default function LoginForm() {
 					label="Password"
 				/>
 
-				<Button variant="contained" disabled={isLoading} type="Submit">
+				<Button
+					variant="contained"
+					disabled={isLoading || loginDisabled}
+					type="Submit">
 					Login
 				</Button>
 			</div>

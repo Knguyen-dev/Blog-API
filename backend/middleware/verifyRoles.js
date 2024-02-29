@@ -3,13 +3,6 @@
 const verifyRoles = (...allowedRoles) => {
 
   return (req, res, next) => {
-    const err = Error("Your role isn't cool enough to get this resource!");
-    err.statusCode = 401;
-
-
-    if (!req.role) {
-      return next(err);
-    }
     const rolesArr = [...allowedRoles];
 
     /*
@@ -17,10 +10,10 @@ const verifyRoles = (...allowedRoles) => {
       we'll let then access the resource, else no.
     */
 
-    const result = rolesArr.includes(req.user.role);
+    const isAuthorized = rolesArr.includes(req.user.role);
 
-    if (!result) {
-      return next(err);
+    if (!isAuthorized) {
+      return res.status(401).json({ message: "Unauthorized to access this resource!" });
     }
 
     // They're authorized at this point so go to the next middleware.

@@ -24,7 +24,7 @@ export default function ProfilePage() {
 	return (
 		<div className="tw-flex tw-flex-col tw-gap-y-5">
 			<Container maxWidth="sm">
-				{/* Avatar Section*/}
+				{/* Avatar Section: Edit avatar*/}
 				<Box className="tw-flex xs:max-sm:tw-flex-col tw-items-center tw-justify-center tw-gap-x-5">
 					<Avatar
 						className="tw-h-20 tw-w-20 xs:max-sm:tw-mb-1 tw-text-4xl"
@@ -33,7 +33,7 @@ export default function ProfilePage() {
 					</Avatar>
 					<div className="tw-flex tw-flex-col tw-items-center tw-gap-y-1">
 						<Typography variant="h5">{auth.user.fullName}</Typography>
-						<EditAvatarDialog />
+						<EditAvatarDialog user={auth.user} />
 					</div>
 				</Box>
 				<Divider className="tw-my-5" />

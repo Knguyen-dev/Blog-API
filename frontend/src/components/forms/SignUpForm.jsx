@@ -49,7 +49,7 @@ export default function SignUpForm() {
 	// function for opening the snackbar, which we'll display on successful registration
 	const navigate = useNavigate();
 
-	const { error, isLoading, signup } = useSignup();
+	const { error, isLoading, signup, signupDisabled } = useSignup();
 
 	const onSubmit = async (formData) => {
 		const { success, data } = await signup(formData);
@@ -66,7 +66,7 @@ export default function SignUpForm() {
     */
 		if (success) {
 			showSnackbar({
-				message: data.message,
+				message: "User registration successful!",
 				severity: "success",
 			});
 			return navigate("/auth/login");
@@ -119,7 +119,10 @@ export default function SignUpForm() {
 					label="Confirm Password"
 				/>
 
-				<Button variant="contained" disabled={isLoading} type="submit">
+				<Button
+					variant="contained"
+					disabled={isLoading || signupDisabled}
+					type="submit">
 					Sign Up
 				</Button>
 			</div>

@@ -1,8 +1,9 @@
 import AvatarForm from "../forms/AvatarForm";
 import { Box, Button } from "@mui/material";
-import FormDialog from "./common/FormDialog";
+import CustomDialog from "./common/CustomDialog";
 import useDialog from "../../hooks/useDialog";
-export default function EditAvatarDialog() {
+import PropTypes from "prop-types";
+export default function EditAvatarDialog({ user }) {
 	const { open, handleOpen, handleClose } = useDialog();
 
 	return (
@@ -11,12 +12,21 @@ export default function EditAvatarDialog() {
 				Edit Avatar
 			</Button>
 
-			<FormDialog
+			<CustomDialog
+				modalTitle="Edit Your Avatar!"
+				CustomForm={<AvatarForm user={user} />}
 				open={open}
+				handleOpen={handleOpen}
 				handleClose={handleClose}
-				dialogTitle="Update Your Avatar">
-				<AvatarForm />
-			</FormDialog>
+			/>
 		</Box>
 	);
 }
+
+EditAvatarDialog.propTypes = {
+	user: PropTypes.shape({
+		username: PropTypes.string,
+		email: PropTypes.string,
+		fullName: PropTypes.string,
+	}),
+};

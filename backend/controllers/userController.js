@@ -6,13 +6,14 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const { body } = require("express-validator");
 const getErrorMap = require("../middleware/getErrorMap");
+const roles_list = require("../config/roles_list");
+
 
 
 const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select("-password -__v");
   res.status(200).json(users);
 })
-
 
 // + Get user via their user ID
 const getUserById = asyncHandler(async (req, res) => {
@@ -29,9 +30,6 @@ const getUserById = asyncHandler(async (req, res) => {
 
   res.status(200).json(user);
 })
-
-
-
 
 /*
 + Delete a user: Handles deleting a user's account. For this to pass, the 
@@ -50,11 +48,9 @@ const deleteUser = [
   body("password").isLength({min: 1}).withMessage("Please enter your current password!"),
   userValidator.confirmPassword,
   asyncHandler(async (req, res) => {
-    const errors = getErrorMap(req);
-
-    
+    const errors = getErrorMap(req);  
     if (Object.keys(errors).length !== 0) {
-      return res.status(400).json({errors});
+      return res.status(400).json(errors);
     }
 
     // Attempt to find user by ID
@@ -85,7 +81,6 @@ const deleteUser = [
   })
 ]
 
-
 /*
 - Logic for updating an avatar:
 - NOTE: Updating only means adding or changing the avatar.
@@ -93,8 +88,13 @@ const deleteUser = [
 const updateAvatar = [  
   // Attempt to save the image file for the avatar, if it exists
   fileUpload.uploadFile.single("file"),
-
   asyncHandler(async(req, res) => {
+
+    // If no file, then stop function execution early
+    if (!req.file) {
+      return res.status(400).json({ message: "File was not detected on our end!" });
+    }
+
     // Attempt to find a user with the parameter id
     const user = await User.findUserByID(req.params.id);
 
@@ -109,7 +109,12 @@ const updateAvatar = [
 
     if (user.avatar) {
       const oldAvatarPath = path.join(__dirname, `../public/images/${user.avatar}`);
-      await fileUpload.deleteFromDisk(oldAvatarPath);
+      try {
+        await fileUpload.deleteFromDisk(oldAvatarPath);
+      } catch (err) {
+        console.log("Avatar deletion error: ", err.messsage)
+      }
+      
     }
 
     // Save the saved file name to the user in the database
@@ -130,7 +135,21 @@ const deleteAvatar = asyncHandler(async(req, res) => {
   if (user.avatar) {
     // Delete avatar from disk
     const oldAvatarPath = path.join(__dirname, `../public/images/${user.avatar}`)
-    await fileUpload.deleteFromDisk(oldAvatarPath);
+
+
+    /*
+    - If we failed to delete file because there wasn't a file like that in our directory,
+      then we can easily just catch the error here. No need to stop the server, if there 
+      was no file in our dir, just delete the avatar the user reported!
+    
+    - NOTE: This is just defensive programming on my part. 
+    */
+    try {
+      await fileUpload.deleteFromDisk(oldAvatarPath);
+    } catch (err) {
+      console.log("Avatar deletion error: ", err.message);
+    }
+    
     // Delete avatar from user in the database
     user.avatar = "";
     await user.save();
@@ -161,18 +180,21 @@ const updateUsername = [
     - NOTE: We use optional chaining here because existingUser could be null, but 
       in the case where it isn't null, we want to check the existingUser 'username' property
       so that we can send back the right error message.
-    */    
+    */
+   
+    
     const existingUser = await User.findOne({username: req.body.username});
     if (existingUser && existingUser?.id !== req.params.id) {
       return res.status(400).json({message: `Username '${req.body.username}' already taken!`});
     } else if (existingUser?.username === req.body.username) {
       return res.status(400).json({message: `Updated username must be different from the current account's username!`});
     }
-
+    
     // At this point the username syntax is valid, and it's available in the database
     // Now get the user that we're updating via the endpoint
     const user = await User.findUserByID(req.params.id);
     user.username = req.body.username;
+    
     await user.save();
 
     // Return updated user as json
@@ -248,7 +270,7 @@ const changePassword = [
 
     // If password fields fail basic syntax checks, return error object
     if (Object.keys(errors).length != 0) {
-      return res.status(400).json({errors});
+      return res.status(400).json(errors);
 		}
 
     const user = await User.findUserByID(req.params.id);
@@ -282,7 +304,48 @@ const changePassword = [
     */
     res.status(200).json({message: "Password change successful!"});
   })
-]
+];
+
+
+/*
++ For changing a user's role. Note that only admins
+  should be allowed to change the role of a user.
+
+- NOTE: 
+  1. When a user's role is changed, if the user whose role is being 
+  changed is already logged in, they would need to get the new access 
+  token with their updated role by refreshing, or logging in again.
+
+  2. There's also the possibility of an admin changing their own role.
+   For security purposes, it's common to restrict admins from changing 
+   their own roles.
+*/
+const changeRole = [
+  userValidator.role,
+  asyncHandler(async (req, res) => {
+    // Check validity of role, if there is an error, send back an error message in json.
+    const errors = getErrorMap(req);
+    if (Object.keys(errors).length!== 0) { 
+      return res.status(400).json({ message: errors.role });
+    }
+
+    // If the user is an admin, and they're trying to change their own role
+    if (req.user.role === roles_list.admin && req.params.id === req.user.id) {
+      return res.status(400).json({ message: "Admins cannot change their own roles!" });
+    }
+
+    // Get the user by ID
+    const user = await User.findUserByID(req.params.id);
+
+    // Update the user's role
+    user.role = req.body.role;
+    await user.save();
+
+    // Return the updated user
+    res.status(200).json(user);
+})];
+
+
 
 module.exports = {
   getUsers,
@@ -294,4 +357,5 @@ module.exports = {
   updateEmail,
   updateFullName,
   changePassword,
+  changeRole,
 }
