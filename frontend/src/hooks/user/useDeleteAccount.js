@@ -3,10 +3,13 @@ import useAuthContext from "./useAuthContext";
 import useAxiosPrivate from "../useAxiosPrivate";
 import { useState } from "react";
 
+import useSubmitDisabled from "./useSubmitDisabled";
+
 export default function useDeleteAccount() {
 	const logout = useLogout();
 	const { auth } = useAuthContext();
 	const axiosPrivate = useAxiosPrivate();
+	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
 
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +40,9 @@ export default function useDeleteAccount() {
 			if (err.response) {
 				if (err.response.status === 400) {
 					data = err.response.data;
+				} else if (err.response.status === 429 && !submitDisabled) {
+					setSubmitDisabled(true);
+					setError(err.response?.data?.message || "Server error occurred!");
 				} else {
 					setError(err.response?.data?.message || "Server error occurred!");
 				}
@@ -52,5 +58,5 @@ export default function useDeleteAccount() {
 		return { success, data };
 	};
 
-	return { error, isLoading, deleteAccount };
+	return { error, isLoading, deleteAccount, submitDisabled };
 }

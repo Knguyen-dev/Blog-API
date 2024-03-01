@@ -10,7 +10,11 @@ import useDialog from "../../hooks/useDialog";
   parameters isLoading, and changeAvatar from 'AvatarForm' component. As a result,
   any errors from deleting an avatar will be shown on the AvatarForm.
 */
-export default function DeleteAvatarDialog({ isLoading, changeAvatar }) {
+export default function DeleteAvatarDialog({
+	isLoading,
+	changeAvatar,
+	disabled,
+}) {
 	const { open, handleOpen, handleClose } = useDialog();
 
 	/*
@@ -43,7 +47,11 @@ export default function DeleteAvatarDialog({ isLoading, changeAvatar }) {
 
 	return (
 		<>
-			<Button variant="contained" color="warning" onClick={handleOpen}>
+			<Button
+				variant="contained"
+				color="warning"
+				onClick={handleOpen}
+				disabled={disabled}>
 				Delete Avatar
 			</Button>
 			<AlertDialog
@@ -59,4 +67,5 @@ export default function DeleteAvatarDialog({ isLoading, changeAvatar }) {
 DeleteAvatarDialog.propTypes = {
 	isLoading: PropTypes.bool,
 	changeAvatar: PropTypes.func,
+	disabled: PropTypes.bool,
 };

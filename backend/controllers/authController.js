@@ -253,25 +253,6 @@ const logoutUser = asyncHandler(async (req, res, next) => {
 })
 
 
-const checkToken = (req, res) => {
-  const authHeader = req.headers.authorization || req.headers.Authorization;
-  const token = authHeader && authHeader.split(" ")[1]
-  if (!token) {
-    return res.status(401).json({message :"Unauthorized, you need to have an access token!"})
-  }
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, asyncHandler(async (err, user) => {
-    if (err) {
-      return res.status(401).json({message: "Invalid access token!"})
-    }
-
-    return res.status(200).json({message: "Good token!"})
-  }
-  ))
-}
-
-
-
 module.exports = {
   signupUser,
   loginUser,

@@ -2,6 +2,7 @@ import { useState } from "react";
 import useAuthContext from "./useAuthContext";
 import useAxiosPrivate from "../useAxiosPrivate";
 import useLogout from "./useLogout";
+import useSubmitDisabled from "./useSubmitDisabled";
 
 export default function useChangePassword() {
 	const [error, setError] = useState(null);
@@ -9,6 +10,8 @@ export default function useChangePassword() {
 	const { auth } = useAuthContext();
 	const logout = useLogout();
 	const axiosPrivate = useAxiosPrivate();
+	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
+
 	const endpoint = `/users/${auth.user._id}/password`;
 
 	const changePassword = async (formData) => {
@@ -69,6 +72,10 @@ export default function useChangePassword() {
 			if (err.response) {
 				if (err.response.status === 400) {
 					data = err.response.data;
+				} else if (err.response.status === 429 && !submitDisabled) {
+					// Rate limiting error, so disable submit button and show rate limit error message.
+					setSubmitDisabled(true);
+					setError(err.response.data?.message || "Server error occurred!");
 				} else {
 					setError(err.response.data?.message || "Server error occurred!");
 				}
@@ -85,5 +92,5 @@ export default function useChangePassword() {
 		return { success, data };
 	};
 
-	return { error, isLoading, changePassword };
+	return { error, isLoading, changePassword, submitDisabled };
 }

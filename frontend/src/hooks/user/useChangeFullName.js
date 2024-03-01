@@ -2,6 +2,7 @@ import { useState } from "react";
 import useAuthContext from "./useAuthContext";
 import useAxiosPrivate from "../useAxiosPrivate";
 import authActions from "../../constants/authActions";
+import useSubmitDisabled from "./useSubmitDisabled";
 
 export default function useChangeFullName() {
 	const [error, setError] = useState(null);
@@ -9,6 +10,8 @@ export default function useChangeFullName() {
 	const { auth, dispatch } = useAuthContext();
 	const endpoint = `/users/${auth.user._id}/fullName`;
 	const axiosPrivate = useAxiosPrivate();
+
+	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
 
 	const changeFullName = async (formData) => {
 		setIsLoading(true);
@@ -41,6 +44,10 @@ export default function useChangeFullName() {
 
       */
 			if (err.response) {
+				// If failed due to rate limiting, then set submitDisabled to disable button on client side
+				if (err.response.status === 429 && !submitDisabled) {
+					setSubmitDisabled(true);
+				}
 				setError(err.response?.data?.message || "Server error occurred!");
 			} else if (err.request) {
 				setError("Network error!");
@@ -55,5 +62,5 @@ export default function useChangeFullName() {
 		return success;
 	};
 
-	return { error, isLoading, changeFullName };
+	return { error, isLoading, changeFullName, submitDisabled };
 }

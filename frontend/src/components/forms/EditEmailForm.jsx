@@ -20,7 +20,7 @@ export default function EditNameForm({ email, handleCloseForm }) {
 		},
 	});
 
-	const { error, isLoading, changeEmail } = useChangeEmail();
+	const { error, isLoading, changeEmail, submitDisabled } = useChangeEmail();
 
 	const onSubmit = async (formData) => {
 		/*
@@ -73,7 +73,10 @@ export default function EditNameForm({ email, handleCloseForm }) {
 						display: "flex",
 						justifyContent: "end",
 					}}>
-					<Button variant="contained" type="submit" disabled={isLoading}>
+					<Button
+						variant="contained"
+						type="submit"
+						disabled={isLoading || submitDisabled}>
 						Update
 					</Button>
 				</Box>

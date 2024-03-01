@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
 			maxLength: 32,
 		},
 
-    initialUsernameChange: {
+    initialUsernameChangeDate: {
       type: Date,
       default: Date.now(),
     },
@@ -101,102 +101,99 @@ const userSchema = new mongoose.Schema(
 );
 
 
-/*
-
-
-1. On the first username change, record the time of our initial change.
-  Of course increment the count.
-2. As long as username count is less than our limit we increment. However, 
-  if the elapsed time since our initial change is greater than 7 days, then
-  we reset the count, probably to 1 since we want to include the current change.
-
-- NOTE: Why is this good? Well, let's say they changed their name on the 3 weeks apart.
-  Well by checking the initial change date, we 
-*/
-
 
 /*
-+ Allow users to change their username twice every 7 days.      
-  
-  
-- NOTE: 
-1. initialChangeDate: represents the date for their initial/first
-  username change in the 7 day time-period where the username limit applies.
-  This means the initial username change marks the start of the 7 day time period 
-  where they have a maximum amount of username changes allowed. Any changes 
-  during that period, as long as they're below the limit, it'll be allowed. 
-  Else it won't be allowed because they have reached the maximum amount of 
-  changes allowed during the period. 
-2. However, if the username is being changed, and the change has been 
-  7 days from initialChangeDate, which was the start date of the period, then 
-  we should reset the user's limits because now we're starting a new period.
-
++ Checks if a username is available. If user doesn't exist return true, else return false.
 */
-userSchema.methods.handleUpdateUsername = function () {
-  const now = new Date();
+userSchema.statics.isUsernameAvailable = async function (username) {
+  const existingUser = await this.findOne({username});
+  return !existingUser;
+}
 
-  // const oneWeekAgo = new Date(now.getTime() - 15 * 1000); // 15 second time period
-  // const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+/*
++ Update Username method: Handles the updating of the username. In our application we 
+  allow the user to update <USERNAME_CHANGE_LIMIT> times every
+  limitPeriod.
+*/
+userSchema.methods.updateUsername = async function (username) {
+  /*
+  - If the new username is the same as their current one, throw an error, 
+    we don't want that to count as a change.
 
-  const fifteenSecondsAgo = new Date(now.getTime() - 15 * 1000);
-  const USERNAME_CHANGE_LIMIT = 2;
+  - NOTE: This avoids the situation where a user enters their own usernmae 
+   and it's flagged as 'username not available', which would be confusing 
+   for the user to see. Of course, if submitting the same username isn't 
+   a problem, you could always change isUsernameAvailable to query for users
+   with the passed username, but not have the current user's ID.
+  */
+  if (this.username === username) {
+    const err = Error(`Username cannot be the same as the current username!`);
+    err.statusCode = 400;
+    throw err;
+  }
 
-  console.log()
+  // Check availability of username.
+  const isAvailable = await this.constructor.isUsernameAvailable(username);
+  if (!isAvailable) {
+    const err = Error(`Username '${username}' is already taken!`);
+    err.statusCode = 400;
+    throw err;
+  }
 
   /*
-  + Conditionals:
-  1. If the username was initially changed over 7 days ago, we can reset the username change count to 1 to
-    indicate that this is now their first username change in the 7 day period.
-    Here we're upating the initialChangeDate, and starting the 7 day period 
-    where their username limit applies.
-  2. Else, we're changing usernames within the 7-day period and they haven't reached their limit yet.
-     Here we increment the count to record that they changed their username.
-  3. Else, the user tried to change ther username, but they have 
-     reached their username changing limit. At this point throw an error to 
-    be caught in our pre 'save' middleware. We'll need the status 400
-    to indicate that it's an error the input the user had.
+  - limitPeriod: Time span spanning for 1 week, starting when the 
+    user initially changes their username. 
+
+  - USERNAME_CHANGE_LIMIT: Number of times the user can change their username within
+    the limitPeriod. If the limit is reached, we'll stop it early and tell the user 
+    they can't change their username since they reached their limit for the current period.
   */
-  if (this.initialChangeDate < fifteenSecondsAgo) {
+  const now = DateTime.utc();
+  const limitPeriod = now.minus({weeks: 1});
+
+  const USERNAME_CHANGE_LIMIT = 2;
+
+  /*
+  - Conditionals:
+  1. If limitPeriod is earlier than initialUsernameChangeDate, then
+    they're attempting to change their username but the limit period is over.
+    So reset and start a new period where username limit applies.
+  
+  2. Else if, username change is within the limitPeriod and they're
+    still below the limit. Just increment the change count and allow them
+    to change their username.
+
+  3. Else, still within limit period, and they already reached their 
+    limit, so return a 400 error to indicate a 'server-side form validation'
+    error which stops function execution early.
+  */
+  if (limitPeriod > this.initialUsernameChangeDate) {    
     this.usernameChangeCount = 1;
-    this.initialChangeDate = now;
+    this.initialUsernameChangeDate = now;
   } else if (this.usernameChangeCount < USERNAME_CHANGE_LIMIT) {
-    this.usernameChangeCount++;
+    this.usernameChangeCount += 1;
   } else {
     const err = Error(`Username change limit reached!`);
     err.statusCode = 400;
     throw err;
   }
+  
+  // Save username 
+  this.username = username;
+  await this.save();
 }
 
-
-// Pre-save middleware
-userSchema.pre("save", function (next) { 
-  try {
-    if (this.isModified("username")) {
-      this.handleUpdateUsername();
-    }
-    next(); // go to next middleware.
-  } catch (err) {
-    // Throw error up and it should be caught in the try/catch in the route/handlers
-    throw err;
-  }
-})
-
-
-
-
 /*
-+ Sign up method: Saves user itno the database.
++ Sign up method: Saves user into the database.
 - NOTE: 
   1. Assumes all data has been validated. This also includes
-  checking if the username is unique.
+    checking if the username is unique.
 
   2. You might be wondering why we're throwing errors with status codes.
     We'll since we can't access the 'res' object here, we've set it up so 
     that we'll throw errors that are going to be caught by asyncHandler. Then
     those errors are going to be sent back as json in {message: "some error message"}
     form. So whenever we can't access our res object, we can do this instead.
-
 */
 userSchema.statics.signup = async function (
 	email,
@@ -207,8 +204,8 @@ userSchema.statics.signup = async function (
 ) {
 
   // Check if an existing user exists with that username already
-  const existingUser = await this.findOne({ username });
-  if (existingUser) {
+  const isAvailable = await this.isUsernameAvailable(username);
+  if (!isAvailable) {
     const error = new Error("Username already taken!");
     error.statusCode = 400;
     throw error;
@@ -235,14 +232,14 @@ userSchema.statics.login = async function (username, password) {
 	const user = await this.findOne({ username });
 
 	if (!user) {
-		const error = new Error("Incorrect username!");
+		const error = new Error("Incorrect username or password!");
 		error.statusCode = 400;
 		throw error;
 	}
 
 	const match = await bcrypt.compare(password, user.password);
 	if (!match) {
-		const error = new Error("Incorrect password!");
+		const error = new Error("Incorrect username or password!");
 		error.statusCode = 400;
 		throw error;
 	}
@@ -336,8 +333,10 @@ userSchema.methods.toJSON = function() {
   delete userObj.refreshToken;
   delete userObj.avatar; // avatar is only used on the backend, avatarSrc will have used in its place on the frontend
   delete userObj.__v; // not needed on frontend
-  delete userObj.initialUsernameChange;
+  delete userObj.initialUsernameChangeDate; // The rest of these are just used on the backend
   delete userObj.usernameChangeCount;
+  delete userObj.createdAt;
+  delete userObj.updatedAt;
   return userObj;
 }
 

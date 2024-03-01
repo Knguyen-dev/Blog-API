@@ -2,11 +2,14 @@ import useAuthContext from "./useAuthContext";
 import authActions from "../../constants/authActions";
 import { useState } from "react";
 import useAxiosPrivate from "../useAxiosPrivate";
+import useSubmitDisabled from "./useSubmitDisabled";
 
 export default function useChangeAvatar() {
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const { auth, dispatch } = useAuthContext();
+
+	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
 
 	// Use axiosPrivate hook since we need to send over our access token for this request
 	const axiosPrivate = useAxiosPrivate();
@@ -57,8 +60,10 @@ export default function useChangeAvatar() {
 
 			dispatch({ type: authActions.updateUser, payload: user });
 		} catch (err) {
-			console.log(err);
 			if (err.response) {
+				if (err.response.status === 429 && !submitDisabled) {
+					setSubmitDisabled(true);
+				}
 				setError(err?.response?.data?.message || "Server error occurred!");
 			} else if (err.request) {
 				setError("Network Error!");
@@ -74,5 +79,6 @@ export default function useChangeAvatar() {
 		error,
 		isLoading,
 		changeAvatar,
+		submitDisabled,
 	};
 }

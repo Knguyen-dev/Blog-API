@@ -19,10 +19,9 @@ const signupLimiter = rateLimit({
 
 const loginLimiter = rateLimit({
   windowMs: 30 * 1000, // 30 second window
-  max: 5, 
-  message: "Too many login attempts. Try again after 30 seconds!",
+  max: 5, // maximum number of request during said window
   handler: (req, res, next, options) => {
-    const err = Error(`Too many signup attempts. Try again after ${options.windowMs / 1000} seconds!`);
+    const err = Error(`Too many login attempts. Try again after ${options.windowMs / 1000} seconds!`);
     err.statusCode = 429 // Status code to indicate 'Too many requests'
     next(err);
   }

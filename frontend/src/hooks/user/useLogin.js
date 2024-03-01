@@ -1,28 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useAuthContext from "./useAuthContext";
 import { axiosPrivate } from "../../api/axios";
 import authActions from "../../constants/authActions";
+import useSubmitDisabled from "./useSubmitDisabled";
 
 const endpoint = "/auth/login";
 
 export default function useLogin() {
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
-	const [loginDisabled, setLoginDisabled] = useState(false);
-	const { dispatch } = useAuthContext();
 
-	// Re-enables the login button after 60 seconds
-	useEffect(() => {
-		let timer;
-		if (loginDisabled) {
-			timer = setTimeout(() => {
-				setLoginDisabled(false); // Re-enable login button after 30 seconds
-			}, 30000);
-		}
-		return () => {
-			clearTimeout(timer);
-		};
-	}, [loginDisabled]);
+	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
+	const { dispatch } = useAuthContext();
 
 	const login = async (formData) => {
 		setIsLoading(true);
@@ -44,7 +33,8 @@ export default function useLogin() {
 
       1. If err.response exists, the server respodned with a status code that falls out 
         of range 2xx. Here if we got a '429', we set state to disable the login button.
-        Finally we set the error message that we got from our servor
+        Finally we set the error message that we got from our server. Also make sure 
+        that loginDisabled = false, we don't really want to update state to true if it's already true.
 
       2. If err.request, then the request was made but no response was received.
       3. Else, something happened in setting up the request that triggered an error.
@@ -53,8 +43,8 @@ export default function useLogin() {
       + Credit: https://axios-http.com/docs/handling_errors
       */
 			if (err.response) {
-				if (err.response.status === 429) {
-					setLoginDisabled(true);
+				if (err.response.status === 429 && !submitDisabled) {
+					setSubmitDisabled(true);
 				}
 				setError(err.response?.data?.message || "Server error occurred!");
 			} else if (err.request) {
@@ -67,5 +57,5 @@ export default function useLogin() {
 		}
 	};
 
-	return { error, isLoading, login, loginDisabled };
+	return { error, isLoading, login, submitDisabled };
 }

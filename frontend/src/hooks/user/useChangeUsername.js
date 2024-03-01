@@ -2,11 +2,15 @@ import { useState } from "react";
 import useAuthContext from "./useAuthContext";
 import authActions from "../../constants/authActions";
 import useAxiosPrivate from "../useAxiosPrivate";
+import useSubmitDisabled from "./useSubmitDisabled";
+
 export default function useChangeUsername() {
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const { auth, dispatch } = useAuthContext();
 	const axiosPrivate = useAxiosPrivate();
+
+	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
 	const endpoint = `/users/${auth.user._id}/username`;
 
 	const changeUsername = async (formData) => {
@@ -24,7 +28,11 @@ export default function useChangeUsername() {
 			dispatch({ type: authActions.updateUser, payload: response.data });
 		} catch (err) {
 			if (err.response) {
-				// If server-side validation sent the error, we expect the error message to be in this structure
+				// If failed due to rate limiting, then set submitDisabled to disable button on client side
+				if (err.response.status === 429 && !submitDisabled) {
+					setSubmitDisabled(true);
+				}
+				// If server sent the error, we expect the error message to be in this structure
 				setError(err.response?.data?.message || "Server error occurred!");
 			} else if (err.request) {
 				setError("Network error!");
@@ -38,5 +46,5 @@ export default function useChangeUsername() {
 		return success;
 	};
 
-	return { error, isLoading, changeUsername };
+	return { error, isLoading, changeUsername, submitDisabled };
 }

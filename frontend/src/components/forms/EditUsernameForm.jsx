@@ -19,7 +19,8 @@ export default function EditUsernameForm({ username, handleCloseForm }) {
 		},
 	});
 
-	const { error, isLoading, changeUsername } = useChangeUsername();
+	const { error, isLoading, changeUsername, submitDisabled } =
+		useChangeUsername();
 
 	const onSubmit = async (formData) => {
 		/*
@@ -72,7 +73,10 @@ export default function EditUsernameForm({ username, handleCloseForm }) {
 						display: "flex",
 						justifyContent: "end",
 					}}>
-					<Button variant="contained" type="submit" disabled={isLoading}>
+					<Button
+						variant="contained"
+						type="submit"
+						disabled={isLoading || submitDisabled}>
 						Update
 					</Button>
 				</Box>

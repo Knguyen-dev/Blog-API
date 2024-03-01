@@ -22,7 +22,7 @@ import PropTypes from "prop-types";
 export default function AvatarForm({ user }) {
 	const [file, setFile] = useState();
 	const [imagePreview, setImagePreview] = useState();
-	const { error, isLoading, changeAvatar } = useChangeAvatar();
+	const { error, isLoading, changeAvatar, submitDisabled } = useChangeAvatar();
 	const avatarInputRef = useRef(null);
 
 	/*
@@ -98,11 +98,12 @@ export default function AvatarForm({ user }) {
 					<DeleteAvatarDialog
 						isLoading={isLoading}
 						changeAvatar={changeAvatar}
+						disabled={submitDisabled}
 					/>
 					<Button
 						variant="contained"
 						type={"submit"}
-						disabled={isLoading}
+						disabled={isLoading || submitDisabled}
 						startIcon={<CloudUploadIcon />}>
 						Submit
 					</Button>

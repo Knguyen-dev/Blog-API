@@ -18,14 +18,14 @@ router.get("/", verifyRoles(roles_list.admin), userController.getUsers);
 // it's another user
 router.get("/:id", userController.getUserById)
 
-// Route for deleting users; apply canDeleteUser to that route only
-router.delete("/:id", userPerms.canDeleteUser, userController.deleteUser);
-
-
 
 // Limit amount of requests for editing a user account
 router.use(userLimiter.editUserLimiter)
 
+
+
+// Route for deleting users; apply canDeleteUser to that route only
+router.delete("/:id", userPerms.canDeleteUser, userController.deleteUser);
 
 // Route for updating user's role, specifically for administrators only
 router.patch("/:id/role", verifyRoles(roles_list.admin), userController.changeRole);

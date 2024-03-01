@@ -33,7 +33,8 @@ export default function ChangePasswordForm() {
 
 	const { showSnackbar } = useSnackbar();
 
-	const { error, isLoading, changePassword } = useChangePassword();
+	const { error, isLoading, changePassword, submitDisabled } =
+		useChangePassword();
 
 	const onSubmit = async (formData) => {
 		const { success, data } = await changePassword(formData);
@@ -83,7 +84,10 @@ export default function ChangePasswordForm() {
 						justifyContent: "end",
 						marginTop: 1,
 					}}>
-					<Button variant="contained" type="submit" disabled={isLoading}>
+					<Button
+						variant="contained"
+						type="submit"
+						disabled={isLoading || submitDisabled}>
 						Submit
 					</Button>
 				</Box>

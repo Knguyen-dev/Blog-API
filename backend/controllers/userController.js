@@ -169,36 +169,24 @@ const updateUsername = [
       return res.status(400).json({message: errors.username});
 		}
 
-    /*
-    + Conditionals:
-    1. There's an existing user and the id of the user we're updating 
-        doesn't match the user we found. Meaning the inputted username was already taken by a another user.
-    2. existingUser exists, and their username matches the username passed in the request body. This means
-      the account username being updated, will be replaced with the same username, which will do nothing. 
-      Return an error saying that the updated username they submit must be different from their current username.
-
-    - NOTE: We use optional chaining here because existingUser could be null, but 
-      in the case where it isn't null, we want to check the existingUser 'username' property
-      so that we can send back the right error message.
-    */
-   
-    
-    const existingUser = await User.findOne({username: req.body.username});
-    if (existingUser && existingUser?.id !== req.params.id) {
-      return res.status(400).json({message: `Username '${req.body.username}' already taken!`});
-    } else if (existingUser?.username === req.body.username) {
-      return res.status(400).json({message: `Updated username must be different from the current account's username!`});
-    }
-    
-    // At this point the username syntax is valid, and it's available in the database
-    // Now get the user that we're updating via the endpoint
+    // Username syntax is valid, try to find user with target ID
     const user = await User.findUserByID(req.params.id);
-    user.username = req.body.username;
     
-    await user.save();
+    // Try/catch to catch our custom errors when updating the username
+    try {
+      // Try to update username and return updated user as json
+      await user.updateUsername(req.body.username);
+      return res.status(200).json(user);
+    } catch (err) {
 
-    // Return updated user as json
-    return res.status(200).json(user);
+      // If status 400, then we caught an username related error when updating the username.
+      if (err.statusCode === 400) {
+        return res.status(400).json({message: err.message});
+      } 
+
+      // Else, it's not a username related error so throw it.
+      throw err;
+    }
   })
 ]
 

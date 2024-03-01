@@ -22,7 +22,8 @@ export default function DeleteAccountForm() {
 			confirmPassword: "",
 		},
 	});
-	const { error, isLoading, deleteAccount } = useDeleteAccount();
+	const { error, isLoading, deleteAccount, submitDisabled } =
+		useDeleteAccount();
 	const { showSnackbar } = useSnackbar();
 
 	const onSubmit = async (formData) => {
@@ -84,7 +85,7 @@ export default function DeleteAccountForm() {
 						variant="contained"
 						color="warning"
 						type="submit"
-						disabled={isLoading}>
+						disabled={isLoading || submitDisabled}>
 						Delete
 					</Button>
 				</Box>

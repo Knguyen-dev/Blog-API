@@ -18,7 +18,8 @@ export default function EditFullNameForm({ fullName, handleCloseForm }) {
 		},
 	});
 
-	const { error, isLoading, changeFullName } = useChangeFullName();
+	const { error, isLoading, changeFullName, submitDisabled } =
+		useChangeFullName();
 	const onSubmit = async (formData) => {
 		/*
     - If submitted name isn't different from current account's name
@@ -71,7 +72,10 @@ export default function EditFullNameForm({ fullName, handleCloseForm }) {
 						display: "flex",
 						justifyContent: "end",
 					}}>
-					<Button variant="contained" type="submit" disabled={isLoading}>
+					<Button
+						variant="contained"
+						type="submit"
+						disabled={isLoading || submitDisabled}>
 						Update
 					</Button>
 				</Box>

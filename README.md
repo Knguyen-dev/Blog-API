@@ -66,6 +66,42 @@
   rather than actually working with posts.
 
 
+# Commit Changes
++ Frontend:
+- Implemented a simple hook to help us deal with disabling submit buttons in
+  forms for client side rate limiting.
+
++ Backend:
+- Implemented logic for limiting and tracking username changes.
+
+- Should probably talk about 
+
+# More progress Commit Description:
+
++ Front End
+- Added package to disable react-dev-tools in production.
+- Fixed issue with axios that would lose image data when trying to 
+  refresh an expired access token.
+- Updated theming, so now our theme function accepts an object of 'preferences'. 
+  ColorProvider now controls these preferences.
+- Changed ResponsiveDrawer, so now it works when animations/transitions are disabled.
+
+- Avatar form is now updated and now initially displays the user's current avatar, but
+  also displays the image of the currently selected image file. For the login and 
+  signup form, we're experimenting how we can disable submit buttons when we get
+  a status code 429.
+
+
++ Backend: 
+- Added rate limiters for our auth, employee and user controller
+- Added role middleware that helps us verify permissions for the user controlller
+- Added route and function for signing up users that are employees.
+
+
+
+
+
+
 
 # Credits:
 1. https://stackoverflow.com/questions/57650692/where-to-store-the-refresh-token-on-the-client

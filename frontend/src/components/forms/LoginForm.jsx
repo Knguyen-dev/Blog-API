@@ -24,9 +24,9 @@ export default function LoginForm() {
 			password: "",
 		},
 	});
-	const { error, isLoading, login, loginDisabled } = useLogin();
+	const { error, isLoading, login, submitDisabled } = useLogin();
 
-	// Auto logins for us when rendering LoginForm
+	// Auto logins for us when testing rendering LoginForm
 	useEffect(() => {
 		const loginRoleUser = async () => {
 			await login({ username: "Mario70", password: "P$ssword_123" });
@@ -71,7 +71,7 @@ export default function LoginForm() {
 
 				<Button
 					variant="contained"
-					disabled={isLoading || loginDisabled}
+					disabled={isLoading || submitDisabled}
 					type="Submit">
 					Login
 				</Button>
