@@ -49,15 +49,29 @@
 
 # BOOK MARK:
 
-1. Found out the real. Issue apparently axios changed the content type 
-  of prevRequest, but now that we changed it back, it works. 
 
-2. Now we need need rate limiters for our requests. How many times can a user 
-  change their avatar. How many times can a user change their username. So
-  yes rate limits on the modification of users and other things.
+1. Create markup for the manage posts page. Then the create post 
+  page where the editor or admin sees the post that they are editing.  
 
-  
-  
+- Design inspiration for manage post page:
+1. https://support.webself.net/hc/en-us/articles/219595627-Manage-blog
+2. https://wpcentral.co/docs/website-management/posts-management/
+3. https://www.elegantthemes.com/blog/wordpress/wordpress-posts-how-to-create-and-manage-them
+
+- Design inspiration more specific to create post page
+1. https://pagelayer.com/docs/getting-started/create-a-post-page/
+
+
+- Continue working on the Data tables. I think since the data table
+  things are similar, we could probably get away with working on the data
+  tables and designs for both the manage posts page and the team page.
+  Because the team page would simply be another table, where we could 
+  see the users that are admins and editors, fellow team members. There
+  we could do the add teammate dialog or form. So for now keep 
+  working on the data grid for the manage posts page, maybe move 
+  on to editing and whatnot.
+
+
 
 
 3. Now we should get started on working with TinyMCE, which is the rich text
@@ -66,39 +80,14 @@
   rather than actually working with posts.
 
 
-# Commit Changes
-+ Frontend:
-- Implemented a simple hook to help us deal with disabling submit buttons in
-  forms for client side rate limiting.
+
++ Commit 
+
++ Front end:
+- Started working on integrating a good data-grid for showing posts.
 
 + Backend:
-- Implemented logic for limiting and tracking username changes.
-
-- Should probably talk about 
-
-# More progress Commit Description:
-
-+ Front End
-- Added package to disable react-dev-tools in production.
-- Fixed issue with axios that would lose image data when trying to 
-  refresh an expired access token.
-- Updated theming, so now our theme function accepts an object of 'preferences'. 
-  ColorProvider now controls these preferences.
-- Changed ResponsiveDrawer, so now it works when animations/transitions are disabled.
-
-- Avatar form is now updated and now initially displays the user's current avatar, but
-  also displays the image of the currently selected image file. For the login and 
-  signup form, we're experimenting how we can disable submit buttons when we get
-  a status code 429.
-
-
-+ Backend: 
-- Added rate limiters for our auth, employee and user controller
-- Added role middleware that helps us verify permissions for the user controlller
-- Added route and function for signing up users that are employees.
-
-
-
+- Updated backend avatar handling logic to be a bit more dyanmic
 
 
 

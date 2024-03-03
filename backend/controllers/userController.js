@@ -108,7 +108,10 @@ const updateAvatar = [
     */
 
     if (user.avatar) {
-      const oldAvatarPath = path.join(__dirname, `../public/images/${user.avatar}`);
+      
+      const oldAvatarPath = path.join(fileUpload.imageDirectory, user.avatar);
+
+      // const oldAvatarPath = `/${fileUpload.imageDirectory}/${user.avatar}`;
       try {
         await fileUpload.deleteFromDisk(oldAvatarPath);
       } catch (err) {
@@ -134,8 +137,8 @@ const deleteAvatar = asyncHandler(async(req, res) => {
   // If the user has an existing avatar
   if (user.avatar) {
     // Delete avatar from disk
-    const oldAvatarPath = path.join(__dirname, `../public/images/${user.avatar}`)
 
+    const oldAvatarPath = path.join(fileUpload.imageDirectory, user.avatar);
 
     /*
     - If we failed to delete file because there wasn't a file like that in our directory,

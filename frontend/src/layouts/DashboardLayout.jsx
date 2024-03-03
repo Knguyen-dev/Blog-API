@@ -115,7 +115,7 @@ export default function DashboardLayout() {
         the full space. Also do overflow-y-scroll so that the pages we render are able
         to be scrolled, but at the same time, our Header and Sidebar retain their positions
         if those are scrolled. */}
-			<main className="tw-p-10 tw-flex-1 tw-overflow-y-scroll">
+			<main className="tw-p-4 tw-flex-1 tw-overflow-y-scroll">
 				<Outlet />
 			</main>
 		</Box>

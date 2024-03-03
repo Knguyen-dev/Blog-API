@@ -2,12 +2,22 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
+
+// Define the directory where you want to store images
+const imageDirectory = "public/avatars";
+
+// Check if the directory exists, if not, create it
+if (!fs.existsSync(imageDirectory)) {
+  fs.mkdirSync(imageDirectory, { recursive: true });
+}
+
+
 // Create storage and logic for uploading user avatars/profile pictures
 // to our disk.
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/images")
+    cb(null, imageDirectory)
   },
 
   // Save the file with a unique filename, we then store this filename
@@ -90,5 +100,6 @@ const deleteFromDisk = (filePath) => {
 module.exports = {
   uploadFile,
   deleteFromDisk,
+  imageDirectory
 
 };

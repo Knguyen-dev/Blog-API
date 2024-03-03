@@ -39,15 +39,19 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   you should be all good.
 */
 
-export default function SearchBar({ onSubmit }) {
+export default function SearchBar({
+	onSubmit,
+	placeholder = "Search",
+	className,
+}) {
 	return (
-		<form onSubmit={onSubmit}>
+		<form onSubmit={onSubmit} className={className}>
 			<Search>
 				<SearchIconWrapper>
 					<SearchIcon />
 				</SearchIconWrapper>
 				<StyledInputBase
-					placeholder="Search..."
+					placeholder={placeholder}
 					inputProps={{ "aria-label": "search" }}
 				/>
 			</Search>
@@ -57,4 +61,6 @@ export default function SearchBar({ onSubmit }) {
 
 SearchBar.propTypes = {
 	onSubmit: PropTypes.func,
+	placeholder: PropTypes.string,
+	className: PropTypes.string,
 };

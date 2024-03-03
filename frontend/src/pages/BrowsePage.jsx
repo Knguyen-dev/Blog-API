@@ -22,7 +22,7 @@ import ScienceIcon from "@mui/icons-material/Science";
 import { Typography } from "@mui/material";
 
 import PostCard from "../components/cards/PostCard";
-import samplePosts from "../assets/samplePosts";
+import { samplePosts } from "../assets/samplePosts";
 import { useEffect, useState } from "react";
 
 const browseDrawer = [

@@ -255,7 +255,7 @@ userSchema.statics.login = async function (username, password) {
 */
 userSchema.virtual("avatarSrc").get(function() {
   if (this.avatar) {
-    return `http://localhost:${process.env.PORT}/images/${this.avatar}`;
+    return `http://localhost:${process.env.PORT}/avatars/${this.avatar}`;
   } else {
     return ""
   }
