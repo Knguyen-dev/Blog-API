@@ -27,9 +27,6 @@ router.use(userLimiter.editUserLimiter)
 // Route for deleting users; apply canDeleteUser to that route only
 router.delete("/:id", userPerms.canDeleteUser, userController.deleteUser);
 
-// Route for updating user's role, specifically for administrators only
-router.patch("/:id/role", verifyRoles(roles_list.admin), userController.changeRole);
-
 // Routes for updating and editing users; apply canEditUser to all of the below routes
 router.use("/:id", userPerms.canEditUser);
 router.patch("/:id/avatar", userController.updateAvatar);

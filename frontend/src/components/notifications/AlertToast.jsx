@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
   and text color.
 */
 
-export default function SimpleSnackbar({
+export default function AlertToast({
 	open,
 	handleClose,
 	autoHideDuration,
@@ -36,7 +36,7 @@ export default function SimpleSnackbar({
 	);
 }
 
-SimpleSnackbar.propTypes = {
+AlertToast.propTypes = {
 	open: PropTypes.bool,
 	handleClose: PropTypes.func,
 	autoHideDuration: PropTypes.number,

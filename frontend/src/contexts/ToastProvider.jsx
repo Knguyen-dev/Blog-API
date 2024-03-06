@@ -7,10 +7,10 @@
 */
 
 import { createContext, useState, useEffect } from "react";
-import AlertSnackbar from "../components/notifications/AlertSnackbar";
+import AlertToast from "../components/notifications/AlertToast";
 import PropTypes from "prop-types";
 
-export const SnackbarContext = createContext();
+export const ToastContext = createContext();
 
 // Default snackbar settings if said settings aren't passed through our messageObj
 const DEFAULTS = {
@@ -20,7 +20,7 @@ const DEFAULTS = {
 	severity: "info",
 };
 
-export const SnackbarProvider = ({ children }) => {
+export const ToastProvider = ({ children }) => {
 	/*
   + States:
   - snackPack: A queue of snack our snackbar messages. Each element will be a message
@@ -70,7 +70,7 @@ export const SnackbarProvider = ({ children }) => {
 	}, [snackPack, messageInfo, open]);
 
 	// Enqueues a new message object on the end of our snackbar queue state
-	const showSnackbar = (messageObj) => {
+	const showToast = (messageObj) => {
 		setSnackPack((prev) => [
 			...prev,
 			{ ...messageObj, key: new Date().getTime() },
@@ -92,9 +92,9 @@ export const SnackbarProvider = ({ children }) => {
 	};
 
 	return (
-		<SnackbarContext.Provider value={{ showSnackbar }}>
+		<ToastContext.Provider value={{ showToast }}>
 			{children}
-			<AlertSnackbar
+			<AlertToast
 				key={messageInfo?.key}
 				open={open}
 				message={messageInfo?.message || DEFAULTS.message}
@@ -106,10 +106,10 @@ export const SnackbarProvider = ({ children }) => {
 					messageInfo?.autoHideDuration || DEFAULTS.autoHideDuration
 				}
 			/>
-		</SnackbarContext.Provider>
+		</ToastContext.Provider>
 	);
 };
 
-SnackbarProvider.propTypes = {
+ToastProvider.propTypes = {
 	children: PropTypes.element,
 };

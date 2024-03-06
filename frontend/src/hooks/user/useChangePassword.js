@@ -38,7 +38,7 @@ export default function useChangePassword() {
 
 		try {
 			// Make a patch request to change the password of the user
-			const response = await axiosPrivate.patch(endpoint, formData);
+			await axiosPrivate.patch(endpoint, formData);
 
 			/*
       - Password change was successful at least, so mark this as true
@@ -48,7 +48,6 @@ export default function useChangePassword() {
        this so that we can display this on our global snackbar. 
       */
 			success = true;
-			data = response.data;
 
 			// First request was successful, run function to log out the user.
 			await logout();

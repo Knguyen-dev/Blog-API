@@ -73,10 +73,12 @@ export default function useAxiosPrivate() {
           it again. This prevents us from getting stuck in an infinite loop of 
           getting a new refresh token and retrying.
         */
-				if (err?.response.status === 401 && !prevRequest?.sent) {
+				if (err?.response?.status === 401 && !prevRequest?.sent) {
 					prevRequest.sent = true;
 					const newAccessToken = await refresh();
 					prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+
+					console.log("Retrying request!");
 					return axiosPrivate(prevRequest);
 				}
 				/*

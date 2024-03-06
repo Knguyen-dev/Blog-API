@@ -17,6 +17,11 @@
 - control: What we get back form the useForm hook and is passed to the input
 - name: How react hook form is going to track the value.
 - render: Render the component we want to use.
+
+- NOTE: We'll specifically use this when we need our input fields to work 
+  with react-hook-form. If you you're manually controlling your input fields
+  with state, then you don't use this component. Just use textfield instead or 
+  something.
 */
 
 import { Controller } from "react-hook-form";

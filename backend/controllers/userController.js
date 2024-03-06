@@ -311,30 +311,6 @@ const changePassword = [
    For security purposes, it's common to restrict admins from changing 
    their own roles.
 */
-const changeRole = [
-  userValidator.role,
-  asyncHandler(async (req, res) => {
-    // Check validity of role, if there is an error, send back an error message in json.
-    const errors = getErrorMap(req);
-    if (Object.keys(errors).length!== 0) { 
-      return res.status(400).json({ message: errors.role });
-    }
-
-    // If the user is an admin, and they're trying to change their own role
-    if (req.user.role === roles_list.admin && req.params.id === req.user.id) {
-      return res.status(400).json({ message: "Admins cannot change their own roles!" });
-    }
-
-    // Get the user by ID
-    const user = await User.findUserByID(req.params.id);
-
-    // Update the user's role
-    user.role = req.body.role;
-    await user.save();
-
-    // Return the updated user
-    res.status(200).json(user);
-})];
 
 
 
@@ -348,5 +324,4 @@ module.exports = {
   updateEmail,
   updateFullName,
   changePassword,
-  changeRole,
 }

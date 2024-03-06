@@ -84,11 +84,18 @@
 + Commit 
 
 + Front end:
-- Started working on integrating a good data-grid for showing posts.
+- Started working on integrating a good data-grid for showing posts and employees.
+- Near the end of EmployeeGrid. We've handled adding, removing, and updating 
+  employees. Added rendering for the avatar on the datagrid. 
+- Added new EmployeeProvider for handling showing employees on the 
+  data grid.
 
 + Backend:
 - Updated backend avatar handling logic to be a bit more dyanmic
-
+- Updated User model, now has isEmployee to indicate when a user is an employee
+  whereas before we only assumed editors and admins were employees.
+- Now we have routes for removing and adding employees on the backend.
+  Removed employee signup route.
 
 
 

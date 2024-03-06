@@ -1,7 +1,5 @@
-import { Button, Typography, Container, Box } from "@mui/material";
-import SearchBar from "../../components/Input/SearchBar";
+import { Button, Typography, Box } from "@mui/material";
 import useAuthContext from "../../hooks/user/useAuthContext";
-import PostTable from "../../components/DataTable/PostTable";
 
 /*
  -Use 'columnVisibilityModel' prop to control what columns are visible. So this makes 
@@ -23,18 +21,7 @@ export default function ManagePostsPage() {
 				</Box>
 			</header>
 
-			<main>
-				<Container maxWidth="md" className="tw-flex">
-					<SearchBar
-						placeholder="Search posts by title"
-						className="tw-flex-1"
-					/>
-				</Container>
-
-				<Container maxWidth="lg" className="tw-mt-5">
-					<PostTable auth={auth} />
-				</Container>
-			</main>
+			<main>Main Content</main>
 		</div>
 	);
 }

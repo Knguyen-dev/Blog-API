@@ -5,7 +5,7 @@ import { Box, Button } from "@mui/material";
 import FormPasswordField from "../Input/FormPasswordField";
 import useChangePassword from "../../hooks/user/useChangePassword";
 import PropTypes from "prop-types";
-import useSnackbar from "../../hooks/useSnackbar";
+import useToast from "../../hooks/useToast";
 
 import {
 	passwordSchema,
@@ -31,7 +31,7 @@ export default function ChangePasswordForm() {
 		},
 	});
 
-	const { showSnackbar } = useSnackbar();
+	const { showToast } = useToast();
 
 	const { error, isLoading, changePassword, submitDisabled } =
 		useChangePassword();
@@ -39,8 +39,8 @@ export default function ChangePasswordForm() {
 	const onSubmit = async (formData) => {
 		const { success, data } = await changePassword(formData);
 		if (success) {
-			showSnackbar({
-				message: data.message,
+			showToast({
+				message: "Password Change Successful! Please log back in.",
 				severity: "success",
 			});
 		} else if (data) {

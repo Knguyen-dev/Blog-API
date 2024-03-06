@@ -23,7 +23,6 @@ import ResponsiveDrawer from "../components/drawers/ResponsiveDrawer";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import GroupsIcon from "@mui/icons-material/Groups";
-
 import useAuthContext from "../hooks/user/useAuthContext";
 
 import { useState, useEffect } from "react";
@@ -102,20 +101,26 @@ export default function DashboardLayout() {
 	};
 
 	return (
-		<Box className="tw-flex tw-flex-1 ">
-			{/* Image and avatar here */}
+		/*
+    + Styling explained:
+    - flex-1 ensures we get the ensure space for the app-layout. Then
+      'tw-w-full' will help the data-grid scroll correctly. Then 
+      for our 'main' we do flex-1 to ensure the pages we're rendering
+      get the rest of the space not occupied by ResponsiveDrawer. Then 
+      we overflow auto to ensure we only get scrollbars when we need it.
+      The vertical scrolling for when there's a lot of vertical content, 
+      but our horizontal scrolling also helps things such as our data-grid 
+      become fully responsive and viewable.
+    
+     */
+		<Box className="tw-flex tw-flex-1 tw-w-full">
 			<ResponsiveDrawer
 				drawerWidth={225}
 				drawerArr={dashboardDrawer}
 				activeTabID={activeTabID}
 				handleTabClick={handleTabClick}
 			/>
-
-			{/* Pages for the user dashboard; do flex 1 to give the pages we're rendering
-        the full space. Also do overflow-y-scroll so that the pages we render are able
-        to be scrolled, but at the same time, our Header and Sidebar retain their positions
-        if those are scrolled. */}
-			<main className="tw-p-4 tw-flex-1 tw-overflow-y-scroll">
+			<main className="tw-p-4 tw-flex-1 tw-overflow-auto">
 				<Outlet />
 			</main>
 		</Box>

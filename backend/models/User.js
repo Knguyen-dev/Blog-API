@@ -65,6 +65,19 @@ const userSchema = new mongoose.Schema(
       default: roles_list.user
     },
 
+    
+    /*
+    - Whether the user is an employee or not. People with role of 
+      editor and admins must have 'isEmployee' set as true. However 
+      if the account has role = user, and they're an employee, that 
+      wouldn't give them any extra privileges. IsEmployee is just an 
+      indicator so that we can track employee accounts.
+    */
+    isEmployee: {
+      type: Boolean,
+      default: false,
+    },
+
 
     /*
     - Storing refresh tokens in the database allows hte server to revoke or 
@@ -101,9 +114,47 @@ const userSchema = new mongoose.Schema(
 );
 
 
+/*
++ Handles pre saving
+- IF the role is editor or admin, then they're automatically an employee. Role 
+  of 'user' can be an employee or just a regular user.
+
+- Cases covered:
+1. If saving an editor or admin, this correctly ensures they're an employee.
+  As well as this, it keeps the flexibility of signing up accounts with 'role' user
+  as a 'user' role can be a regular user or an employee.
+2. If changing isEmployee to false to a user, we ensure that they go back 
+  to having a role of user.
+
+- NOTE: We'll probably not get too into 'changing' isEmployee, but it's 
+  just something to note.
+*/
+
+// userSchema.pre('save', function(next) {
+
+//   // If saving a editor or admin, ensure that they're indicated as an employee
+//   if (this.role === roles_list.editor || this.role === roles_list.admin) {
+//     this.isEmployee = true;
+//   }
+
+//   /*
+//   - However, if at this point 'isEmployee' is still false, that 
+//     means they're not an employee and so anyone who isn't an employee
+//     should only have role of 'user'.
+//   */
+//   if (!this.isEmployee) {
+//     this.role = roles_list.user;
+//   }
+
+//   next();
+// })
+
+
 
 /*
 + Checks if a username is available. If user doesn't exist return true, else return false.
+
+
 */
 userSchema.statics.isUsernameAvailable = async function (username) {
   const existingUser = await this.findOne({username});
@@ -117,19 +168,16 @@ userSchema.statics.isUsernameAvailable = async function (username) {
 */
 userSchema.methods.updateUsername = async function (username) {
   /*
-  - If the new username is the same as their current one, throw an error, 
-    we don't want that to count as a change.
+  - If the new username is the same as their current one, just end
+    the function early. 
 
-  - NOTE: This avoids the situation where a user enters their own usernmae 
-   and it's flagged as 'username not available', which would be confusing 
-   for the user to see. Of course, if submitting the same username isn't 
-   a problem, you could always change isUsernameAvailable to query for users
-   with the passed username, but not have the current user's ID.
+  - NOTE: This avoids us counting the them entering the same username as 
+    a username chang, and avoids the sitaution where 'isUsernameAvailable'
+    finds their own account and flags it as 'Username is already taken'.
+
   */
   if (this.username === username) {
-    const err = Error(`Username cannot be the same as the current username!`);
-    err.statusCode = 400;
-    throw err;
+    return;
   }
 
   // Check availability of username.
@@ -183,6 +231,9 @@ userSchema.methods.updateUsername = async function (username) {
   await this.save();
 }
 
+
+
+
 /*
 + Sign up method: Saves user into the database.
 - NOTE: 
@@ -200,7 +251,8 @@ userSchema.statics.signup = async function (
 	username,
 	password,
 	fullName,
-  role = roles_list.user
+  role = roles_list.user,
+  isEmployee = false
 ) {
 
   // Check if an existing user exists with that username already
@@ -221,7 +273,8 @@ userSchema.statics.signup = async function (
 		username,
 		password: hash,
 		fullName,
-    role
+    role,
+    isEmployee
 	});
 
   // Return the user

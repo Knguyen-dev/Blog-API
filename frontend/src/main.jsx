@@ -6,7 +6,8 @@ import "./index.css";
 import { StyledEngineProvider } from "@mui/material";
 import { AuthProvider } from "./contexts/AuthProvider.jsx";
 import ColorModeProvider from "./contexts/ColorModeProvider.jsx";
-import { SnackbarProvider } from "./contexts/SnackbarProvider.jsx";
+import { ToastProvider } from "./contexts/ToastProvider.jsx";
+import { EmployeeProvider } from "./contexts/EmployeeProvider.jsx";
 
 import { disableReactDevTools } from "@fvilers/disable-react-devtools";
 /*
@@ -26,9 +27,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 		<StyledEngineProvider injectFirst>
 			<ColorModeProvider>
 				<AuthProvider>
-					<SnackbarProvider>
-						<App />
-					</SnackbarProvider>
+					<ToastProvider>
+						<EmployeeProvider>
+							<App />
+						</EmployeeProvider>
+					</ToastProvider>
 				</AuthProvider>
 			</ColorModeProvider>
 		</StyledEngineProvider>

@@ -1,0 +1,8 @@
+const employeeActions = {
+	ADD_EMPLOYEE: "ADD_EMPLOYEE",
+	DELETE_EMPLOYEE: "DELETE_EMPLOYEE",
+	UPDATE_EMPLOYEE: "UPDATE_EMPLOYEE",
+	SET_EMPLOYEES: "SET_EMPLOYEES",
+};
+
+export default employeeActions;

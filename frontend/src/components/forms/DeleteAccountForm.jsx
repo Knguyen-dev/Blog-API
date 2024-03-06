@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Box, Typography } from "@mui/material";
 import FormPasswordField from "../Input/FormPasswordField";
 import useDeleteAccount from "../../hooks/user/useDeleteAccount";
-import useSnackbar from "../../hooks/useSnackbar";
+import useToast from "../../hooks/useToast";
 
 import PropTypes from "prop-types";
 import { confirmPasswordSchema } from "../../constants/validationSchemas";
@@ -24,14 +24,14 @@ export default function DeleteAccountForm() {
 	});
 	const { error, isLoading, deleteAccount, submitDisabled } =
 		useDeleteAccount();
-	const { showSnackbar } = useSnackbar();
+	const { showToast } = useToast();
 
 	const onSubmit = async (formData) => {
 		const { success, data } = await deleteAccount(formData);
 
 		// If successful, handle showing the snackbar
 		if (success) {
-			showSnackbar({
+			showToast({
 				message: data.message,
 				severity: "success",
 			});

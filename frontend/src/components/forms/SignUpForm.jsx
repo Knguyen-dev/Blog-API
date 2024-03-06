@@ -13,7 +13,7 @@ import {
 	passwordSchema,
 	confirmPasswordSchema,
 } from "../../constants/validationSchemas";
-import useSnackbar from "../../hooks/useSnackbar";
+import useToast from "../../hooks/useToast";
 
 const validationSchema = yup.object().shape({
 	email: emailSchema,
@@ -44,7 +44,7 @@ export default function SignUpForm() {
 		},
 	});
 
-	const { showSnackbar } = useSnackbar();
+	const { showToast } = useToast();
 
 	// function for opening the snackbar, which we'll display on successful registration
 	const navigate = useNavigate();
@@ -65,7 +65,7 @@ export default function SignUpForm() {
       so there was a server error. This error is updated in our error state.
     */
 		if (success) {
-			showSnackbar({
+			showToast({
 				message: "User registration successful!",
 				severity: "success",
 			});

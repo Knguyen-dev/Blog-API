@@ -12,6 +12,7 @@ const userList = [
     fullName: "Kevin Z. Nguyen",
     password: "P$ssword_123",
     role: roles_list.admin,
+    isEmployee: true,
   },
   {
     email: "thenoc27@gmail.com",
@@ -19,6 +20,7 @@ const userList = [
     fullName: "Frank Fraiche",
     password: "P$ssword_123",
     role: roles_list.editor,
+    isEmployee: true,
   },
   {
     email: "mario@nintendo.com",
@@ -26,6 +28,7 @@ const userList = [
     fullName: "Mario Mario",
     password: "P$ssword_123",
     role: roles_list.user,
+    isEmployee: false,
   },
   {
     email: "Jack@burgers.gov",
@@ -33,6 +36,15 @@ const userList = [
     fullName: "Jack E. Colman",
     password: "P$ssword_123",
     role: roles_list.user,
+    isEmployee: false,
+  },
+  {
+    email: "Larian20@gmail.com",
+    username: "L4rian",
+    fullName: "Larry Marian",
+    password: "P$ssword_123",
+    role: roles_list.user,
+    isEmployee: true,
   },
 ]
 
@@ -47,7 +59,8 @@ const loadUsers = async () => {
       const fullName = userList[i].fullName;
       const password = userList[i].password;
       const role = userList[i].role
-      await User.signup(email, username, password, fullName, role);
+      const isEmployee = userList[i].isEmployee;
+      await User.signup(email, username, password, fullName, role, isEmployee);
     }
 
   } catch (err) {

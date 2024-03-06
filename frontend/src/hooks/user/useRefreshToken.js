@@ -1,14 +1,14 @@
 import useAuthContext from "./useAuthContext";
 import axios from "../../api/axios";
 import authActions from "../../constants/authActions";
-import useSnackbar from "../../hooks/useSnackbar";
+import useToast from "../../hooks/useToast";
 
 const endpoint = "/auth/refresh";
 
 export default function useRefreshToken() {
 	const { auth, dispatch } = useAuthContext();
 
-	const { showSnackbar } = useSnackbar();
+	const { showToast } = useToast();
 	/*
   - Call for the refresh token, which will set the global auth
     state and return the new access token.
@@ -86,7 +86,7 @@ export default function useRefreshToken() {
       */
 			if (auth.user) {
 				dispatch({ type: authActions.logout });
-				showSnackbar({
+				showToast({
 					message: "User session has expired! Please log back in.",
 					severity: "info",
 				});

@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 export default function DataTable({
 	rows,
 	columns,
+	columnVisibilityModel,
+	onColumnVisibilityModelChange,
 	processRowUpdate,
 	onProcessRowUpdateError,
 	slotProps,
@@ -12,6 +14,8 @@ export default function DataTable({
 		<DataGrid
 			rows={rows}
 			columns={columns}
+			columnVisibilityModel={columnVisibilityModel}
+			onColumnVisibilityModelChange={onColumnVisibilityModelChange}
 			processRowUpdate={processRowUpdate}
 			onProcessRowUpdateError={onProcessRowUpdateError}
 			slots={{ toolbar: GridToolbar }}
@@ -22,6 +26,8 @@ export default function DataTable({
 DataTable.propTypes = {
 	rows: PropTypes.array,
 	columns: PropTypes.array,
+	columnVisibilityModel: PropTypes.object,
+	onColumnVisibilityModelChange: PropTypes.func,
 	processRowUpdate: PropTypes.func,
 	onProcessRowUpdateError: PropTypes.func,
 	slotProps: PropTypes.object,

@@ -1,7 +1,7 @@
-import DataTable from "./DataTable";
+// import DataTable from "./DataTable";
+import { DataGrid } from "@mui/x-data-grid";
 import { sampleTablePosts } from "../../assets/samplePosts";
 import PropTypes from "prop-types";
-import RenderCellExpand from "./RenderCellExpand";
 
 /*
 - For PostTable, since the id of posts are probably going to 
@@ -51,7 +51,6 @@ export default function PostTable({ auth }) {
 			headerName: "Title",
 			flex: 1,
 			hideable: false,
-			renderCell: RenderCellExpand,
 		},
 		{
 			field: "category",
@@ -80,7 +79,7 @@ export default function PostTable({ auth }) {
 		});
 	}
 
-	return <DataTable rows={rows} columns={columns} />;
+	return <DataGrid rows={rows} columns={columns} />;
 }
 
 PostTable.propTypes = {
