@@ -1,12 +1,11 @@
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
-const userValidator = require("../middleware/userValidators");
+const userValidators = require("../middleware/userValidators");
 const fileUpload = require("../middleware/fileUpload");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const { body } = require("express-validator");
 const getErrorMap = require("../middleware/getErrorMap");
-const roles_list = require("../config/roles_list");
 
 
 
@@ -46,7 +45,7 @@ const getUserById = asyncHandler(async (req, res) => {
 */
 const deleteUser = [
   body("password").isLength({min: 1}).withMessage("Please enter your current password!"),
-  userValidator.confirmPassword,
+  userValidators.confirmPassword,
   asyncHandler(async (req, res) => {
     const errors = getErrorMap(req);  
     if (Object.keys(errors).length !== 0) {
@@ -163,7 +162,7 @@ const deleteAvatar = asyncHandler(async(req, res) => {
 })
 
 const updateUsername = [
-  userValidator.username,
+  userValidators.username,
   asyncHandler(async(req, res) => {
     const errors = getErrorMap(req);
     
@@ -194,7 +193,7 @@ const updateUsername = [
 ]
 
 const updateEmail = [
-  userValidator.email,
+  userValidators.email,
   asyncHandler(async (req, res) => {
     const errors = getErrorMap(req);
 
@@ -221,7 +220,7 @@ const updateEmail = [
 ]
 
 const updateFullName = [
-  userValidator.fullName,
+  userValidators.fullName,
   asyncHandler(async(req, res) => {
     const errors = getErrorMap(req);
 
@@ -253,8 +252,8 @@ const changePassword = [
     for basic syntax.
   */
   body("oldPassword").isLength({min: 1}).withMessage("Please enter in your old password!"),
-  userValidator.password,
-  userValidator.confirmPassword,
+  userValidators.password,
+  userValidators.confirmPassword,
 
   asyncHandler(async (req, res) => {
     const errors = getErrorMap(req);
@@ -296,23 +295,6 @@ const changePassword = [
     res.status(200).json({message: "Password change successful!"});
   })
 ];
-
-
-/*
-+ For changing a user's role. Note that only admins
-  should be allowed to change the role of a user.
-
-- NOTE: 
-  1. When a user's role is changed, if the user whose role is being 
-  changed is already logged in, they would need to get the new access 
-  token with their updated role by refreshing, or logging in again.
-
-  2. There's also the possibility of an admin changing their own role.
-   For security purposes, it's common to restrict admins from changing 
-   their own roles.
-*/
-
-
 
 module.exports = {
   getUsers,

@@ -2,7 +2,7 @@ const {body} = require("express-validator");
 const roles_list = require("../config/roles_list");
 
 
-const userValidator = {
+const userValidators = {
   email: body("email")
 		.trim()
 		.escape()
@@ -57,20 +57,10 @@ const userValidator = {
   role: body("role")
     .trim()
     .escape()
-    .custom( role => {
-      role = parseInt(role); // convert role to number
+    .customSanitizer(role => parseInt(role))
+    .custom( (role, { req }) => {
       return Object.values(roles_list).includes(role);
     }).withMessage("Role is not valid!"),
-
-  employeeRole: body("role")
-    .trim()
-    .escape()
-    .custom( role => {
-      role = parseInt(role); // convert role to number
-
-      // Employees must have a valid role, and it can't be 'user' role.
-      return Object.values(roles_list).includes(role) && role!== roles_list.user;
-    }).withMessage("Employee must have a valid employee role!"),
 }
   
-module.exports = userValidator;
+module.exports = userValidators;

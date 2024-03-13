@@ -6,17 +6,9 @@ const asyncHandler = require("express-async-handler");
 
 
 /*
-+ Controller for signing up employees:
-- Despite the repetition, it makes sense that we'll
-  have two route handlers for signing up regular users
-  versus signing up editors or admins. Here, we'll need
-  the user making the request to be an admin, and we'll do 
-  that by ensuring that htey're authenticated and that the 
-  role matches.
-
++ Controller for handling users that are specifically marked as 'employees':
 - NOTE: 
 1. Should be only accessible to admin users only.
-2. I should probably make a userValidator.role as well
 */
 
 
@@ -44,6 +36,7 @@ const updateEmployee = [
   userValidators.email,
   userValidators.fullName,
   userValidators.role,  
+
   asyncHandler(async (req, res) => {
 
     const errors = getErrorMap(req);
@@ -54,7 +47,6 @@ const updateEmployee = [
       return res.status(400).json({message: errors[firstKey]});
     }
 
-
     /*
     + Admins should be the only ones using this route. As well, we don't allow 
       admins to change their roles. 
@@ -64,7 +56,7 @@ const updateEmployee = [
       admin then send back an error saying that admins can't change their roles.
     */
     if (req.user.id === req.params.id && req.body.role !== roles_list.admin) {
-      return res.status(400).json({message: "Admins cannot change their own roles!"});
+      return res.status(400).json({message: "Admins must stay as admins!"});
     }
 
     const user = await User.findUserByID(req.params.id);

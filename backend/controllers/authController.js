@@ -1,8 +1,7 @@
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
-const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
-const userValidator = require("../middleware/userValidators");
+const userValidators = require("../middleware/userValidators");
 const getErrorMap = require("../middleware/getErrorMap");
 
 
@@ -77,11 +76,11 @@ const refresh = asyncHandler(async (req, res) => {
   the front end form can display errors for respective fields. 
 */
 const signupUser = [
-  userValidator.email,
-  userValidator.username,
-  userValidator.password,
-  userValidator.confirmPassword,
-  userValidator.fullName,
+  userValidators.email,
+  userValidators.username,
+  userValidators.password,
+  userValidators.confirmPassword,
+  userValidators.fullName,
 	
 	asyncHandler(async (req, res, next) => {
 		// Sanitize and validate data

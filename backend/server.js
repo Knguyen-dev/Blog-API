@@ -8,6 +8,8 @@ const mongoose = require("mongoose");
 const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userRouter");
 const employeeRouter = require("./routes/employeeRouter");
+const categoryRouter = require("./routes/categoryRouter");
+const tagRouter = require("./routes/tagRouter");
 
 const connectDB = require("./config/database");
 const corsOption = require("./config/corsOption");
@@ -31,11 +33,11 @@ app.use(cookieParser()); // let's us access cookies from request object
 app.use("/auth", authRouter);
 
 // Api (protected) routes
-app.use(verifyJWT);
+// app.use(verifyJWT);
 app.use("/users", userRouter);
 app.use("/employees", employeeRouter);
-
-
+app.use("/categories", categoryRouter);
+app.use('/tags', tagRouter);
 
 
 

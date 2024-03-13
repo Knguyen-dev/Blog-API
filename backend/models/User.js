@@ -2,18 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const {DateTime} = require("luxon");
 const roles_list = require("../config/roles_list");
-
-
-/*
-
-- We should have limiters on email, username, and fullName so that 
-  you can only change them twice a week.
-
-
-
-
-
-*/
+const queryUtils = require("../middleware/queryUtils");
 
 const userSchema = new mongoose.Schema(
 	{
@@ -78,6 +67,10 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
+    lastLogin: {
+      type: Date
+    },
+
 
     /*
     - Storing refresh tokens in the database allows hte server to revoke or 
@@ -114,47 +107,9 @@ const userSchema = new mongoose.Schema(
 );
 
 
-/*
-+ Handles pre saving
-- IF the role is editor or admin, then they're automatically an employee. Role 
-  of 'user' can be an employee or just a regular user.
-
-- Cases covered:
-1. If saving an editor or admin, this correctly ensures they're an employee.
-  As well as this, it keeps the flexibility of signing up accounts with 'role' user
-  as a 'user' role can be a regular user or an employee.
-2. If changing isEmployee to false to a user, we ensure that they go back 
-  to having a role of user.
-
-- NOTE: We'll probably not get too into 'changing' isEmployee, but it's 
-  just something to note.
-*/
-
-// userSchema.pre('save', function(next) {
-
-//   // If saving a editor or admin, ensure that they're indicated as an employee
-//   if (this.role === roles_list.editor || this.role === roles_list.admin) {
-//     this.isEmployee = true;
-//   }
-
-//   /*
-//   - However, if at this point 'isEmployee' is still false, that 
-//     means they're not an employee and so anyone who isn't an employee
-//     should only have role of 'user'.
-//   */
-//   if (!this.isEmployee) {
-//     this.role = roles_list.user;
-//   }
-
-//   next();
-// })
-
-
 
 /*
 + Checks if a username is available. If user doesn't exist return true, else return false.
-
-
 */
 userSchema.statics.isUsernameAvailable = async function (username) {
   const existingUser = await this.findOne({username});
@@ -296,6 +251,12 @@ userSchema.statics.login = async function (username, password) {
 		error.statusCode = 400;
 		throw error;
 	}
+
+
+  // Set the 'lastLogin' to now in UTC time. Changes to user will finally be 
+  // saved in the login route handler
+  user.lastLogin = DateTime.utc();
+
 	return user;
 };
 
@@ -335,40 +296,8 @@ userSchema.virtual("avatarInitials").get(function() {
 
 })
 
-/*
-- Static method for finding a user. It handles checking whether the ID is valid,
-  the selection of fields, and the sending of errors if the user wasn't found. 
-  Finally it returns the user.
-
-- NOTE: 
-  1. Main benefit of this is now we can reduce a lot of repetition that 
-  we'd normally face when doing things such as verifynig whether the id is valid, 
-  querying the database via id, and then checking if the database found anything.
-
-  2. If selectOptions is null, mongoose will include all fields.
-
-  3. Status code 404 is reserved for bad user id and no user found. Whlist 
-    we use status code 400 to indicate that we found invalid input in a user's 
-    input data. These status codes sometimes return error objects in different forms,
-    and we can predict what kind of error data we'll get on the front end if we follow
-    these rules.
-*/
-userSchema.statics.findUserByID = async function(userID, selectOptions = null) {
-  // Check if the document ID provided is valid
-  if (!mongoose.Types.ObjectId.isValid(userID)) {
-    const err = Error("Invalid user ID!")
-    err.statusCode = 404
-    throw err;
-  }
-  let user = await this.findById(userID).select(selectOptions);
-  // If no user was found with that ID
-  if (!user) {
-    const err = Error("User not found!")
-    err.statusCode = 404
-    throw err;
-  }
-  return user;
-}
+// Static method for finding a user
+userSchema.statics.findUserByID = queryUtils.findDocumentByID;
 
 /*
 - Situation: When sending back a user as json, we don't want to include fields such as 

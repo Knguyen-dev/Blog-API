@@ -1,3 +1,8 @@
+/*
++ Employee Router: The employee router and controller are special as they 
+  both refer to and modify "User" documents, or documents in the 'users'
+  collection. 
+*/
 const router = require("express").Router();
 const verifyRoles = require("../middleware/verifyRoles");
 const employeeController = require("../controllers/employeeController");
