@@ -37,6 +37,7 @@ export default function FormInputField({
 	className,
 	fullWidth,
 	variant = "outlined",
+	autoComplete,
 }) {
 	return (
 		<Controller
@@ -57,6 +58,9 @@ export default function FormInputField({
 					variant={variant}
 					className={className}
 					fullWidth={fullWidth}
+					inputProps={{
+						autoComplete: autoComplete,
+					}}
 				/>
 			)}
 		/>
@@ -71,4 +75,5 @@ FormInputField.propTypes = {
 	className: PropTypes.string,
 	fullWidth: PropTypes.bool,
 	variant: PropTypes.string,
+	autoComplete: PropTypes.string,
 };

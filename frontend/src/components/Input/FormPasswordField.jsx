@@ -9,6 +9,7 @@ export default function FormPasswordField({
 	label,
 	placeholder,
 	className,
+	autoComplete,
 }) {
 	return (
 		<Controller
@@ -25,6 +26,7 @@ export default function FormPasswordField({
 					label={label}
 					placeholder={placeholder}
 					className={className}
+					autoComplete={autoComplete}
 				/>
 			)}
 		/>
@@ -38,4 +40,5 @@ FormPasswordField.propTypes = {
 	label: PropTypes.string,
 	placeholder: PropTypes.string,
 	className: PropTypes.string,
+	autoComplete: PropTypes.string,
 };

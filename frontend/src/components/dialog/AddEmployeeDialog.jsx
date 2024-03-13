@@ -1,10 +1,8 @@
-import useDialog from "../../hooks/useDialog";
 import CustomDialog from "./common/CustomDialog";
-import { Box, Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import AddEmployeeForm from "../forms/AddEmployeeForm";
-export default function AddEmployeeDialog() {
-	const { open, handleOpen, handleClose } = useDialog();
-
+import PropTypes from "prop-types";
+export default function AddEmployeeDialog({ open, handleOpen, handleClose }) {
 	const dialogText = (
 		<Typography variant="span">
 			Enter the username of the account you are adding as an employee. Then
@@ -13,18 +11,18 @@ export default function AddEmployeeDialog() {
 	);
 
 	return (
-		<Box>
-			<Button variant="outlined" onClick={handleOpen}>
-				Add Employee
-			</Button>
-			<CustomDialog
-				modalTitle="Sign up an Employee"
-				dialogText={dialogText}
-				open={open}
-				CustomForm={<AddEmployeeForm />}
-				handleOpen={handleOpen}
-				handleClose={handleClose}
-			/>
-		</Box>
+		<CustomDialog
+			modalTitle="Sign up an Employee"
+			dialogText={dialogText}
+			open={open}
+			CustomForm={<AddEmployeeForm />}
+			handleOpen={handleOpen}
+			handleClose={handleClose}
+		/>
 	);
 }
+AddEmployeeDialog.propTypes = {
+	open: PropTypes.bool,
+	handleOpen: PropTypes.func,
+	handleClose: PropTypes.func,
+};

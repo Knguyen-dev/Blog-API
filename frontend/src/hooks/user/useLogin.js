@@ -16,9 +16,13 @@ export default function useLogin() {
 	const login = async (formData) => {
 		setIsLoading(true);
 		setError(null);
+		let success = false;
 
 		try {
 			const response = await axiosPrivate.post(endpoint, formData);
+
+			// indicate successful login
+			success = true;
 
 			/*
       - Set the auth state to what we got from the endpoint. We should 
@@ -55,6 +59,8 @@ export default function useLogin() {
 		} finally {
 			setIsLoading(false);
 		}
+
+		return success;
 	};
 
 	return { error, isLoading, login, submitDisabled };

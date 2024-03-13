@@ -1,14 +1,11 @@
 import { Button, Divider, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import FormInputField from "../Input/FormInputField";
 import FormPasswordField from "../Input/FormPasswordField";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import useLogin from "../../hooks/user/useLogin";
-
-// Effect for testing
-import { useEffect } from "react";
 
 // Only validation we need here is just making sure the user has entered actual values
 const validationSchema = yup.object().shape({
@@ -24,29 +21,23 @@ export default function LoginForm() {
 			password: "",
 		},
 	});
+	const location = useLocation();
+	const navigate = useNavigate();
+
 	const { error, isLoading, login, submitDisabled } = useLogin();
-
-	// Auto logins for us when testing rendering LoginForm
-	useEffect(() => {
-		const loginRoleUser = async () => {
-			await login({ username: "Mario70", password: "P$ssword_123" });
-		};
-
-		const loginRoleEditor = async () => {
-			await login({ username: "grandcreamfraiche", password: "P$ssword_123" });
-		};
-
-		const loginRoleAdmin = async () => {
-			await login({ username: "kbizzzyycentral", password: "P$ssword_123" });
-		};
-
-		// loginRoleAdmin();
-	}, [login]);
 
 	const onSubmit = async (formData) => {
 		// Attempt to login, on success our route handling will automatically redirect us.
 		// Else on fail, our error will be shown on the form.
-		await login(formData);
+		const success = await login(formData);
+
+		/*
+    - Smart Redirects: If successful login, redirect them to where they wanted to go before the redirect
+		 Else default to dashboard if they only went to the login page.
+    */
+		if (success) {
+			navigate(location.state?.from || "/dashboard");
+		}
 	};
 
 	return (
@@ -61,12 +52,14 @@ export default function LoginForm() {
 					name="username"
 					control={control}
 					label="Username"
+					autoComplete="username"
 				/>
 				<FormPasswordField
 					id="password"
 					name="password"
 					control={control}
 					label="Password"
+					autoComplete="current-password"
 				/>
 
 				<Button

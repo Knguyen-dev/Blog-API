@@ -1,3 +1,6 @@
+/*
++ EmployeeProvider: Provider used for storing state data about the employee grid.
+*/
 import { createContext, useReducer } from "react";
 import employeeActions from "../constants/employeeActions";
 import PropTypes from "prop-types";
@@ -28,7 +31,7 @@ const employeeReducer = (state, action) => {
 			};
 
 		// Assumes payload is array of employees
-		case employeeActions.set:
+		case employeeActions.SET_EMPLOYEES:
 			return {
 				...state,
 				employees: action.payload,

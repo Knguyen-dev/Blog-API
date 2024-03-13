@@ -26,6 +26,8 @@
 - This is a good site to take design inspiration off of, but it's quite complex.
 2. Site 2: https://blog-client-dovimaj.vercel.app/
 - Here's an easy site to copy off of.
+3. https://www.mohammadfaisal.dev/blog; this one would be difficult, but I think I like their simplified blog page a lot better than my youtube-esque one. I guess it's 
+probably better if I personalize my website a bit.
 
 # How can we do image storage:
 1. File system: Store images on web server file system. Downsides are 
@@ -48,56 +50,36 @@
   acts as a 'reverse proxy'
 
 # BOOK MARK:
-
-
-1. Create markup for the manage posts page. Then the create post 
-  page where the editor or admin sees the post that they are editing.  
-
-- Design inspiration for manage post page:
-1. https://support.webself.net/hc/en-us/articles/219595627-Manage-blog
-2. https://wpcentral.co/docs/website-management/posts-management/
-3. https://www.elegantthemes.com/blog/wordpress/wordpress-posts-how-to-create-and-manage-them
-
-- Design inspiration more specific to create post page
-1. https://pagelayer.com/docs/getting-started/create-a-post-page/
-
-
-- Continue working on the Data tables. I think since the data table
-  things are similar, we could probably get away with working on the data
-  tables and designs for both the manage posts page and the team page.
-  Because the team page would simply be another table, where we could 
-  see the users that are admins and editors, fellow team members. There
-  we could do the add teammate dialog or form. So for now keep 
-  working on the data grid for the manage posts page, maybe move 
-  on to editing and whatnot.
+Finished functionality for categories and tags. Now we need to add functionality to posts.
+For managing tags, we'll create a dedicated tag section for editors/admins where they 
+can add, delete, or edit tags. This section will be in the editor tab, and it will show 
+a shared table of all tags in the database, which will help editors know which tags are 
+available. Then they can use those tags in a post. So in this case, if an editor wants to 
+have a tag on a post, but that tag doesn't exist yet, they can just go to the editor page 
+and add that tag. Finally they'll be able to go back to the editor suite and add that tag 
+to the post.
 
 
 
 
-3. Now we should get started on working with TinyMCE, which is the rich text
-  editor we're trying to use. Here we'll start designing the page for 
-  creating posts. We'll probably just get started on the 'design and appearance'
-  rather than actually working with posts.
 
 
 
-+ Commit 
 
-+ Front end:
-- Started working on integrating a good data-grid for showing posts and employees.
-- Near the end of EmployeeGrid. We've handled adding, removing, and updating 
-  employees. Added rendering for the avatar on the datagrid. 
-- Added new EmployeeProvider for handling showing employees on the 
-  data grid.
-
-+ Backend:
-- Updated backend avatar handling logic to be a bit more dyanmic
-- Updated User model, now has isEmployee to indicate when a user is an employee
-  whereas before we only assumed editors and admins were employees.
-- Now we have routes for removing and adding employees on the backend.
-  Removed employee signup route.
+2. You likely want to get looking into api caching when getting data 
+  such as Employees, Posts for hte posts grid, but also posts and comments.
+  For now basic caching for express should do the job nicely. In the future 
+  though, try to look into things such as Redis. 
 
 
+
+
+
+# Hosting 
+- Definitely not hosting on Netlify considering that you can get 
+  charged even if you're a free tier user. Probably best if we deploy 
+  on render or cloudflare pages
+- 
 
 # Credits:
 1. https://stackoverflow.com/questions/57650692/where-to-store-the-refresh-token-on-the-client
@@ -105,3 +87,4 @@
 3. How to create youtube layout (tailwind typescript): https://youtu.be/ymGB1lqP1CM?si=BZv6QUEFMrVKE5Qf
 4. TinyMCE V6 Docs: https://www.tiny.cloud/docs/tinymce/6/
 5. React forms and jwt: https://www.youtube.com/watch?v=brcHK3P6ChQ&list=PL0Zuz27SZ-6PRCpm9clX0WiBEMB70FWwd
+6. https://deadsimplechat.com/blog/how-to-safely-use-dangerouslysetinnerhtml-in-react/

@@ -22,7 +22,8 @@ const colors = {
 };
 
 /*
-- Objects should go over the 'components' key
+- Our code to take away any type of transition, animation, or effect 
+  when the user doesn't want them.
 
 */
 const disableEffects = {
@@ -44,6 +45,7 @@ const disableEffects = {
 	},
 };
 
+// Transitions that we apply to components when animations are turned o
 const appTransitions = {
 	easing: {
 		easeIn: "cubic-bezier(0.4, 0, 1, 1)",

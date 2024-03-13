@@ -20,6 +20,7 @@ import BrowsePage from "./pages/BrowsePage";
 import ProfilePage from "./pages/dashboard/ProfilePage";
 import ManagePostsPage from "./pages/dashboard/ManagePostsPage";
 import TeamPage from "./pages/dashboard/TeamPage";
+import CreatePostPage from "./pages/CreatePostPage";
 
 // Components
 import SignUpForm from "./components/forms/SignUpForm";
@@ -91,6 +92,21 @@ function App() {
 									<ProtectedRoute
 										allowedRoles={[import.meta.env.VITE_ROLE_ADMIN]}>
 										<TeamPage />
+									</ProtectedRoute>
+								}
+							/>
+						</Route>
+
+						<Route path="editor-suite">
+							<Route
+								index
+								element={
+									<ProtectedRoute
+										allowedRoles={[
+											import.meta.env.VITE_ROLE_EDITOR,
+											import.meta.env.VITE_ROLE_ADMIN,
+										]}>
+										<CreatePostPage />
 									</ProtectedRoute>
 								}
 							/>

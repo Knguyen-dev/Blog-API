@@ -1,4 +1,3 @@
-import useToast from "../../hooks/useToast";
 import { TextField, Button, Box } from "@mui/material";
 import BasicSelect from "../Input/BasicSelect";
 import { getRoleNumber } from "../../utilities/roleUtilities";
@@ -18,19 +17,6 @@ const options = [
 		value: getRoleNumber("admin"),
 	},
 ];
-
-/*
-- Okay so after we add an employee we want to update the internal state of 
-  the data grid as well. The issue is that well they are two separated components.
-  I think an appropriate idea here would be a context provider. Or a shared
-  state between useAddEmployee hook, and then our EmployeeGrid
-
-- NOTE: For select component make sure you define a valid default value 
-  to prevent the error "Mui component switching from uncontrolled to controlled 
-  or vice versa.". Or you could define a placeholder with value 'null' so that 
-  you can set our state, role, to null.
-
-*/
 
 const defaultValues = {
 	username: "",

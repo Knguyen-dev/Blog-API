@@ -3,6 +3,9 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 
+// Import PrismJS theme for styling code blocks
+import "./components/styles/prism-dracula.css";
+
 import { StyledEngineProvider } from "@mui/material";
 import { AuthProvider } from "./contexts/AuthProvider.jsx";
 import ColorModeProvider from "./contexts/ColorModeProvider.jsx";

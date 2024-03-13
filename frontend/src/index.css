@@ -6,25 +6,13 @@
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	--error-clr: #b91c1c;
-}
-
-ul,
-li {
-	list-style: none;
 }
 
 .root-layout {
 	min-height: 100vh;
 }
 
-body {
-	margin: 0;
-	padding: 0;
-}
-
-/* Not Found Page */
-
+/* Not Found Page the 'Not Authorized Page'*/
 .rejection-page {
 	background-image: url("/night_background.jpg");
 	background-size: cover;
@@ -42,6 +30,15 @@ body {
 	@apply tw-p-3 tw-text-center tw-text-red-700 tw-bg-slate-100 tw-rounded-md;
 }
 
-.link {
-	background-color: white;
+/* 
++ Styling for the post preview in the editor suite:
+- We remove margin on the figure so that images are formatted properly 
+  when they have captions. Then we just style the captions too.
+*/
+.post-preview figure {
+	margin: 0;
+}
+
+.post-preview figcaption {
+	@apply tw-text-xs tw-text-gray-400 tw-italic;
 }

@@ -16,6 +16,7 @@ export default function PasswordField({
 	onChange,
 	required,
 	className,
+	autoComplete,
 }) {
 	const [showPassword, setShowPassword] = useState(false);
 	const toggleShowPassword = () => setShowPassword((show) => !show);
@@ -34,6 +35,7 @@ export default function PasswordField({
 			type={showPassword ? "text" : "password"}
 			className={className}
 			InputProps={{
+				autoComplete: autoComplete,
 				endAdornment: (
 					<InputAdornment position="end">
 						<IconButton
@@ -60,4 +62,5 @@ PasswordField.propTypes = {
 	onChange: PropTypes.func,
 	required: PropTypes.bool,
 	className: PropTypes.string,
+	autoComplete: PropTypes.string,
 };
