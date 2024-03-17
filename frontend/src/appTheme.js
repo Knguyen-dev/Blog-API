@@ -12,12 +12,16 @@ const colors = {
 		brandColor: "#121212", // Color for the app header's brand link.
 		bodyBg: "#ddd", // Background color for the main content pages
 		inputBg: "#F3F4F6", // background color for search bar
+
+		accordionBg: "#f4f4f5",
 	},
 	darkMode: {
 		headerBg: "#121212",
 		brandColor: "#FFFFFF",
 		bodyBg: "#10172A",
 		inputBg: "#374151",
+
+		accordionBg: "#121212", // background color for the accordion header
 	},
 };
 

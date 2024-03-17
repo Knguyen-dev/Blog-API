@@ -17,20 +17,43 @@ const mongoose = require('mongoose');
     input data. These status codes sometimes return error objects in different forms,
     and we can predict what kind of error data we'll get on the front end if we follow
     these rules.
+
+- populateOptions: An array of strings indicating the fields that should be 
+  populated.
 */
-const findDocumentByID = async function(docID, selectOptions = null) {
+const findDocumentByID = async function(docID, populateOptions = null) {
   // Check if the document ID provided is valid
   if (!mongoose.Types.ObjectId.isValid(docID)) {
-    const err = new Error("Invalid document ID!");
+    const err = new Error(`Invalid ${this.modelName} ID!`);
     err.statusCode = 404;
     throw err;
   }
   
-  let document = await this.findById(docID).select(selectOptions);
+  /*
+  1. Create our query object
+  2. If 'populateOptions', then we passed in some fields to populate, so add
+    these populate commands onto the query.
+  - NOTE: Although it may appear that we are resetting the query object with each
+    iteration of the loop, this is not the case. In JavaScript, objects are passed 
+    by reference, so when we call the populate method on the query object, we are 
+    updating its reference with a new reference that includes an additional populate 
+    command for the current field. Therefore, each iteration of the loop modifies the 
+    query object to include the population instruction for the corresponding field in the populateOptions object."
+  */
+  
+  let query = this.findById(docID);
+  if (populateOptions) {
+    for (const field of populateOptions) {
+      query = query.populate(field);
+    }
+  }
+
+  // Execute the query and attempt to return our document
+  const document = await query.exec();
   
   // If no document was found with that ID
   if (!document) {
-    const err = new Error("Document not found!");
+    const err = new Error(`${this.modelName} not found!`);
     err.statusCode = 404;
     throw err;
   }
@@ -38,4 +61,21 @@ const findDocumentByID = async function(docID, selectOptions = null) {
   return document;
 };
 
-module.exports = { findDocumentByID };
+/*
+
+- NOTE: Function assumes tags and postTags are arrays of strings.
+  So for postTags, convert the object ids into strings first.
+*/
+function areTagIDsSubset(tags, postTags) {
+  // Convert arrays to sets for efficient comparison
+  const tagsSet = new Set(tags);
+  const postTagsSet = new Set(postTags);
+  
+  // Check if all tag IDs in 'tags' are already present in 'postTags'
+  // If true, it means all provided tag IDs are valid, as they are already associated with the post
+  // If false, it indicates there are unknown and potentially invalid tag IDs in the 'tags' array
+  return [...tagsSet].every(tagID => postTagsSet.has(tagID));
+}
+
+
+module.exports = { findDocumentByID, areTagIDsSubset };

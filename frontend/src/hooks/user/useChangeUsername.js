@@ -33,7 +33,7 @@ export default function useChangeUsername() {
 					setSubmitDisabled(true);
 				}
 				// If server sent the error, we expect the error message to be in this structure
-				setError(err.response?.data?.message || "Server error occurred!");
+				setError(err.response?.data?.error.message || "Server error occurred!");
 			} else if (err.request) {
 				setError("Network error!");
 			} else {

@@ -8,6 +8,8 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PropTypes from "prop-types";
+import { useTheme } from "@emotion/react";
+
 export default function BasicAccordion({
 	expanded,
 	handleChange,
@@ -15,13 +17,19 @@ export default function BasicAccordion({
 	children,
 	id,
 }) {
+	const theme = useTheme();
 	return (
-		<Accordion expanded={expanded} onChange={handleChange}>
+		<Accordion
+			expanded={expanded}
+			onChange={handleChange}
+			sx={{
+				backgroundColor: theme.palette.accordionBg,
+			}}>
 			<AccordionSummary
 				expandIcon={<ExpandMoreIcon />}
 				aria-controls={`${id}-content`}
 				id={`${id}-header`}>
-				<Typography sx={{ width: "33%", flexShrink: 0 }}>
+				<Typography sx={{ width: "40%", flexShrink: 0 }}>
 					{headerTitle}
 				</Typography>
 			</AccordionSummary>
@@ -32,6 +40,7 @@ export default function BasicAccordion({
 BasicAccordion.propTypes = {
 	expanded: PropTypes.bool,
 	handleChange: PropTypes.func,
+	className: PropTypes.string,
 	headerTitle: PropTypes.string,
 	children: PropTypes.element,
 	id: PropTypes.string,

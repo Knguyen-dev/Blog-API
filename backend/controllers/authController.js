@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
-const userValidators = require("../middleware/userValidators");
+const userValidators = require("../middleware/validators/userValidators");
 const getErrorMap = require("../middleware/getErrorMap");
 
 

@@ -9,18 +9,24 @@
   browsers encourages devs to amrk such event listeners as passive to improve scrolling 
   experiences, especially on touch devices. Solution: In this case, we found out that this 
   is happening due to TinyMce. After Googling, it seems the solution was to set UI mode to 'split"."
+  It's also due to adding the skins and content_css properties.
 
 2. With TinyMCE, mode of the UI is set on initialization only. So if the user changes the 
   theme of the application, they'll need to refresh to apply the theme to the editor. 
-  It's unfortunate, but it's just how it is with the current tinymce editor.
+  It's unfortunate, but it's just how it is with the current tinymce editor is, and as 
+  a result, we will keep the editor in light mode
 */
 
 import { Editor } from "@tinymce/tinymce-react";
-import useColorContext from "../../hooks/useColorContext";
 import PropTypes from "prop-types";
 
 export default function PostEditor({ initialValue, value, setValue }) {
-	const { preferences } = useColorContext();
+	const handleEditChange = (newValue, editor) => {
+		const wordCount = editor.plugins.wordcount.body.getWordCount();
+
+		// reducer expects payload to be in format: {body, wordCount}
+		setValue({ body: newValue, wordCount });
+	};
 
 	return (
 		<Editor
@@ -28,7 +34,7 @@ export default function PostEditor({ initialValue, value, setValue }) {
 			apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
 			initialValue={initialValue}
 			value={value}
-			onEditorChange={(newValue) => setValue(newValue)}
+			onEditorChange={handleEditChange}
 			init={{
 				ui_mode: "split",
 				image_caption: true,
@@ -49,9 +55,6 @@ export default function PostEditor({ initialValue, value, setValue }) {
 					});
 				},
 
-				/*Only issue is that onchange this component doesn't seem to re-render */
-				skin: preferences.darkMode ? "oxide-dark" : "oxide",
-				content_css: preferences.darkMode ? "dark" : "light",
 				height: 300,
 
 				menubar: "edit insert view format table tools help",

@@ -50,7 +50,9 @@ export default function useLogin() {
 				if (err.response.status === 429 && !submitDisabled) {
 					setSubmitDisabled(true);
 				}
-				setError(err.response?.data?.message || "Server error occurred!");
+				setError(
+					err.response?.data?.error?.message || "Server error occurred!"
+				);
 			} else if (err.request) {
 				setError("Network error!");
 			} else {

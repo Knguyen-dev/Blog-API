@@ -10,6 +10,7 @@ const userRouter = require("./routes/userRouter");
 const employeeRouter = require("./routes/employeeRouter");
 const categoryRouter = require("./routes/categoryRouter");
 const tagRouter = require("./routes/tagRouter");
+const postRouter = require("./routes/postRouter");
 
 const connectDB = require("./config/database");
 const corsOption = require("./config/corsOption");
@@ -33,12 +34,12 @@ app.use(cookieParser()); // let's us access cookies from request object
 app.use("/auth", authRouter);
 
 // Api (protected) routes
-// app.use(verifyJWT);
+app.use(verifyJWT);
 app.use("/users", userRouter);
 app.use("/employees", employeeRouter);
 app.use("/categories", categoryRouter);
 app.use('/tags', tagRouter);
-
+app.use("/posts", postRouter);
 
 
 // Catch all route for our api
@@ -56,18 +57,28 @@ app.use(function (req, res, next) {
   that it was something on our end rather than the client's. The reason that 
   we're replacing the error message is becasue with a programming or database 
   error, it's likely going to be not understandable for the average user.
+
+
+- NOTE: We want this to catch database validation errors and unexpected errors.
 */
 app.use(function (err, req, res, next) {
 
-  console.log("Error Caught: ", err.message);
+  console.log("Error Caught: ", err);
 
   if (!err.statusCode) {
     err.statusCode = 500
     err.message = "Server Error!"
   }
 
+  const errorObj = {
+    error: {
+      status: err.statusCode,
+      message: err.message
+    }
+  }
+
 	// Return the error as json
-	res.status(err.statusCode).json({ message: err.message });
+	res.status(err.statusCode).json(errorObj);
 });
 
 

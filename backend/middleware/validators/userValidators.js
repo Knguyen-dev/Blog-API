@@ -1,5 +1,5 @@
 const {body} = require("express-validator");
-const roles_list = require("../config/roles_list");
+const roles_list = require("../../config/roles_list");
 
 
 const userValidators = {

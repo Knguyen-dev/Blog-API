@@ -74,9 +74,13 @@ export default function useChangePassword() {
 				} else if (err.response.status === 429 && !submitDisabled) {
 					// Rate limiting error, so disable submit button and show rate limit error message.
 					setSubmitDisabled(true);
-					setError(err.response.data?.message || "Server error occurred!");
+					setError(
+						err.response.data?.error.message || "Server error occurred!"
+					);
 				} else {
-					setError(err.response.data?.message || "Server error occurred!");
+					setError(
+						err.response.data?.error.message || "Server error occurred!"
+					);
 				}
 			} else if (err.request) {
 				setError("Network error!");

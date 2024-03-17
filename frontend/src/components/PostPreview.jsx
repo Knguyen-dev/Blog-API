@@ -1,8 +1,6 @@
 import { Box, Typography, Divider } from "@mui/material";
 import { TagContainer } from "./styles/TagContainer.styled";
 import PropTypes from "prop-types";
-import PrismJS from "prismjs";
-import { useEffect } from "react";
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
 	year: "numeric",
 	month: "long",
@@ -11,7 +9,10 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 
 PostPreview.propTypes = {
 	title: PropTypes.string,
-	category: PropTypes.string,
+	category: PropTypes.shape({
+		label: PropTypes.string,
+		value: PropTypes.string,
+	}),
 	body: PropTypes.string,
 	dateObj: PropTypes.object,
 	authorName: PropTypes.string,
@@ -25,8 +26,6 @@ PostPreview.propTypes = {
 	),
 };
 
-const currentYear = new Date().getFullYear();
-
 export default function PostPreview({
 	title,
 	category,
@@ -37,28 +36,15 @@ export default function PostPreview({
 	imgCredits,
 	tags,
 }) {
-	/*
-  + Effect calls PrismJS to highlight/color code blocks:
-  1. If there are <pre> tags in our post-preview, then call prism to highlight them.
-
-
-  - NOTE: If it desperately affects performance, then we'll only run this once we 
-    start displaying for real.
-  */
-	useEffect(() => {
-		const preElements = document.querySelectorAll(".post-preview pre");
-		if (preElements.length > 0) {
-			PrismJS.highlightAll();
-		}
-	}, [body]);
-
 	return (
 		<Box component="main" className="tw-p-4">
 			{/* Header of the post: has title, date published, category, author*/}
 			<Box>
 				{/* Post header: Category, title of post, author, post thumbnail/display image and credits */}
 				<Box className="tw-flex tw-justify-center">
-					<TagContainer>{category}</TagContainer>
+					<TagContainer>
+						{category ? category.label : "Sample Category"}
+					</TagContainer>
 				</Box>
 				<Typography variant="h4" className="tw-text-center tw-mt-3">
 					{title}
@@ -104,7 +90,7 @@ export default function PostPreview({
 								<TagContainer
 									className="tw-text-xs md:tw-text-sm"
 									key={tag.value}>
-									{tag.value}
+									{tag.label}
 								</TagContainer>
 							))}
 						</Box>
@@ -114,7 +100,7 @@ export default function PostPreview({
 				{/* Fake copyright section */}
 				<Box className="tw-mt-5">
 					<Typography variant="body2" className="tw-text-gray-500">
-						&copy; {currentYear} BlogSphere. All rights reserved.
+						&copy; {dateObj.getFullYear()} BlogSphere. All rights reserved.
 					</Typography>
 				</Box>
 			</Box>

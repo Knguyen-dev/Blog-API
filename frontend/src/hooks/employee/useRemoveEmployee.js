@@ -53,7 +53,7 @@ export default function useRemoveEmployee() {
 				if (err.response.status === 429 && !submitDisabled) {
 					setSubmitDisabled(true);
 				}
-				setError(err.response.data.message || "Server error!");
+				setError(err.response.data.error.message);
 			} else if (err.request) {
 				setError("Network error!");
 			} else {

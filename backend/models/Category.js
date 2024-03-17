@@ -30,6 +30,12 @@ const categorySchema = new mongoose.Schema({
 
 // Finds categories by ID.
 categorySchema.statics.findCategoryByID = queryUtils.findDocumentByID;
-
+categorySchema.methods.toJSON = function() {
+  const categoryObj = this.toObject();
+  delete categoryObj.createdAt;
+  delete categoryObj.updatedAt;
+  delete categoryObj.__v;
+  return categoryObj;
+}
 
 module.exports = mongoose.model("Category", categorySchema, "Categories");

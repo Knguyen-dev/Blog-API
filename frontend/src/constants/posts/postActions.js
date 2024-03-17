@@ -8,6 +8,7 @@ const postActions = {
 	SET_IMAGE_CREDITS: "SET_IMAGE_CREDITS",
 	SET_STATUS: "SET_STATUS",
 	SET_POST: "SET_POST",
+	CLEAR_POST: "CLEAR_POST",
 };
 
 export default postActions;

@@ -50,14 +50,42 @@ probably better if I personalize my website a bit.
   acts as a 'reverse proxy'
 
 # BOOK MARK:
-Finished functionality for categories and tags. Now we need to add functionality to posts.
-For managing tags, we'll create a dedicated tag section for editors/admins where they 
-can add, delete, or edit tags. This section will be in the editor tab, and it will show 
-a shared table of all tags in the database, which will help editors know which tags are 
-available. Then they can use those tags in a post. So in this case, if an editor wants to 
-have a tag on a post, but that tag doesn't exist yet, they can just go to the editor page 
-and add that tag. Finally they'll be able to go back to the editor suite and add that tag 
-to the post.
+- Finished functionality for categories and tags. Now we need to add functionality to posts.For managing tags, we'll create a dedicated tag section for editors/admins where they can add, delete, or edit tags. This section will be in the editor tab, and it will show a shared table of all tags in the database, which will help editors know which tags are available. Then they can use those tags in a post. So in this case, if an editor wants to have a tag on a post, but that tag doesn't exist yet, they can just go to the editor page and add that tag. Finally they'll be able to go back to the editor suite and add that tag to the post.
+
+
+
+- Note that if a user logs out, we should probably clear the postData in their
+  local storage. You should probably need to save their postData to the database 
+  as a post that's a draft. I see that makes more sense 
+
+
+### Planned
+- Now: Uniformalize our error handling
+
+1. Changing up the react folder structure. Decide between 'intermediate' and 'advanced'.
+2. Add markup and functionality for showing 'published on' and last edited
+  on dates.
+3. Adding tests and practicing making tests for existing things ('probably with the help of tabnine').
+  Get some practice with TDD and thinking like TDD
+4. Adding certain permissions for posts, maybe an admin can only update the status. Who can
+  delete the post, etc.
+5. Switch to using JSDocs convention for commenting functions. Learn more about that
+6. Adding markup and logic for managing tags and categories
+7. Probably switching to TypeScript.
+
+
+# Commit 
+
+## Frontend
+- Added pages for creating new post and saving changes to existing posts.
+- Removed PrismJS code highlighting for PostPreview at the moment since it only highlights JS code, and can't detect other code.
+
+## Backend
+- Add routes for CRUD operations with Posts.
+- Partially updated the way we handle validation errors and database errors.
+  The changes have been applied in our new controllers 'Post' 'Tags' and 
+  'Category'. But we will still need to migrate these changes over to the 
+  other controllers.
 
 
 

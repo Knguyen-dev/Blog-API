@@ -7,52 +7,64 @@ import useSubmitDisabled from "../user/useSubmitDisabled";
   that should pose a problem as 
 */
 
-const addNewPointEndpoint = "/posts";
-const saveExistingPostEndpoint = "/posts/:id";
-
 export default function useSavePost() {
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const axiosPrivate = useAxiosPrivate();
 	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
 
-	const addNewPost = async () => {};
+	const saveExistingPost = (postData) => {
+		return axiosPrivate.patch(`/posts/${postData.id}`, postData);
+	};
 
-	const saveExistingPost = async () => {};
+	const createNewPost = (postData) => {
+		return axiosPrivate.post("/posts", postData);
+	};
 
 	// Will either call addNewPost or saveExistingPost depending on whether we have
 	// an existing postID or not.
 	const savePost = async (postData) => {
 		setIsLoading(true);
 		setError(null);
+		let success = false;
 
 		try {
-			// Sanitize the html
+			// Sanitize the html on the front end.
 			postData.body = DOMPurify.sanitize(postData.body);
 
-			let response = null;
-
-			// If we have an id, that means we're saving changes to an existing post
+			// If 'id' property exists, we are saving changes to an existing post.
 			if (postData.id) {
-				response = await saveExistingPost(postData);
+				await saveExistingPost(postData);
 			} else {
-				// No id so we're adding a completely new post to the database
-				response = await addNewPost(postData);
+				await createNewPost(postData);
 			}
 
-			// Response data will contain the saved post that is in the database.
-			return response.data;
+			// Mark operation as successful!
+			success = true;
 		} catch (err) {
 			if (err.response) {
 				if (err.response.status === 429 && !submitDisabled) {
 					setSubmitDisabled(true);
 				}
-				setError(err?.response?.data?.message || "Server error occurred!");
+				setError(err.response.data?.error?.message);
 			} else if (err.request) {
 				setError("Network Error!");
 			} else {
 				setError("Something unexpected happened!");
 			}
+		} finally {
+			setIsLoading(false);
 		}
+
+		// Return whether or not the operation was successful
+		return success;
+	};
+
+	return {
+		error,
+		setError,
+		isLoading,
+		submitDisabled,
+		savePost,
 	};
 }

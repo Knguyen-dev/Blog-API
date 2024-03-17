@@ -46,7 +46,7 @@ export default function useAddEmployee() {
 				if (err.response.status === 429 && !submitDisabled) {
 					setSubmitDisabled(true);
 				}
-				setError(err.response.data.message);
+				setError(err.response.data.error.message);
 			} else if (err.request) {
 				setError("Network error!");
 			} else {

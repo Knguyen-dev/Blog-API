@@ -1,6 +1,6 @@
 const roles_list = require("../config/roles_list");
 const getErrorMap = require("../middleware/getErrorMap");
-const userValidators = require("../middleware/userValidators");
+const userValidators = require("../middleware/validators/userValidators");
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 

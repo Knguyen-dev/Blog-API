@@ -10,6 +10,7 @@ import {
 import RootLayout from "./layouts/RootLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import AppLayout from "./layouts/AppLayout";
+import EditorLayout from "./layouts/EditorLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
 
 // Pages
@@ -21,6 +22,7 @@ import ProfilePage from "./pages/dashboard/ProfilePage";
 import ManagePostsPage from "./pages/dashboard/ManagePostsPage";
 import TeamPage from "./pages/dashboard/TeamPage";
 import CreatePostPage from "./pages/CreatePostPage";
+import EditPostPage from "./pages/EditPostPage";
 
 // Components
 import SignUpForm from "./components/forms/SignUpForm";
@@ -97,19 +99,20 @@ function App() {
 							/>
 						</Route>
 
-						<Route path="editor-suite">
-							<Route
-								index
-								element={
-									<ProtectedRoute
-										allowedRoles={[
-											import.meta.env.VITE_ROLE_EDITOR,
-											import.meta.env.VITE_ROLE_ADMIN,
-										]}>
-										<CreatePostPage />
-									</ProtectedRoute>
-								}
-							/>
+						<Route
+							path="editor-suite"
+							element={
+								<ProtectedRoute
+									allowedRoles={[
+										import.meta.env.VITE_ROLE_EDITOR,
+										import.meta.env.VITE_ROLE_ADMIN,
+									]}>
+									<EditorLayout />
+								</ProtectedRoute>
+							}>
+							<Route index element={<CreatePostPage />} />
+
+							<Route path=":id" element={<EditPostPage />} />
 						</Route>
 					</Route>
 				</Route>

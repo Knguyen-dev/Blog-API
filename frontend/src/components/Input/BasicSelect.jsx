@@ -31,6 +31,7 @@ export default function BasicSelect({
 					</MenuItem>
 
 					{options.map((option, index) => (
+						// On click, the value is the entire option object.
 						<MenuItem key={index} value={option.value}>
 							{option.label}
 						</MenuItem>
@@ -41,13 +42,13 @@ export default function BasicSelect({
 	);
 }
 BasicSelect.propTypes = {
-	value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+	value: PropTypes.string,
 	setValue: PropTypes.func,
 	label: PropTypes.string,
 	options: PropTypes.arrayOf(
 		PropTypes.shape({
 			label: PropTypes.string,
-			value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+			value: PropTypes.string,
 		})
 	),
 	placeholder: PropTypes.string,

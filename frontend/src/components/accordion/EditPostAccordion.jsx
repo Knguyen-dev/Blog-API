@@ -5,89 +5,118 @@
 */
 
 import { useState } from "react";
-
-import PostForm from "../forms/Post/PostForm";
 import FilteredAutoSelect from "../autocomplete/common/FilteredAutoSelect";
-import PostImageForm from "../forms/Post/PostImageForm";
-import SubmitPostArea from "../forms/Post/SubmitPostArea";
+import BasicAuto from "../autocomplete/BasicAuto";
+import submissionTypes from "../../constants/posts/submissionOptions";
 import BasicAccordion from "./common/BasicAccordion";
 import postActions from "../../constants/posts/postActions";
-import { Box } from "@mui/material";
+import PostEditor from "../Input/PostEditor";
+import BasicSelect from "../Input/BasicSelect";
+import { Box, TextField, Button } from "@mui/material";
 import PropTypes from "prop-types";
 
 EditPostAccordion.propTypes = {
-	title: PropTypes.string,
-	setTitle: PropTypes.func,
-	category: PropTypes.string,
-	tags: PropTypes.arrayOf(
+	state: PropTypes.shape({
+		title: PropTypes.string,
+		category: PropTypes.shape({
+			label: PropTypes.string,
+			value: PropTypes.string,
+		}),
+		body: PropTypes.string,
+
+		tags: PropTypes.arrayOf(
+			PropTypes.shape({
+				label: PropTypes.string,
+				value: PropTypes.string,
+			})
+		),
+		imgSrc: PropTypes.string,
+		imgCredits: PropTypes.string,
+		status: PropTypes.string,
+	}),
+	dispatch: PropTypes.func,
+	categoryList: PropTypes.arrayOf(
 		PropTypes.shape({
 			label: PropTypes.string,
 			value: PropTypes.string,
 		})
 	),
-	imgSrc: PropTypes.string,
-	imgCredits: PropTypes.string,
-	body: PropTypes.string,
-	status: PropTypes.string,
-	dispatch: PropTypes.func,
+	tagList: PropTypes.arrayOf(
+		PropTypes.shape({
+			label: PropTypes.string,
+			value: PropTypes.string,
+		})
+	),
+	handleSubmitPost: PropTypes.func,
+	error: PropTypes.string,
+	isLoading: PropTypes.bool,
+	submitDisabled: PropTypes.bool,
 };
 
-// Fake tags: Probably here you'd call the effect to get the available tags
-const tagOptions = [
-	{
-		label: "Trending",
-		value: "Trending",
-	},
-	{
-		label: "Opinion",
-		value: "Opinion",
-	},
-	{
-		label: "Analysis",
-		value: "Analysis",
-	},
-	{
-		label: "Streaming",
-		value: "Streaming",
-	},
-	{
-		label: "Popular Culture",
-		value: "Popular Culture",
-	},
-	{
-		label: "Controversy",
-		value: "Controversy",
-	},
-	{
-		label: "Politics",
-		value: "Politics",
-	},
-];
-
 export default function EditPostAccordion({
-	title,
-	category,
-	body,
-	tags,
-	imgSrc,
-	imgCredits,
-	status,
+	state,
 	dispatch,
+	categoryList,
+	tagList,
+	handleSubmitPost, // Depending on whether it's the edit or create page, the function could be different
+	error,
+	isLoading,
+	submitDisabled,
 }) {
 	// State that indicates the current accordion that's expanded.
 	const [activeIndex, setActiveIndex] = useState(0);
+
+	/*
+  + Handles clicks on the accordion given the index position
+    of said accordion
+  - If clicked in an already expanded section, close the section. To
+    close the section and leave all other sections closed, set index to 
+    a value out of range, such as -1. Then stop function execution early.
+  - Else, they are clicking on a section that is different from the opened 
+    one, so just set the active index to the new index.
+  */
+	const handleChange = (index) => {
+		if (index === activeIndex) {
+			setActiveIndex(-1);
+			return;
+		}
+		setActiveIndex(index);
+	};
 
 	// Create sections for the accordion that we'll use to render
 	const sections = [
 		{
 			title: "Title, Category, & Body",
 			content: (
-				<PostForm
-					title={title}
-					category={category}
-					body={body}
-					dispatch={dispatch}
-				/>
+				<Box className="tw-flex tw-flex-col tw-gap-y-2">
+					{/* Input fields for the form */}
+					<TextField
+						label="Title"
+						id="title"
+						name="title"
+						value={state.title}
+						onChange={(e) =>
+							dispatch({ type: postActions.SET_TITLE, payload: e.target.value })
+						}
+					/>
+
+					<BasicAuto
+						options={categoryList}
+						onChange={(e, newCategory) =>
+							dispatch({ type: postActions.SET_CATEGORY, payload: newCategory })
+						}
+						value={state.category}
+						label="Categories"
+					/>
+
+					<PostEditor
+						value={state.body}
+						// 'payload' will be an object with values for {body, wordCount}
+						setValue={(payload) =>
+							dispatch({ type: postActions.SET_BODY, payload })
+						}
+					/>
+				</Box>
 			),
 		},
 		{
@@ -97,9 +126,9 @@ export default function EditPostAccordion({
 					id="tags"
 					label="Post Tags"
 					placeholder="Enter tags for your post!"
-					options={tagOptions}
+					selectedValues={state.tags}
+					options={tagList}
 					isOption
-					selectedValues={tags}
 					setSelectedValues={(newValues) =>
 						dispatch({ type: postActions.SET_TAGS, payload: newValues })
 					}
@@ -109,35 +138,59 @@ export default function EditPostAccordion({
 		{
 			title: "Display Image",
 			content: (
-				<PostImageForm
-					imgSrc={imgSrc}
-					imgCredits={imgCredits}
-					dispatch={dispatch}
-				/>
+				<Box className="tw-flex tw-flex-col tw-gap-y-4">
+					<TextField
+						label="Post Image"
+						helperText="The src link of the image will be the thunmbnail of the post"
+						value={state.imgSrc}
+						onChange={(e) =>
+							dispatch({ type: postActions.SET_IMAGE, payload: e.target.value })
+						}
+					/>
+
+					<TextField
+						label="Image Credits"
+						helperText="Credits to the photographer of the image and platform it came from"
+						value={state.imgCredits}
+						onChange={(e) =>
+							dispatch({
+								type: postActions.SET_IMAGE_CREDITS,
+								payload: e.target.value,
+							})
+						}
+					/>
+				</Box>
 			),
 		},
 		{
 			title: "Submission",
-			content: <SubmitPostArea status={status} dispatch={dispatch} />,
+			content: (
+				<Box className="tw-flex tw-flex-col tw-gap-y-2">
+					<BasicSelect
+						label="Status"
+						placeholder="Enter the submission type"
+						options={submissionTypes}
+						value={state.status || ""}
+						setValue={(status) =>
+							dispatch({ type: postActions.SET_STATUS, payload: status })
+						}
+					/>
+					{error && <div className="error">{error}</div>}
+					{/* Action Buttons for hte form */}
+					<Box
+						className="tw-flex tw-justify-end tw-gap-x-4"
+						onClick={handleSubmitPost}>
+						<Button
+							variant="contained"
+							color="primary"
+							disabled={isLoading || submitDisabled}>
+							Submit
+						</Button>
+					</Box>
+				</Box>
+			),
 		},
 	];
-	/*
-  + Handles clicks on the accordion given the index position
-    of said accordion
-  - If clicked in an already expanded section, close the section. To
-    close the section and leave all other sections closed, set index to 
-    a value out of range, such as -1. Then stop function execution early.
-  - Else, they are clicking on a section that is different from the opened 
-    one, so just set the active index to the new index.
-
-  */
-	const handleChange = (index) => {
-		if (index === activeIndex) {
-			setActiveIndex(-1);
-			return;
-		}
-		setActiveIndex(index);
-	};
 
 	return (
 		<Box>

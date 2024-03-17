@@ -1,25 +1,25 @@
 const getErrorMap = require("../middleware/getErrorMap");
 const asyncHandler = require("express-async-handler");
-const tagValidators = require("../middleware/tagValidators");
-const Tag = require("../models/Tag");
+const tagValidators = require("../middleware/validators/tagValidators");
+const handleValidationErrors = require("../middleware/handleValidationErrors")
+
+const {Tag, tagEvents} = require("../models/Tag")
+
 const Post = require("../models/Post");
 
 // createTag: Creates a tag
 const createTag = [
   tagValidators.title,
+  handleValidationErrors,
 
   asyncHandler(async(req, res) => {
-    const errors = getErrorMap(req);
-
-    // If there were syntax errors, return the error object
-    if (Object.keys(errors).length !== 0) {
-      return res.status(400).json(errors);
-    }
 
     // Check if a tag with that title already exists.
     const existingTag = await Tag.findOne({ title: { $regex: new RegExp('^' + req.body.title + '$', 'i') } });
     if (existingTag) {
-      return res.status(400).json({message: `A tag already exists with that title!`});
+      const err = new Error("A tag already exists with that title!")
+      err.statusCode = 400;
+      throw err;
     }
 
     // Title is unique, so create the tag in the database.
@@ -41,26 +41,53 @@ const deleteTag = asyncHandler(async(req, res) => {
   res.status(200).json(result);
 })
 
+
+
+/**
+ * Event listener handles removing the deleted tag ID from the 'tags'
+ * array for the posts in the database
+ * 
+ * @param (string) deletedTagID - ID of the tag being deleted. Passed in when the pre('findOneAndDelete')
+ *                                hook is called.
+*/
+
+tagEvents.on("tagDeleted", async(deletedTagID) => {
+  try {
+    await Post.updateMany(
+      {
+        // Get all posts with 'deletedTagID' in their tags array
+        tags: deletedTagID, 
+      },
+      {
+        $pull: {
+          // Remove the deletedTagID from their tags array.
+          tags: deletedTagID,
+        }
+      }
+    )
+  } catch (err) {
+    console.error("Error removing deleted tag ID from posts: ", err);
+  }
+})
+/*
+- NOTE: Of course for the event listener to work, ensure that 'tagController'
+  is imported somewhere, so that the code in the file is executed. Since 
+  we're in a controller, and we export it for our tagRouter, and that router
+  is used in our express app, this is fine.  
+*/
+
 // updateTag: Updates a tag 
 const updateTag = [
   tagValidators.title,
+  handleValidationErrors,
   asyncHandler(async(req, res) => {
-    const errors = getErrorMap(req);
-    
-    // Check for syntax errors 
-    if (Object.keys(errors).length !== 0) {
-      return res.status(400).json(errors);
-    }
-
     // Check if tag ID is valid and the tag exists in the database
     const tag = await Tag.findTagByID(req.params.id);
-
 
     /*
     - Check if a tag with that title already exists. 
     
-    
-    -However don't include the tag ID of the tag we're currently updating.
+    - However don't include the tag ID of the tag we're currently updating.
       This allows us to avoid accidentally tagging the current tag 
       for having a duplicate title. This is useful when simply
       updating the casing of a tag. For example updating a tag
@@ -68,7 +95,9 @@ const updateTag = [
     */
     const existingTag = await Tag.findOne({ _id: {$ne: req.params.id}, title: { $regex: new RegExp('^' + req.body.title + '$', 'i') } });
     if (existingTag) {
-      return res.status(400).json({message: `A tag already exists with that title!`});
+      const err = new Error("A tag already exists with that title!");
+      err.statusCode = 400;
+      throw err;
     }
 
     // Appy changes to the tag, save to database, and send updated tag back as json.
@@ -97,6 +126,9 @@ const getTagDetails = asyncHandler(async(req, res) => {
   // Return the tag, and posts associated with the tag
   res.status(200).json({tag, posts});
 })
+
+
+
 
 module.exports = {
   createTag,

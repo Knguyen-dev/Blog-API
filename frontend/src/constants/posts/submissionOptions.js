@@ -1,15 +1,15 @@
 const submissionTypes = [
 	{
 		label: "Draft",
-		value: "Draft",
+		value: "draft",
 	},
 	{
 		label: "Published",
-		value: "Published",
+		value: "published",
 	},
 	{
 		label: "Private",
-		value: "Private",
+		value: "private",
 	},
 ];
 export default submissionTypes;

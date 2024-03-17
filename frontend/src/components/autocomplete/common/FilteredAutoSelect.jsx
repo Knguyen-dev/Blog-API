@@ -17,17 +17,18 @@ FilteredAutoSelect.propTypes = {
 	id: PropTypes.string,
 	label: PropTypes.string,
 	placeholder: PropTypes.string,
+
 	options: PropTypes.arrayOf(
 		PropTypes.shape({
-			label: PropTypes.string.isRequired,
-			value: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-				.isRequired,
+			label: PropTypes.string,
+			value: PropTypes.string,
 		})
-	).isRequired,
+	),
+
 	selectedValues: PropTypes.arrayOf(
 		PropTypes.shape({
 			label: PropTypes.string,
-			value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+			value: PropTypes.string,
 		})
 	),
 	setSelectedValues: PropTypes.func,

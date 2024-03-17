@@ -1,33 +1,27 @@
 const getErrorMap = require("../middleware/getErrorMap");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
-
-
 const Category = require("../models/Category");
 const Post = require("../models/Post");
-const categoryValidators = require("../middleware/categoryValidators");
-
+const categoryValidators = require("../middleware/validators/categoryValidators");
+const handledValidationErrors = require("../middleware/handleValidationErrors");
 
 
 const createCategory = [
   categoryValidators.title,
   categoryValidators.description,
+  handledValidationErrors,
   asyncHandler(async(req,res) => {
-    const errors = getErrorMap(req);
-
-    // If there were syntax errors, return the error object
-    if (Object.keys(errors).length !== 0) {
-      return res.status(400).json(errors);
-    }
 
     /*
     - Check if a category already exists with that name. Use regex to consider casing so 
       a category "PolItICs" and "politics" are duplicates.
     */
-    
     const existingCategory = await Category.findOne({ title: { $regex: new RegExp('^' + req.body.title + '$', 'i') } });
     if (existingCategory) {
-      return res.status(400).json({message: `A category already exists with that title!`});
+      const err = new Error("A category already exists with that title!");
+      err.statusCode = 400;
+      throw err; // Throw error to middleware function
     }
 
     /*
@@ -67,14 +61,8 @@ const deleteCategory = asyncHandler(async(req, res) => {
 const updateCategory = [
   categoryValidators.title,
   categoryValidators.description,
+  handledValidationErrors,
   asyncHandler(async(req,res) => {
-    const errors = getErrorMap(req);
-
-    // If there were syntax errors, return the error object
-    if (Object.keys(errors).length !== 0) {
-      return res.status(400).json(errors);
-    }
-
     // At this point, attempt to find Category based on the ID given
     const category = await Category.findCategoryByID(req.params.id);
 
@@ -87,16 +75,16 @@ const updateCategory = [
     */
     const existingCategory = await Category.findOne({_id: {$ne: req.params.id}, title: { $regex: new RegExp('^' + req.body.title + '$', 'i') } });
     if (existingCategory) {
-      return res.status(400).json({message: `A category already exists with that title!`});
+      const err = new Error("A category already exists with that title!");
+      err.statusCode = 400;
+      throw err;
     }
-
 
     /*
     - Good title, description, and ID at this point:
     1. Apply changes to the title, if any
     2. Apply changes to description, if any.
     3. Apply changes to the slug, if any.
-
     - NOTE: We know the title either changed to something unique, or stayed 
       the same, so we can safely create a valid/unique slug for the updated 
       category.
@@ -109,7 +97,6 @@ const updateCategory = [
       strict: true,
       trim: true , 
     })
-
 
     await category.save()
 

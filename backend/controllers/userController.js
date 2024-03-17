@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
-const userValidators = require("../middleware/userValidators");
+const userValidators = require("../middleware/validators/userValidators");
 const fileUpload = require("../middleware/fileUpload");
 const path = require("path");
 const bcrypt = require("bcrypt");
@@ -10,7 +10,7 @@ const getErrorMap = require("../middleware/getErrorMap");
 
 
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find().select("-password -__v");
+  const users = await User.find();
   res.status(200).json(users);
 })
 

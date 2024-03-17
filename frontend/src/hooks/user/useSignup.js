@@ -69,9 +69,9 @@ export default function useSignup() {
 					data = err.response.data;
 				} else if (err.response.status === 429 && !submitDisabled) {
 					setSubmitDisabled(true);
-					setError(err.response.data.message);
+					setError(err.response.data.error.message);
 				} else {
-					setError(err.response.data?.message || "Server error occurred!");
+					setError(err.response.data?.error.message);
 				}
 			} else if (err.request) {
 				setError("Network error!");
