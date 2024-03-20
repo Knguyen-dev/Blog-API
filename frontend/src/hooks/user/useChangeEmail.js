@@ -3,6 +3,7 @@ import useAuthContext from "./useAuthContext";
 import useAxiosPrivate from "../useAxiosPrivate";
 import authActions from "../../constants/authActions";
 import useDisableSubmit from "./useSubmitDisabled";
+import getErrorData from "../../utilities/getErrorData";
 
 export default function useChangeEmail() {
 	const [error, setError] = useState(null);
@@ -31,7 +32,7 @@ export default function useChangeEmail() {
 				if (err.response.status === 429 && !submitDisabled) {
 					setSubmitDisabled(true);
 				}
-				setError(err.response?.data?.error.message || "Server error occurred!");
+				setError(getErrorData(err));
 			} else if (err.request) {
 				setError("Network error!");
 			} else {

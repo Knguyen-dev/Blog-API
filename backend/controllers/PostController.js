@@ -85,20 +85,7 @@ const updatePost = [
       throw err;
     } 
     
-    /*
-    - At this point the user is allowed to update the post. 
-      At this point you'd repeat the same database checks you did 
-      in 'createNewPost':
-
-    1. Check if there's a post with that title or slug
-    2. Check if category exists
-    3. Check if the tags provided exist in the database
-    4. Create/save the post in the database
-    */
-   console.log("Category: ", req.body.category);
-
-
-
+    // At this point update the post
     await post.updatePost(
       req.body.title,
       req.body.body,
@@ -111,8 +98,7 @@ const updatePost = [
     )
 
     // Return updated post as json
-    // res.status(200).json(post);
-    res.status(200).json({message: "Pretend submission"});
+    res.status(200).json(post);
   })
 ]
 

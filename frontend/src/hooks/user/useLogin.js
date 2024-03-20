@@ -2,6 +2,7 @@ import { useState } from "react";
 import useAuthContext from "./useAuthContext";
 import { axiosPrivate } from "../../api/axios";
 import authActions from "../../constants/authActions";
+import getErrorData from "../../utilities/getErrorData";
 import useSubmitDisabled from "./useSubmitDisabled";
 
 const endpoint = "/auth/login";
@@ -50,9 +51,7 @@ export default function useLogin() {
 				if (err.response.status === 429 && !submitDisabled) {
 					setSubmitDisabled(true);
 				}
-				setError(
-					err.response?.data?.error?.message || "Server error occurred!"
-				);
+				setError(getErrorData(err, false));
 			} else if (err.request) {
 				setError("Network error!");
 			} else {

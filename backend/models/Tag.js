@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 const queryUtils = require("../middleware/queryUtils");
-
-
 const EventEmitter = require("events");
 
 const tagSchema = new mongoose.Schema({
@@ -23,6 +21,8 @@ tagSchema.methods.toJSON = function() {
   delete tabObj.__v;
   return tabObj;
 }
+
+
 
 /*
 + Handles cleaning up post's collection when deleting tags
@@ -91,8 +91,6 @@ tagSchema.pre("findOneAndDelete", function (next) {
     be 'req.params.id'. This is the 'id' of the tag we want deleted.
   */
   tagEvents.emit("tagDeleted", this._conditions._id);
-
-  console.log("Event being emitted");
 
   next();
 })

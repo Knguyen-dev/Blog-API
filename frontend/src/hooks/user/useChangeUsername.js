@@ -3,6 +3,7 @@ import useAuthContext from "./useAuthContext";
 import authActions from "../../constants/authActions";
 import useAxiosPrivate from "../useAxiosPrivate";
 import useSubmitDisabled from "./useSubmitDisabled";
+import getErrorData from "../../utilities/getErrorData";
 
 export default function useChangeUsername() {
 	const [error, setError] = useState(null);
@@ -32,8 +33,9 @@ export default function useChangeUsername() {
 				if (err.response.status === 429 && !submitDisabled) {
 					setSubmitDisabled(true);
 				}
-				// If server sent the error, we expect the error message to be in this structure
-				setError(err.response?.data?.error.message || "Server error occurred!");
+
+				// Get the error message sent by the server
+				setError(getErrorData(err));
 			} else if (err.request) {
 				setError("Network error!");
 			} else {

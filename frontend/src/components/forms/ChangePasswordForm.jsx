@@ -22,7 +22,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function ChangePasswordForm() {
-	const { control, handleSubmit, setError } = useForm({
+	const { control, handleSubmit } = useForm({
 		resolver: yupResolver(validationSchema),
 		defaultValues: {
 			oldPassword: "",
@@ -37,18 +37,11 @@ export default function ChangePasswordForm() {
 		useChangePassword();
 
 	const onSubmit = async (formData) => {
-		const { success, data } = await changePassword(formData);
+		const success = await changePassword(formData);
 		if (success) {
 			showToast({
 				message: "Password Change Successful! Please log back in.",
 				severity: "success",
-			});
-		} else if (data) {
-			Object.keys(data).forEach((fieldName) => {
-				setError(fieldName, {
-					type: "server",
-					message: data[fieldName],
-				});
 			});
 		}
 	};

@@ -5,6 +5,8 @@ const Category = require("../models/Category");
 const Post = require("../models/Post");
 const categoryValidators = require("../middleware/validators/categoryValidators");
 const handledValidationErrors = require("../middleware/handleValidationErrors");
+const ValidationError = require("../errors/ValidationError");
+
 
 
 const createCategory = [
@@ -19,8 +21,7 @@ const createCategory = [
     */
     const existingCategory = await Category.findOne({ title: { $regex: new RegExp('^' + req.body.title + '$', 'i') } });
     if (existingCategory) {
-      const err = new Error("A category already exists with that title!");
-      err.statusCode = 400;
+      const err = new ValidationError("title", "A category already exists with that title!", 400);
       throw err; // Throw error to middleware function
     }
 
@@ -75,8 +76,7 @@ const updateCategory = [
     */
     const existingCategory = await Category.findOne({_id: {$ne: req.params.id}, title: { $regex: new RegExp('^' + req.body.title + '$', 'i') } });
     if (existingCategory) {
-      const err = new Error("A category already exists with that title!");
-      err.statusCode = 400;
+      const err = new ValidationError("title", "A category already exists with that title!", 400);
       throw err;
     }
 

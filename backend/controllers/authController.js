@@ -2,8 +2,8 @@ const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const userValidators = require("../middleware/validators/userValidators");
-const getErrorMap = require("../middleware/getErrorMap");
-
+const {body} = require("express-validator");
+const handleValidationErrors = require("../middleware/handleValidationErrors");
 
 /*
 + Functions for creating an access and refresh token:
@@ -81,40 +81,18 @@ const signupUser = [
   userValidators.password,
   userValidators.confirmPassword,
   userValidators.fullName,
-	
+  handleValidationErrors,
 	asyncHandler(async (req, res, next) => {
-		// Sanitize and validate data
-		const errors = getErrorMap(req);
-
-    // If input fails basic syntax rules, send back an object of errors.
-		if (Object.keys(errors).length != 0) {
-			return res.status(400).json(errors);
-		}
-    
 		// At this point, data is valid, so save user into the database and return successful response
 		const { email, username, password, fullName } = req.body;
-
-    try {
-      // Everything should be valid, so proceed with user signup
-      const user = await User.signup(
-        email,
-        username,
-        password,
-        fullName
-      );
-      
-      // Respond indicating it was a success!
-      res.status(200).json(user);
-    } catch (err) {
-      // If we get an error with a status code 400, we know it's an issue with the username
-      if (err.statusCode === 400) {
-        errors.username = err.message;
-        res.status(400).json(errors);
-      } else {
-        // Else throw an error so that it's caught by express-async-handler
-        throw err;
-      }
-    }
+    // Everything should be valid, so proceed with user signup
+    const user = await User.signup(
+      email,
+      username,
+      password,
+      fullName
+    );
+    res.status(200).json(user);
 	}),
 ];
 
@@ -145,15 +123,15 @@ const signupUser = [
 
 
 */
-const loginUser = asyncHandler(async (req, res) => {
-		const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({message: "All fields must be filled!" })
-    }
+const loginUser = [
+  body("username").isLength({min: 1}).withMessage("Please enter your username!"),
+  body("password").isLength({min:1}).withMessage("Please enter your password!"),
+  handleValidationErrors,
+  asyncHandler(async (req, res) => {
 
 		// Try to login the user, if fails, an error is thrown, which will send back the error
     // message in json to our client
-		const user = await User.login(username, password);
+		const user = await User.login(req.body.username, req.body.password);
 
     /*
     - At this point the user has been successfully logged in so create
@@ -165,6 +143,7 @@ const loginUser = asyncHandler(async (req, res) => {
     */
 		const accessToken = createAccessToken(user);
 		const refreshToken = createRefreshToken(user);
+
 
     /*
     + Create a secure cookie on our response for our refresh token: 
@@ -202,7 +181,7 @@ const loginUser = asyncHandler(async (req, res) => {
     // Return the access token and user back
     res.status(200).json({user, accessToken})
 	}
-)
+)]
 
 
 

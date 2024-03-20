@@ -6,7 +6,8 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const { body } = require("express-validator");
 const getErrorMap = require("../middleware/getErrorMap");
-
+const handleValidationErrors = require("../middleware/handleValidationErrors");
+const ValidationError = require("../errors/ValidationError");
 
 
 const getUsers = asyncHandler(async (req, res) => {
@@ -46,20 +47,25 @@ const getUserById = asyncHandler(async (req, res) => {
 const deleteUser = [
   body("password").isLength({min: 1}).withMessage("Please enter your current password!"),
   userValidators.confirmPassword,
-  asyncHandler(async (req, res) => {
-    const errors = getErrorMap(req);  
-    if (Object.keys(errors).length !== 0) {
-      return res.status(400).json(errors);
-    }
+  handleValidationErrors,
 
+  asyncHandler(async (req, res) => {
     // Attempt to find user by ID
     const user = await User.findUserByID(req.params.id);
 
-    // Verify that the entered in password hashes to one in database
+
+    
+    /*
+    - Check if password matches
+    - NOTE: We want to an error 'details' back to the client here 
+      so use 'validationError
+    */
     const isMatch = await bcrypt.compare(req.body.password, user.password);
     if (!isMatch) {
-      errors.password = "Current password is incorrect!";
-      return res.status(400).json(errors);
+
+      
+      const err = new ValidationError("password", "Password is incorrect!", 400);
+      throw err;
     }
 
     /*
@@ -73,10 +79,11 @@ const deleteUser = [
       await fileUpload.deleteFromDisk(avatarPath);
     }
 
+    // Delete user 
     await User.findByIdAndDelete(req.params.id);
 
-    // Indicate that user was successfully deleted
-    res.status(200).json({message: "Account successfully deleted!"});
+    // Return the user that was deleted
+    res.status(200).json(user);
   })
 ]
 
@@ -106,11 +113,8 @@ const updateAvatar = [
       means we are just deleting the old one.
     */
 
-    if (user.avatar) {
-      
+    if (user.avatar) {      
       const oldAvatarPath = path.join(fileUpload.imageDirectory, user.avatar);
-
-      // const oldAvatarPath = `/${fileUpload.imageDirectory}/${user.avatar}`;
       try {
         await fileUpload.deleteFromDisk(oldAvatarPath);
       } catch (err) {
@@ -163,54 +167,29 @@ const deleteAvatar = asyncHandler(async(req, res) => {
 
 const updateUsername = [
   userValidators.username,
+  handleValidationErrors,
   asyncHandler(async(req, res) => {
-    const errors = getErrorMap(req);
     
-    // If it failed basic syntax checks, send back error message in json
-    if (Object.keys(errors).length != 0) {
-      return res.status(400).json({message: errors.username});
-		}
-
     // Username syntax is valid, try to find user with target ID
     const user = await User.findUserByID(req.params.id);
     
-    // Try/catch to catch our custom errors when updating the username
-    try {
-      // Try to update username and return updated user as json
-      await user.updateUsername(req.body.username);
-      return res.status(200).json(user);
-    } catch (err) {
+    // Try to update username and return updated user as json
+    await user.updateUsername(req.body.username);
 
-      // If status 400, then we caught an username related error when updating the username.
-      if (err.statusCode === 400) {
-        return res.status(400).json({message: err.message});
-      } 
 
-      // Else, it's not a username related error so throw it.
-      throw err;
-    }
+    res.status(200).json(user);
   })
 ]
 
 const updateEmail = [
   userValidators.email,
+  handleValidationErrors,
   asyncHandler(async (req, res) => {
-    const errors = getErrorMap(req);
-
-    // If email fails to pass basic syntax rules, send back error message in json
-    if (Object.keys(errors).length != 0) {
-      return res.status(400).json({message: errors.email});
-		}
    
     // Attempt to find user
     const user = await User.findUserByID(req.params.id); 
 
-    // If the emails of the found user is the same as the one sent in the request, return an error response
-    if (user.email === req.body.email) {
-      return res.status(400).json({message: `Updated email must be different from the current account's email!`});
-    }
-
-    // At this point, it's a new email, so apply and save changes to the user
+    // User has been found so just update the email
     user.email = req.body.email;
     await user.save();
 
@@ -221,23 +200,14 @@ const updateEmail = [
 
 const updateFullName = [
   userValidators.fullName,
-  asyncHandler(async(req, res) => {
-    const errors = getErrorMap(req);
+  handleValidationErrors,
 
-    // If fullName fails to pass basic syntax rules, send back error message in json
-    if (Object.keys(errors).length != 0) {
-      return res.status(400).json({message: errors.fullName});
-		}
+  asyncHandler(async(req, res) => {
 
     // Find user
     const user = await User.findUserByID(req.params.id);
 
-    // If the emails of the found user is the same as the one sent in the request, return an error response
-    if (user.fullName === req.body.fullName) {
-      return res.status(400).json({message: `Updated name must be different from the current account's name!`});
-    }
-
-    // Apply changes and save user since it's a new name
+    // Apply changes since the user exists!
     user.fullName = req.body.fullName;
     await user.save();
 
@@ -249,27 +219,23 @@ const updateFullName = [
 const changePassword = [
   /*
   - Validate old password, new password, and confirmed password 
-    for basic syntax.
+    for basic syntax. 'oldPassword' represents the user's current password, whilst
+    'password' is the new passwrod they want to change to.
   */
   body("oldPassword").isLength({min: 1}).withMessage("Please enter in your old password!"),
-  userValidators.password,
+  userValidators.password, // new password must be validated using our standards.
   userValidators.confirmPassword,
-
+  handleValidationErrors,
   asyncHandler(async (req, res) => {
-    const errors = getErrorMap(req);
 
-    // If password fields fail basic syntax checks, return error object
-    if (Object.keys(errors).length != 0) {
-      return res.status(400).json(errors);
-		}
-
+    // Attempt to find user via their ID
     const user = await User.findUserByID(req.params.id);
 
     // Check if the old password they entered matches the password on the account
     const match = await bcrypt.compare(req.body.oldPassword, user.password);
     if (!match) {
-      errors.oldPassword = "Old password you entered was incorrect!"
-      return res.status(400).json(errors);
+      const err = ValidationError("oldPassword", "Old password you entered was incorrect!", 400)
+      throw err;
     }
 
     // Everything passes so hash and save the user's new password

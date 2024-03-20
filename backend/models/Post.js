@@ -3,9 +3,7 @@ const slugify = require("slugify");
 const queryUtils = require("../middleware/queryUtils");
 const Category = require('../models/Category');
 const {Tag} = require("../models/Tag");
-
-
-
+const ValidationError = require("../errors/ValidationError");
 const post_status_map = require("../config/post_status_map");
 
 const postSchema = new mongoose.Schema(
@@ -86,14 +84,6 @@ const postSchema = new mongoose.Schema(
       required: true,
     }
 
-
-    // An array of comments that are associated with the post
-    // comments: [
-    //   {
-    //     type: mongoose.SchemaTypes.ObjectId,
-    //     ref: "Comment"
-    //   }
-    // ],
 	},
 	{
 		toJSON: { virtuals: true },
@@ -124,25 +114,52 @@ postSchema.statics.checkTitleAndSlug = async function(title, slug) {
     } else {
       errMessage = `Slug generated for post is already taken '${existingPost.slug}'. Please make title more different!`;
     }
-    const err = new Error(errMessage);  
-    err.statusCode = 400;
+
+    const err = new ValidationError("title", errMessage, 400);
     throw err;
   }
 
 }
 
-// Check if Category exists, if it doesn't then send back an error
+
+/*
+- Check if Category exists, if it doesn't then send back an error
+
+
+- NOTE: 
+1. Here doing 404 is kind of deceptive. While it is accurate it doesn't 
+  quite convey the idea that the 'category' passed in by the request or user 
+  was invalid and didn't exist. So here we'll option for a 400 and use 
+  a ValidationError so that we can have the same error format with handleValidationErrors
+  middleware. 
+*/
 postSchema.statics.checkCategory = async function(categoryID) {
-  const category = await Category.findCategoryByID(categoryID);
-  if (!category) {
-    const err = new Error(`Category with ID '${categoryID}' not found!`)
-    err.statusCode = 404;
+
+  const err = ValidationError("category", "", 400);
+
+  // Check if valid mongoose object id 
+  if (!mongoose.Types.ObjectId.isValid(categoryID)) {
+    err.message = "Invalid category ID!";
     throw err;
   }
 
+  // Get category and check whether or not it was found
+  const category = await Category.findById(categoryID);
+  if (!category) {
+    err.message = `Category with ID '${categoryID}' not found!`
+    throw err;
+  }
 }
 
-// Checks if IDs in tagIDs are existing IDs in the tags collection
+/*
+- Checks if IDs in tagIDs are existing IDs in the tags collection
+
+- NOTE: Similar with checkCategory, 404 is accurate but doesn't convey the proper
+  idea that the 'tags' that were in the request body were invalid. Then we raise 
+  an error and indicate the 'tags' property, in the request body was the 'field'
+  that had an issue
+*/
+
 postSchema.statics.checkTags = async function(tagIDs) {
   /*
   + Check for any invalid tags.
@@ -155,8 +172,7 @@ postSchema.statics.checkTags = async function(tagIDs) {
   const existingTagIDs = existingTags.map(tagObj => tagObj._id.toString());
   tagIDs.forEach(tagID => {
     if (!existingTagIDs.includes(tagID)) {
-      const err = new Error(`Tag with ID ${tagID} doesn't exist!`);
-      err.statusCode = 404;
+      const err = ValidationError("tags", `Tag with ID ${tagID} doesn't exist!`, 400);
       throw err; 
     }
   });
@@ -222,7 +238,6 @@ postSchema.methods.updatePost = async function(title, body, categoryID, tagIDs, 
     trim: true, 
   });
   if (this.title.toLowerCase() !== title.toLowerCase()) {
-    console.log("TItle changed, so doing database check!");
     await this.constructor.checkTitleAndSlug(title, slug);
   }
 

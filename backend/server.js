@@ -11,6 +11,8 @@ const employeeRouter = require("./routes/employeeRouter");
 const categoryRouter = require("./routes/categoryRouter");
 const tagRouter = require("./routes/tagRouter");
 const postRouter = require("./routes/postRouter");
+const ValidationError = require("./errors/ValidationError");
+
 
 const connectDB = require("./config/database");
 const corsOption = require("./config/corsOption");
@@ -58,27 +60,31 @@ app.use(function (req, res, next) {
   we're replacing the error message is becasue with a programming or database 
   error, it's likely going to be not understandable for the average user.
 
-
-- NOTE: We want this to catch database validation errors and unexpected errors.
 */
 app.use(function (err, req, res, next) {
 
-  console.log("Error Caught: ", err);
+  console.log("Error Caught: ", err.message);
 
+
+  // If no status code, it's an unexpected error, so mark its status code and give it a general error message
   if (!err.statusCode) {
     err.statusCode = 500
     err.message = "Server Error!"
   }
 
-  const errorObj = {
-    error: {
-      status: err.statusCode,
-      message: err.message
-    }
-  }
 
-	// Return the error as json
-	res.status(err.statusCode).json(errorObj);
+  // If it's a validation error, we can return it as JSON directly
+  if (err instanceof ValidationError) {
+    res.status(err.statuscode).json(err);
+  } else {
+    // Else, we manually create our standard error format.
+    res.status(err.statusCode).json({
+      error: {
+          status: err.statusCode,
+          message: err.message
+        }
+    });
+  }
 });
 
 

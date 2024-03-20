@@ -3,6 +3,7 @@ import useAuthContext from "./useAuthContext";
 import useAxiosPrivate from "../useAxiosPrivate";
 import useLogout from "./useLogout";
 import useSubmitDisabled from "./useSubmitDisabled";
+import getErrorData from "../../utilities/getErrorData";
 
 export default function useChangePassword() {
 	const [error, setError] = useState(null);
@@ -23,10 +24,6 @@ export default function useChangePassword() {
       successful or not. I'm planning to use this later so that we can trigger 
       a snackbar.
 
-    - data: Variable that will contain the error object returned by server-side 
-      form validation. If it's null, we can assume that no errors happened
-      with the server-side form validation.
-
     - NOTE: Since we have front-end validation with yup. If there is 
       any server-side validation errors, then it will be because of 
       database checks that we performed. In this case, it will be 
@@ -34,19 +31,11 @@ export default function useChangePassword() {
       field.
     */
 		let success = false;
-		let data = null;
 
 		try {
 			// Make a patch request to change the password of the user
 			await axiosPrivate.patch(endpoint, formData);
 
-			/*
-      - Password change was successful at least, so mark this as true
-			 So even if there's an error when logging out, we want to notify the user
-			 that they have a new password. We should have gotten a success message from
-       the server in the general form {message: some_success_message}. So store 
-       this so that we can display this on our global snackbar. 
-      */
 			success = true;
 
 			// First request was successful, run function to log out the user.
@@ -56,32 +45,18 @@ export default function useChangePassword() {
 		} catch (err) {
 			/*
       - Conditionals:
-      1. If err.response: A server error happened. If it's status code 
-        400, then the error was with the first request as the input failed 
-        server side validation. We should be getting back an error object defining errors for each
-        field. We want to return this as 'data' so we can do setError in our change 
-        password form. Else, regardless of status code we should get an error object
-        in form {message: some_error_message}. For this type of error, we want to 
-        set the error state on the hook, which will later allow us to display these 
-        types of errors differently on the form.
+      1. If server error.
       2. Else if (err.request): A network error, so set the error state of the hook
       3. Else: Something went wrong on the client side when setting up the request.
         This is usually due to a programming error or something similar.
       */
 			if (err.response) {
-				if (err.response.status === 400) {
-					data = err.response.data;
-				} else if (err.response.status === 429 && !submitDisabled) {
+				if (err.response.status === 429 && !submitDisabled) {
 					// Rate limiting error, so disable submit button and show rate limit error message.
 					setSubmitDisabled(true);
-					setError(
-						err.response.data?.error.message || "Server error occurred!"
-					);
-				} else {
-					setError(
-						err.response.data?.error.message || "Server error occurred!"
-					);
 				}
+
+				setError(getErrorData(err, false));
 			} else if (err.request) {
 				setError("Network error!");
 			} else {
@@ -92,7 +67,7 @@ export default function useChangePassword() {
 		}
 
 		// Return the success state, and the data
-		return { success, data };
+		return success;
 	};
 
 	return { error, isLoading, changePassword, submitDisabled };

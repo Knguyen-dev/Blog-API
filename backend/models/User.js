@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const {DateTime} = require("luxon");
 const roles_list = require("../config/roles_list");
 const queryUtils = require("../middleware/queryUtils");
+const ValidationError = require("../errors/ValidationError");
+
 
 const userSchema = new mongoose.Schema(
 	{
@@ -138,8 +140,7 @@ userSchema.methods.updateUsername = async function (username) {
   // Check availability of username.
   const isAvailable = await this.constructor.isUsernameAvailable(username);
   if (!isAvailable) {
-    const err = Error(`Username '${username}' is already taken!`);
-    err.statusCode = 400;
+    const err = new ValidationError("username", `Username '${username}' is already taken!`, 400)
     throw err;
   }
 
@@ -176,8 +177,7 @@ userSchema.methods.updateUsername = async function (username) {
   } else if (this.usernameChangeCount < USERNAME_CHANGE_LIMIT) {
     this.usernameChangeCount += 1;
   } else {
-    const err = Error(`Username change limit reached!`);
-    err.statusCode = 400;
+    const err = new ValidationError("username", `Username change limit reached! Can only change username twice every 7 days.`, 400);
     throw err;
   }
   
@@ -213,9 +213,8 @@ userSchema.statics.signup = async function (
   // Check if an existing user exists with that username already
   const isAvailable = await this.isUsernameAvailable(username);
   if (!isAvailable) {
-    const error = new Error("Username already taken!");
-    error.statusCode = 400;
-    throw error;
+    const err = new ValidationError("username", "Username already taken!", 400);
+    throw err;
   }
 
 	// Hash password
@@ -239,19 +238,22 @@ userSchema.statics.signup = async function (
 userSchema.statics.login = async function (username, password) {
 	const user = await this.findOne({ username });
 
+  /*
+  - For security purposes we can't really specify that this a problem with the 
+    username or password, so we just list the field as 'credentials'. This way we 
+    can still mark this as a database validation error.
+  */
+  const err = new Error("Incorrect username or password!");
+  err.statusCode = 400;
+  
 	if (!user) {
-		const error = new Error("Incorrect username or password!");
-		error.statusCode = 400;
-		throw error;
+		throw err;
 	}
 
 	const match = await bcrypt.compare(password, user.password);
 	if (!match) {
-		const error = new Error("Incorrect username or password!");
-		error.statusCode = 400;
-		throw error;
+		throw err;
 	}
-
 
   // Set the 'lastLogin' to now in UTC time. Changes to user will finally be 
   // saved in the login route handler
@@ -298,6 +300,9 @@ userSchema.virtual("avatarInitials").get(function() {
 
 // Static method for finding a user
 userSchema.statics.findUserByID = queryUtils.findDocumentByID;
+
+
+
 
 /*
 - Situation: When sending back a user as json, we don't want to include fields such as 

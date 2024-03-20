@@ -33,7 +33,7 @@ const validationSchema = yup.object().shape({
   submits the form, all input fields that we registered will be validated.
 */
 export default function SignUpForm() {
-	const { control, handleSubmit, setError } = useForm({
+	const { control, handleSubmit } = useForm({
 		resolver: yupResolver(validationSchema),
 		defaultValues: {
 			email: "",
@@ -52,7 +52,7 @@ export default function SignUpForm() {
 	const { error, isLoading, signup, submitDisabled } = useSignup();
 
 	const onSubmit = async (formData) => {
-		const { success, data } = await signup(formData);
+		const success = await signup(formData);
 		/*
     - Conditionals:
     1. On success redirect the user to the login page and open the snackbar.
@@ -70,13 +70,6 @@ export default function SignUpForm() {
 				severity: "success",
 			});
 			return navigate("/auth/login");
-		} else if (data) {
-			Object.keys(data).forEach((fieldName) => {
-				setError(fieldName, {
-					type: "server",
-					message: data[fieldName],
-				});
-			});
 		}
 	};
 

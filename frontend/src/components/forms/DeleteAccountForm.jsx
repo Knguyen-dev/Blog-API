@@ -15,7 +15,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function DeleteAccountForm() {
-	const { control, handleSubmit, setError } = useForm({
+	const { control, handleSubmit } = useForm({
 		resolver: yupResolver(validationSchema),
 		defaultValues: {
 			password: "",
@@ -27,22 +27,13 @@ export default function DeleteAccountForm() {
 	const { showToast } = useToast();
 
 	const onSubmit = async (formData) => {
-		const { success, data } = await deleteAccount(formData);
+		const success = await deleteAccount(formData);
 
 		// If successful, handle showing the snackbar
 		if (success) {
 			showToast({
-				message: data.message,
+				message: "Successfully deleted account!",
 				severity: "success",
-			});
-		} else if (data) {
-			// Else if unsuccessful and data is defined (failed due to server validation)
-			// Then set the error fields.
-			Object.keys(data).forEach((fieldName) => {
-				setError(fieldName, {
-					type: "server",
-					message: data[fieldName],
-				});
 			});
 		}
 	};
