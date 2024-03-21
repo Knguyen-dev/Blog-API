@@ -1,11 +1,8 @@
 const mongoose = require("mongoose");
 const queryUtils = require("../middleware/queryUtils");
 const categorySchema = new mongoose.Schema({
-  /*
-  - For the 'title' we won't lowercase it. Categories should be easy to handle
-    since there aren't as many of them so if there's a duplicate title, 
-    we can easily edit or delete the title.
-  */
+  
+  // Title of the category
   title: {
     type: String,
     required: true,
@@ -13,13 +10,14 @@ const categorySchema = new mongoose.Schema({
     unique: true,
   },
 
-  
+  // Description of the category
   description: {
     type: String,
     required: true,
     maxLength: 500,
   },
 
+  // Slug we generated for the category
   slug: {
     type: String,
     lowercase: true,

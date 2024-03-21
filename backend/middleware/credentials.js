@@ -1,12 +1,15 @@
 const allowedOrigins = require("../config/allowedOrigins");
 
-/*
-- Middleware that allows the accessing of cookies (credentials)
-  by the server if it's an origin that's on our allowed list.
-  So we're essentially indicating the browser that our server allows 
-  cookies to be sent.
-*/
 
+/**
+ * Middleware that sets the 'Acess-Control-Allow-Credentials' header to 'true' for requests
+ * that are from origins that are whitelisted. As a result credentials such as cookies, authorization headers,
+ * and other things can be sent in cross-origin requests. 
+ * 
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {function} next - Function to go to the next middleware function
+ */
 const credentials = (req, res, next) => {
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {

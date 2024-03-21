@@ -16,7 +16,7 @@
 
 */
 
-const roles_list = require("../../config/roles_list");
+const roles_map = require("../../config/roles_map");
 
 
 /*
@@ -30,8 +30,10 @@ const roles_list = require("../../config/roles_list");
   to delete the user account.
 */
 function canDeleteUser(req, res, next) {
-  if (req.user.role !== roles_list.admin && req.user.id !== req.params.id) {
-    return res.status(401).json({message: "Unauthorized to delete said user!"});
+  if (req.user.role !== roles_map.admin && req.user.id !== req.params.id) {
+    const err = new Error("Unauthorized to delete said user!");
+    err.statusCode = 401;
+    throw err;
   }
   next();
 }
@@ -48,8 +50,10 @@ function canDeleteUser(req, res, next) {
   to edit the user account.
 */
 function canEditUser(req, res, next) {
-  if (req.user.role !== roles_list.admin && req.user.id !== req.params.id) {
-    return res.status(401).json({message: "Unauthorized to edit said user!"});
+  if (req.user.role !== roles_map.admin && req.user.id !== req.params.id) {
+    const err = new Error("Unauthorized to edit said user!");
+    err.statusCode = 401;
+    throw err;
   } 
   next();
 }

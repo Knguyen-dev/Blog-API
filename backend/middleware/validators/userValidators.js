@@ -1,8 +1,13 @@
 const {body} = require("express-validator");
-const roles_list = require("../../config/roles_list");
+const roles_map = require("../../config/roles_map");
 
 
 const userValidators = {
+  /**
+   * Validates the email of the user.
+   * 
+   * @params {string} email - Email that the user wants to sign up with
+   */
   email: body("email")
 		.trim()
 		.escape()
@@ -12,6 +17,12 @@ const userValidators = {
 			max: 64,
 		})
 		.withMessage("Maximum email length is 64 characters"),
+
+  /**
+   * Validates the username that the user wants to sign up with.
+   * 
+   * @params {string} username - Username that the user wants to create an account with
+   */
   username: body("username")
 		.trim()
 		.escape()
@@ -23,6 +34,12 @@ const userValidators = {
 		.withMessage(
 			"Username has to be within 1 to 32 characters and alphanumeric!"
 		),
+
+  /**
+   * Validates the password of the user.
+   * 
+   * @params {string} password - Password that the user wants to secure their account with.
+   */
   password: body("password")
 		.trim()
     .custom(password => {
@@ -40,11 +57,24 @@ const userValidators = {
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])(?!.*\s).{8,40}$/;
       return passwordRegex.test(password);
     }).withMessage("Password needs to be 8 to 40 characters, and must have one uppercase letter, lowercase letter, symbol, and one number."),
+  
+  /**
+   * Middleware that checks the 'password' and 'confirmPassword' properties are equal
+   * 
+   * @params {string} confirmPassword - The value of the 'confirmPassword' field. This value should match the 'password' field
+   * 
+   */
   confirmPassword: body("confirmPassword")
 		.custom((confirmPassword, { req }) => {
 			return confirmPassword === req.body.password;
 		})
 		.withMessage("Passwords must match!"),
+  
+  /**
+   * Validates the fullName property 
+   * 
+   * @params {string} fullName - The full name that will be displayed for the user.
+   */
   fullName: body("fullName")
 		.trim()
 		.escape()
@@ -54,12 +84,19 @@ const userValidators = {
 		})
 		.withMessage("Full name must be within 1 to 64 characters"),
 
+  /**
+   * Sanitizes and valiates the 'role' of a user. We ensure 'role' is a number by sanitizing it 
+   * and then we validate that it's a valid role that we support.
+   * 
+   * @params {string} role - A string that can be converted into a number, that will numerically represent
+   *                        a user's role.
+   */
   role: body("role")
     .trim()
     .escape()
     .customSanitizer(role => parseInt(role))
     .custom( (role, { req }) => {
-      return Object.values(roles_list).includes(role);
+      return Object.values(roles_map).includes(role);
     }).withMessage("Role is not valid!"),
 }
   

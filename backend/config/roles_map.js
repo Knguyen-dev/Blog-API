@@ -10,10 +10,10 @@
   assignments
 */
 
-const roles_list = {
+const roles_map = {
   admin: 5150,
   editor: 1984,
   user: 2001,
 }
 
-module.exports = roles_list;
+module.exports = roles_map;

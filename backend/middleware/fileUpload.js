@@ -29,13 +29,17 @@ const storage = multer.diskStorage({
   }
 })
 
-/*
-- File filter: Function that lets us control which files should be uploaded and which
-  files should be skipped.
-*/
-
+// Array of file types that we accept
 const acceptedFileTypes = ["image/png", "image/jpg", "image/jpeg"];
 
+/**
+ * Function that ensures only files with mimetype in our 'acceptedFileTypes' are 
+ * uploaded and saved to our directory.
+ * 
+ * @param {Object} req - Request object
+ * @param {Object} file - File object
+ * @param {function} cb - Function used with multer to indicate the success status.
+ */
 const fileFilter = (req, file, cb) => {
   // If file type is included in our acceptedFileTypes, accept the file
   if (acceptedFileTypes.includes(file.mimetype)) {
@@ -47,6 +51,11 @@ const fileFilter = (req, file, cb) => {
 }
 
 
+/**
+ * Creates a multer instance wiht our configurations. We'll use this multer instance and access its
+ * '.single' api to download user files to our directory.
+ * 
+ */
 const uploadFile = multer({
   storage: storage,
   fileFilter: fileFilter,
@@ -63,28 +72,13 @@ const uploadFile = multer({
 
 });
 
-/*
-+ Deletes file from disk. We'll use this to delete avatar images from disk.
 
-- If there's an error, we reject it, meaning we return a promise that will 
-  eventually evaluate into an error. Let's remember what happens when we 
-  reject a promise:
-
-  1. State transition: Promise transitions from pending to 'rejected' state.
-  2. Error handling: The nearest .catch() block is used to handle the rejection
-    and execute our associated error handling code in that catch block. Or the
-    .then() block could be used if you're running two args. 
-  3. Propagation: If there's no explicit error handling, then the error object
-    will keep propagating down the promise chain until it reaches a block that 
-    handles the error. That happens in this case, as we don't have immediate 
-    error handling in our deleteFromDisk function, so it propagates to our 
-    route handling function where it's caught by asyncHander.
-
-- Else we're successful, so return a promise that evaluates during nothing. 
-  If an error happens during our deletion process, our 'await' will evaluate 
-  to an error, which in turn should be caught by our asyncHandler.
-
-*/
+/**
+ * Middleware that deletes a file from our directory.
+ * 
+ * @param {string} filePath - Path to the file we want to delete
+ * @returns 
+ */
 const deleteFromDisk = (filePath) => {
   return new Promise((resolve, reject) => {
     fs.unlink(filePath, (err) => {

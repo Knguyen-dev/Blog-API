@@ -8,13 +8,14 @@ const post_status_map = require("../config/post_status_map");
 
 const postSchema = new mongoose.Schema(
 	{
+    // User who created the post; the author of the post
 		user: {
 			type: mongoose.SchemaTypes.ObjectId,
 			ref: "User",
 			required: true,
 		},
 
-    // Ideal titles have between 60 and 100 characters in length
+    // Title of a post; you could also think about this like an article
 		title: {
 			type: String,
 			require: true,
@@ -22,23 +23,14 @@ const postSchema = new mongoose.Schema(
       unique: true,
 		},
 
-    /*
-    + How to create slugs:
-    1. Take a title "Luigi's Mansion 3: Guide and Walkthrough". Lowercase it 
-      and replace all spaces with hypens.
-    2. Then we need to ensure that the slug is unique, with a database check of course.
-    */
+    // Slug for the post
     slug: {
       type: String,
       lowercase: true,
       unique: true
     },
 
-    /*
-    + Body: Going to be an html string. As well as this, we'll enforce a maximum
-      limit of 2000 words in the body. As well as this, we probably want to 
-      be able to count the words on the backend
-    */
+    // Body of the post, representing the main content of it; an html string
     body: {
 			type: String,
 			required: true,
@@ -58,7 +50,7 @@ const postSchema = new mongoose.Schema(
     },
 
     
-    // The array of tags IDs associated with the post
+    // The array of tags IDs associated with the post; optional
     tags: [
       {
         type: mongoose.SchemaTypes.ObjectId,
@@ -67,11 +59,13 @@ const postSchema = new mongoose.Schema(
     ],
 
 
+    // Source to the post's thumbnail or display image
     imgSrc: String,
+
+    // The credits for that display image
     imgCredits: String,
 
-
-    // Represents the status of the post; keep these lowercase for uniformity
+    // String representing the status of the post
     status: {
       type: String,
       enum: Object.keys(post_status_map),
@@ -79,6 +73,7 @@ const postSchema = new mongoose.Schema(
       lowercase: true,
     },
 
+    // Amount of words in the body of the post 
     wordCount: {
       type: Number,
       required: true,
@@ -94,14 +89,20 @@ const postSchema = new mongoose.Schema(
 
 postSchema.statics.findPostByID = queryUtils.findDocumentByID;
 
-// Checks whether the title and generated slug are unique and haven't been taken yet.
+
+
+/**
+ * Verifies whether a title and its generated slug are both unique and haven't 
+ * been taken by another post yet.
+ * 
+ * @param {string} title - Title of the post 
+ * @param {string} slug - Slug generated based on the title
+ */
 postSchema.statics.checkTitleAndSlug = async function(title, slug) {
   /*
   - Find a post with same title (case insensitive) or slug
-  - If post exists:
-  1. If it's due to titles being same, indicate that title is already taken
-  2. Else, it's due to the slugs being the same, indicate that.
-  - Finally throw a 400 error.
+  - If post exists, generate a corresponding error message, and throw back a status code 400
+    with a ValidationError, which gives us a error details object when sending back our json error.
   */
   const existingPost = await this.findOne({$or: [
     {title: { $regex: new RegExp('^' + title + '$', 'i') }}, 
@@ -118,21 +119,14 @@ postSchema.statics.checkTitleAndSlug = async function(title, slug) {
     const err = new ValidationError("title", errMessage, 400);
     throw err;
   }
-
 }
 
-
-/*
-- Check if Category exists, if it doesn't then send back an error
-
-
-- NOTE: 
-1. Here doing 404 is kind of deceptive. While it is accurate it doesn't 
-  quite convey the idea that the 'category' passed in by the request or user 
-  was invalid and didn't exist. So here we'll option for a 400 and use 
-  a ValidationError so that we can have the same error format with handleValidationErrors
-  middleware. 
-*/
+/**
+ * Verify that categoryID is a valid ID. If not, then throw back a ValidationError 
+ * that higlights the 'category' field as the issue.
+ * 
+ * @param {string} categoryID - String representing a potential id for a category
+ */
 postSchema.statics.checkCategory = async function(categoryID) {
 
   const err = ValidationError("category", "", 400);
@@ -151,15 +145,18 @@ postSchema.statics.checkCategory = async function(categoryID) {
   }
 }
 
-/*
-- Checks if IDs in tagIDs are existing IDs in the tags collection
 
-- NOTE: Similar with checkCategory, 404 is accurate but doesn't convey the proper
-  idea that the 'tags' that were in the request body were invalid. Then we raise 
-  an error and indicate the 'tags' property, in the request body was the 'field'
-  that had an issue
-*/
 
+/**
+ * Checks if IDs in tagIDs are existing IDs in the tags collection
+ * 
+ * @param {array} tagIDs - Array of strings that may be valid tag IDs
+ * 
+ * NOTE: Similar with checkCategory, 404 is accurate but doesn't convey the proper
+ * idea that the 'tags' that were in the request body were invalid. Then we raise 
+ * an error and indicate the 'tags' property, in the request body was the 'field'
+ * that had an issue.
+ */
 postSchema.statics.checkTags = async function(tagIDs) {
   /*
   + Check for any invalid tags.
@@ -178,9 +175,21 @@ postSchema.statics.checkTags = async function(tagIDs) {
   });
 }
 
-/*
-+ Handles creating a new post
-*/
+
+/**
+ * Handles creating a new post in the database.
+ * 
+ * @param {string} title - Title of the post 
+ * @param {string} body - Html string representing the body of hte post 
+ * @param {string} categoryID - String representing the ID of the category associated with the post
+ * @param {string} tagIDs - Array of string that represent tag IDs
+ * @param {string} imgSrc - String representing the source of the post's display image
+ * @param {string} imgCredits - Credits for the display image
+ * @param {string} status - Status of the post
+ * @param {int} wordCount - Amount of words in the post's body
+ * @param {string} userID - Id of the user who created the post
+ * @returns {object} post - Newly created post document
+ */
 postSchema.statics.createPost = async function(title, body, categoryID, tagIDs=[], imgSrc, imgCredits, status, wordCount, userID) {
   // Create slug for post, now do a database check on the title and slug of the post
   const slug = slugify(title, {
@@ -225,9 +234,18 @@ postSchema.statics.createPost = async function(title, body, categoryID, tagIDs=[
   return post;
 }
 
-/*
-+ Handles applying updates to an existing post.
-*/
+/**
+ * Instance method for applying updates to an existing post in the database.
+ * 
+ * @param {string} title - Title of the post 
+ * @param {string} body - Html string representing the body of hte post 
+ * @param {string} categoryID - String representing the ID of the category associated with the post
+ * @param {string} tagIDs - Array of string that represent tag IDs
+ * @param {string} imgSrc - String representing the source of the post's display image
+ * @param {string} imgCredits - Credits for the display image
+ * @param {string} status - Status of the post
+ * @param {int} wordCount - Amount of words in the post's body
+ */
 postSchema.methods.updatePost = async function(title, body, categoryID, tagIDs, imgSrc, imgCredits, status, wordCount) {
 
   // If new title is different from the current one, do a database check on the title and slug

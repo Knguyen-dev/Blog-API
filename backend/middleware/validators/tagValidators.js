@@ -11,6 +11,12 @@ const {body} = require("express-validator");
 
 
 const tagValidators = {
+
+  /**
+   * Validates the 'title' of the tag.
+   * 
+   * @params {string} title - The title of the post
+   */
   title: body("title").trim()
     .isLength({min: 1, max: 50})
     // Title is alphanumeric and can accept underscores

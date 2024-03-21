@@ -5,27 +5,34 @@ const userValidators = require("../middleware/validators/userValidators");
 const {body} = require("express-validator");
 const handleValidationErrors = require("../middleware/handleValidationErrors");
 
-/*
-+ Functions for creating an access and refresh token:
-- Access token: Should last for 15 minutes
-- Refresh token: Should last for 1 days
 
-- NOTE: For security reasons, we'll make it so the user has to log 
-  in 3 days after they previously logged in. Also the payload 
-  should probably just be the user.
-*/
+/**
+ * Function to create access token for a user.
+ * 
+ * @param {Object} user - A user object 
+ * @returns {string} The access token
+ */
 function createAccessToken(user) {
 	return jwt.sign({id: user.id,
       role: user.role}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15min" });
 }
 
+/**
+ * Function to create the refresh token for a user.
+ * 
+ * @param {Object} user - A user object.
+ * @returns {string} The refresh token
+ */
 function createRefreshToken(user) {
 	return jwt.sign({id: user.id}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1d" });
 }
 
-/*
-+ Refresh endpoint: Endpoint for refreshing an access token
-*/
+
+/**
+ * Function for refreshing an access token
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const refresh = asyncHandler(async (req, res) => {
   /*
   1. Assuming cookieParser middleware is used, access the cookies of our 
@@ -67,14 +74,12 @@ const refresh = asyncHandler(async (req, res) => {
   }));
 })
 
-/*
-+ Signing up a user:
-- If there are errors with the sign up data, send back the errors as json
 
-- NOTE: Since we have an error object that has messages corresponding to 
-  specific fields, it'd be easier to send back the 'errors' object so that
-  the front end form can display errors for respective fields. 
-*/
+/**
+ * Function for signing up a user
+ * @param {express.Request} req - The request object.
+ * @param {express.Response} res - The response object.
+ */
 const signupUser = [
   userValidators.email,
   userValidators.username,
@@ -82,7 +87,7 @@ const signupUser = [
   userValidators.confirmPassword,
   userValidators.fullName,
   handleValidationErrors,
-	asyncHandler(async (req, res, next) => {
+	asyncHandler(async (req, res) => {
 		// At this point, data is valid, so save user into the database and return successful response
 		const { email, username, password, fullName } = req.body;
     // Everything should be valid, so proceed with user signup
@@ -96,33 +101,12 @@ const signupUser = [
 	}),
 ];
 
-/*
-+ Logging in a user:
-- Route for logging or authenticating a user.
 
-- NOTE: 
-  1. When signing up a user, we had our logic for checking if the username 
-  was already taken in a custom validator. However, when we're doing our login
-  logic, we placed our database checks in our static method inside the '/models/User'
-  file. The only reason I'm doing it this way is because on the sign up form I want 
-  to be able to show the error messages on their respective fields, so if there
-  was a server-side error with the username we'd show it on the form.
-  
-  2. While on the login form we're just going to show one error message that doesn't
-  particularly pertain to a certain field. So 'All fields must be filled' or 
-  'incorrect username or password' don't refer/talk about a specific field.
-  Unlike the message 'not a valid email' or 'password isn't meeting standards'.
-
-  3. Of course, even unexpected errors can happen whilst on the sign up form such
-    as the front end not correctly connecting to the backend, which is why we'll
-    definite consider showing a more general 'error' message in those cases
-
-  4. For a login process, we don't do as much validation. The main validation is 
-  just checking if they filled in the fields, but also if their credentials 
-  are correct.
-
-
-*/
+/**
+ * Function for logging in a user
+ * @param {express.Request} req - The request object.
+ * @param {express.Response} res - The response object.
+ */
 const loginUser = [
   body("username").isLength({min: 1}).withMessage("Please enter your username!"),
   body("password").isLength({min:1}).withMessage("Please enter your password!"),
@@ -133,17 +117,9 @@ const loginUser = [
     // message in json to our client
 		const user = await User.login(req.body.username, req.body.password);
 
-    /*
-    - At this point the user has been successfully logged in so create
-		 the appropriate access and refresh tokens. Access token has the 
-    username and role, whilst the refresh token just has the username. 
-    The former is needed so that we can do server-side role validation, while
-    for the latter, we only need the username to identify who it is when we're 
-    refreshing.
-    */
+    // Create access and refresh tokens
 		const accessToken = createAccessToken(user);
 		const refreshToken = createRefreshToken(user);
-
 
     /*
     + Create a secure cookie on our response for our refresh token: 
@@ -161,11 +137,6 @@ const loginUser = [
     4. maxAge: The expiration date, so here you'd match it to 
       what the refresh token's expiration date was in our 
       createRefreshToken function. 
-
-    - Takeaway: Only our accessToken is handled by our react app, 
-      while our refresh token isn't. However, we will make sure that 
-      when our react-app makes requests, it sends a request with the refresh token cookie.
-      Also 'jwt' just names the cookie 'jwt', and that is what we'll look for.
     */
     res.cookie("jwt", refreshToken, {
       httpOnly: true,
@@ -183,14 +154,12 @@ const loginUser = [
 	}
 )]
 
-
-
-/*
-+ Logging out: Endpoint for logging out the user. We'll clear the jwt 
-  refresh token stored in their cookies and database
-- NOTE: On the client side, you should also delete access token from the state
-*/
-const logoutUser = asyncHandler(async (req, res, next) => {
+/**
+ * Function for logging out a user
+ * @param {express.Request} req - The request object.
+ * @param {express.Response} res - The response object.
+ */
+const logoutUser = asyncHandler(async (req, res) => {
   const cookies = req.cookies;
 
   // If 'cookies.jwt' doesn't exist, not an error but nothing really happened
@@ -222,7 +191,6 @@ const logoutUser = asyncHandler(async (req, res, next) => {
   if (!user) {
     return res.status(204).json({message: "Cookies were cleared, and no user was found with that refresh token!"});
   }
-  
   
   user.refreshToken = "";
   await user.save();

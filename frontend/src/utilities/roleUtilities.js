@@ -11,7 +11,12 @@ const reverseRoleMap = {
 	[import.meta.env.VITE_ROLE_ADMIN]: "Admin",
 };
 
-// Gets number associated with a role name
+/**
+ * Gets number associated with a role
+ *
+ * @param {string} roleName - String representation of a role
+ * @returns {number} Numerical representation of a role
+ */
 function getRoleNumber(roleName) {
 	roleName = roleName.toLowerCase();
 
@@ -19,13 +24,12 @@ function getRoleNumber(roleName) {
 	return parseInt(roleMap[roleName]);
 }
 
-/*
-+ Returns the human-readable string representation of a role, when given
-  the numerical representation of the role.
-
-- NOTE: If roleNumber is an integer, we turn it into a string. This 
-  allows it to map since the environment variables are strings.
-*/
+/**
+ * Returns the human-readable string representation of a role, when given
+ * the numerical representation of the role.
+ * @param {number} roleNumber - Numerical representation of a role
+ * @returns {string} String representation of a role
+ */
 function getRoleString(roleNumber) {
 	if (typeof roleNumber !== "string") {
 		roleNumber = String(roleNumber);

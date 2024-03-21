@@ -1,4 +1,4 @@
-const roles_list = require("../../config/roles_list");
+const roles_map = require("../../config/roles_map");
 
 function canDeletePost(req, res, next) {
 

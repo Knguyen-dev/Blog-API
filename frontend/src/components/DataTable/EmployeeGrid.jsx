@@ -9,6 +9,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import employeeActions from "../../constants/employeeActions";
 import { getRoleNumber, getRoleString } from "../../utilities/roleUtilities";
 import useToast from "../../hooks/useToast";
+import getErrorData from "../../utilities/getErrorData";
 
 export default function EmployeeGrid() {
 	const { state, dispatch } = useEmployeeContext();
@@ -102,7 +103,7 @@ export default function EmployeeGrid() {
 		(err) => {
 			let errMessage = "";
 			if (err.response) {
-				errMessage = err.response.data.message;
+				errMessage = getErrorData(err, false);
 			} else if (err.request) {
 				errMessage = "Network error occurred!";
 			} else {

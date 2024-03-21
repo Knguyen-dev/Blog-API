@@ -3,27 +3,31 @@ const createDOMPurify = require("dompurify");
 const {JSDOM} = require("jsdom");
 const post_status_map = require("../../config/post_status_map");
 
-/*
-+ Function used to get word count from HTML string. Not 100% accurate
-  but it gets very close. 
-
-*/
+/**
+ * Calculates the amount of words in an html string.
+ * 
+ * @param {string} htmlContent - A string containing html markup
+ * @returns {number} The number of words in the HTML content
+ * 
+ * NOTE: This function is accurate, but not perfect, as it's not truly possible to 
+ * get the accurate word count from html markup. Which is why this function gets the 
+ * 'estimated word count', and we validate that word count.
+ */
 function getWordCount(htmlContent) {
   const plainText = htmlContent.replace(/<[^>]*>/g, '');
   const wordCount = plainText.trim().split(/\s+/).length;
   return wordCount;
 }
 
-/*
-+ Function used to check if the reported word count is within a range 
-  estimated by our function. Here we'll allow 25 words on either side
-  so if our r
-
-- NOTE: This function is useful as we'll use it to determine the approximate
-  word count, and check the validity of the 'wordCount' property sent through 
-  the request body. We will allow deviation of about '25' words.
-*/
-
+/**
+ * Checks if reported word count is within a specified deviation range 
+ * from the estimated word count.
+ * 
+ * @param {number} estimatedWordCount - The word count that was calculated from 'getWordCount'
+ * @param {number} reportedCount - The word count that the client provided 
+ * @param {number} deviation - The allowed deviation from estimated word count
+ * @returns {boolean} True if the reported count is within deviation range, false if not.
+ */
 function validateWordCount(estimatedWordCount, reportedCount, deviation) {
   if (reportedCount > estimatedWordCount + deviation || reportedCount < estimatedWordCount - deviation) {
     return false;
@@ -31,22 +35,22 @@ function validateWordCount(estimatedWordCount, reportedCount, deviation) {
   return true;
 }
 
-
-
-
-const postValidators = {
-  // Title of the post
+const postValidators = {  
+  /**
+   * Validates the title of the post 
+   * 
+   * @params {string} title - Title of the post
+   */
   title: body("title").trim().isLength({
     min: 1,
     max: 100
   }).withMessage("Post title must be between 1 and 100 characters long!"),
 
-  /*
-  + wordCount: Reported number of words that the post has.
-  + Note:
-  1. Regex cannot accurately remove all HTML tags from a string, making accurate word count challenging, 
-    which is why we have to estimate sometimes.
-  */
+  /**
+   * Validates the title of the post 
+   * 
+   * @params {string} wordCount: The reported word count of the post
+   */
   wordCount: body("wordCount")
     .trim()
     .customSanitizer(wordCount => parseInt(wordCount))
@@ -75,29 +79,33 @@ const postValidators = {
       return true;
     }),
 
-
-  /*
-  - The body of the post is going to be an html string. For the body, we want 
-  to let a word limit on the stuff. Of course we can rely on the client to side 
-  the word-count to us, but we'd like to have backend validation.
-  - Sanitize the string with DOMPurify.  
-  */
+  /**
+   * Sanitizes the html string with DOMPurify
+   * 
+   * @params {string} body - An string containing html markup in the post's body or content
+   */
   body: body("body").customSanitizer(body => {
     const window = new JSDOM("").window;
     const DOMPurify = createDOMPurify(window);
     return DOMPurify.sanitize(body);
   }),
 
-  // Status of the post 'string';
+  
+  /**
+   * Validates the status of the post to ensure it's a valid value.
+   * 
+   * @params {string} status - Status of the post
+   */
   status: body("status")
     .isIn(Object.keys(post_status_map))
     .withMessage("Post must be in one of the following statuses: draft, published, private."),
 
-  /*
-  + tags: An optional array of tag IDs, which should be strings. This valiator ensures that 
-    'req.body.tags' is an array, and if it does have values, then those values are strings.
-    So at minimum 'tags' should be an empty array.
-  */
+  /**
+   * Validates the 'tags' property to ensure that if it is defined, then it's an array 
+   * that we can iterate through
+   * 
+   * @params {array} tags - An array of strings, and those strings are the ID of the tags on that post
+   */
   tags: body("tags").optional().isArray().withMessage("'tags' property must be an array containing tag IDs as strings!").custom(tags => {
     // If there are elements, ensure all elements are just strings
     if (tags.length > 0 && !tags.every(tagID => typeof tagID === "string")) {
@@ -108,14 +116,26 @@ const postValidators = {
     return true;
   }),
   
-  // category: A string containing the ID of the category that the post belongs in.
+  /**
+   * Validates the 'category' property to ensure it's a defined string. 'category' will be the 
+   * ID of the category that is associated with the post
+   * 
+   * @params {string} category - String representing ID of the category.
+   */
   category: body("category").isLength({min: 1}).withMessage("Category ID for the post is required!"),
 
-  /*
-  - imgSrc and imgCredits are optional fields in the postSchema, but if they are provided
-    then we need to ensure that they are at least strings.
-  */
+  /**
+    * Validates the optional imgSrc property, and ensures it's a string if it's defined.
+    * 
+    * @params {string} imgSrc - String containing the image source for the post's thumbnail.
+    */
   imgSrc: body("imgSrc").optional().isString().withMessage("Image source for the post needs to be a string."),
+
+  /**
+   * Validates the optional imgCredits property, and ensures it's a string if it's defined.
+   * 
+   * @params {string} imgCredits - String containing the credits for the post's thumbnail.
+   */
   imgCredits: body("imgCredits").optional().isString().withMessage("Image credits need to be a string."),
 }
 module.exports = postValidators;

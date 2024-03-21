@@ -4,18 +4,15 @@ const User = require("../models/User");
 const postValidators = require("../middleware/validators/postValidators");
 const handleValidationErrors = require("../middleware/handleValidationErrors");
 
-/*
-+ Creating a post 
-
-- NOTE: Only editors and admins are allowed to access this endpoint and create 
-  posts. As well as this, a user is only allowed to create a post for themselves. 
-  Users can't create posts, and pass it off like another user created them.
-
-1. Potential change would be just checking the slug instead of checking the title
-  The slug itself is more important than the title really.
-
-2. Need to add front-end validation for title, body, etc.
-*/
+/**
+ * Middleware for creating new post
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ * 
+ * NOTE: As well as this, a user is only allowed to create a post for themselves. 
+ * Users can't create posts, and pass it off like another user created them.
+ */
 const createPost = [
   postValidators.title,
   postValidators.body,
@@ -52,15 +49,14 @@ const createPost = [
   })
 ]
 
-/*
-+ Update an existing post.
-
-- NOTE: Only the author of the original post is able to use this particular 
-  route. However, admins should be able to update the 'status' property 
-  of all posts. I don't think we need to check the 'existence' of the user 
-  here because we may make it so if a user deletes their account, all of their 
-  posts are deleted, or we make them not associated with a user.
-*/
+/**
+ * Middleware for creating updating an existing post
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ * 
+ * NOTE: A user can only edit their own post.
+ */
 const updatePost = [
   postValidators.title,
   postValidators.body,
@@ -103,17 +99,14 @@ const updatePost = [
 ]
 
 
-
-
-
-
-
-/*
-+ Delete a post
-- NOTE: Implement the rule that editors can only delete their own posts, whilst 
-  admins have the ability to delete anyone's post. So create 'postPerms' middleware
-  to do that.
-*/
+/**
+ * Middleware for deleting an existing post.
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ * 
+ * NOTE: A user can only edit their own post.
+ */
 const deletePost = asyncHandler(async(req, res) => {
   // Checks for the existence of the post, if not, this throws error
   await Post.findPostByID(req.params.id);
@@ -123,29 +116,29 @@ const deletePost = asyncHandler(async(req, res) => {
   res.status(200).json(result);
 })
 
-
+/**
+ * Get all of the posts in the database
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const getPosts = asyncHandler(async(req, res) => {
   const posts = await Post.find();
   res.status(200).json(posts);
 })
 
 
-/*
-+ Return surface level information about a post
-*/
+/**
+ * Get all of the posts in the database
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const getPost = asyncHandler(async(req, res) => {
   // Attempt to find Post by ID; ensure to populate the 'user', 'category', and 'tags' fields 
   const post = await Post.findPostByID(req.params.id, ['user', 'category' , 'tags']);
   res.status(200).json(post);
 })
-
-
-/*
-+ Return detailed information about a post.
-*/
-
-
-
 
 module.exports = {
   createPost,

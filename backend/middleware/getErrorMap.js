@@ -1,15 +1,11 @@
 const {validationResult} = require("express-validator");
-/*
-+ Extracts an error map from an array of validation errors.
-  The error map is an object where each key is the path of the error (e.g., field name)
-  and the value is the error message. For example if we have fields 
-  {username: some_username, fullName: some_full_name, etc..}, then the error
-  map would be {username: some_username_error} if we have a server-side validation
-  error with the username. The fieldnames in the errorMap will be the fields that 
-  we detected to have server-side validation errors!
-
-
-*/
+/**
+ * Returns an object, where each key is a field, and the value is the error
+ * message for that field, if there's an error. For example, {username: "some_username_error", fullName: "some_full_name_error"}.
+ * 
+ * @param {object} req - Request object
+ * @returns {object} An object containing the field names as keys and values as error messages.
+ */
 const getErrorMap = (req) => {
   return validationResult(req).errors.reduce((errorMap, e) => {
 			return {

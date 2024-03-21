@@ -1,12 +1,10 @@
 const rateLimit = require("express-rate-limit");
 
-/*
-+ loginLimiter: Will be used to restrict the amount of requests from the same IP.
-  So in a 30 second window, we'll only allow 5 requests from the same IP.
 
 
-*/
-
+/**
+ * Middleware to limit sign up attempts
+ */
 const signupLimiter = rateLimit({
   windowMs: 30 * 1000, // 30 second window
   max: 5, 
@@ -17,6 +15,10 @@ const signupLimiter = rateLimit({
   }
 })
 
+/**
+ * Middleware for limiting login attempts
+ * 
+ */
 const loginLimiter = rateLimit({
   windowMs: 30 * 1000, // 30 second window
   max: 5, // maximum number of request during said window

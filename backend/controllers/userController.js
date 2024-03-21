@@ -5,45 +5,35 @@ const fileUpload = require("../middleware/fileUpload");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const { body } = require("express-validator");
-const getErrorMap = require("../middleware/getErrorMap");
 const handleValidationErrors = require("../middleware/handleValidationErrors");
 const ValidationError = require("../errors/ValidationError");
 
-
+/**
+ * Gets all users in the database
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find();
   res.status(200).json(users);
 })
 
-// + Get user via their user ID
+/**
+ * Get a user via their ID
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const getUserById = asyncHandler(async (req, res) => {
-  /*
-  - Send back the user but exclude sensitive information. I mean we
-    would send the info from server to client. Imagine if a 
-    regular user was making this request, we will only send back relevant
-    and non-sensitive info. Basically info that we would potentially want to show
-    maybe on a user's account page. So here we're not sending back the password
-    hash since that is sensitive info, and we're not sending back the index because
-    honestly that doesn't really matter. 
-  */
   const user = await User.findUserByID(req.params.id);
-
   res.status(200).json(user);
 })
 
-/*
-+ Delete a user: Handles deleting a user's account. For this to pass, the 
-  user must enter their password and confirm their password.
-
-1. Delete the user's avatar.
-2. Delete the user from the database.
-
-- NOTE: This function will probably get more changes as we 
-  go on with making posts as well. For example, we'd have to delete all
-  of the pictures associated with those posts that are on disk. Then 
-  after we can delete the post documents from the database.
-
-*/
+/**
+ * Delete an existing user.
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const deleteUser = [
   body("password").isLength({min: 1}).withMessage("Please enter your current password!"),
   userValidators.confirmPassword,
@@ -53,17 +43,14 @@ const deleteUser = [
     // Attempt to find user by ID
     const user = await User.findUserByID(req.params.id);
 
-
-    
     /*
     - Check if password matches
     - NOTE: We want to an error 'details' back to the client here 
-      so use 'validationError
+      so use 'ValidationError'
     */
     const isMatch = await bcrypt.compare(req.body.password, user.password);
     if (!isMatch) {
-
-      
+      // throw a ValidationError to match error format sent 
       const err = new ValidationError("password", "Password is incorrect!", 400);
       throw err;
     }
@@ -73,7 +60,6 @@ const deleteUser = [
     1. If the user has an avatar, delete it, so remove it from disk
     2. Delete the user from the database. We can use their id.
     */
-
     if (user.avatar) {
       const avatarPath = path.join(__dirname, `../public/images/${user.avatar}`);
       await fileUpload.deleteFromDisk(avatarPath);
@@ -87,10 +73,12 @@ const deleteUser = [
   })
 ]
 
-/*
-- Logic for updating an avatar:
-- NOTE: Updating only means adding or changing the avatar.
-*/
+/**
+ * Middleware for updating/changing an avatar.
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const updateAvatar = [  
   // Attempt to save the image file for the avatar, if it exists
   fileUpload.uploadFile.single("file"),
@@ -98,14 +86,16 @@ const updateAvatar = [
 
     // If no file, then stop function execution early
     if (!req.file) {
-      return res.status(400).json({ message: "File was not detected on our end!" });
+      const err = new Error("File was not detected on our end!")
+      err.statusCode = 400;
+      throw err;
     }
 
     // Attempt to find a user with the parameter id
     const user = await User.findUserByID(req.params.id);
 
     /*
-    1. The user is changing avatars, so delete the old avatar 
+    - The user is changing avatars, so delete the old avatar 
       from our disk.
     - If there's an old avatar, then remove it. This is because the user 
       could be changing avatars, in that case we can think of it was replacing
@@ -135,6 +125,12 @@ const updateAvatar = [
   })
 ]
 
+/**
+ * Middleware for deleting an avatar
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const deleteAvatar = asyncHandler(async(req, res) => {
   const user = await User.findUserByID(req.params.id);
   // If the user has an existing avatar
@@ -146,9 +142,7 @@ const deleteAvatar = asyncHandler(async(req, res) => {
     /*
     - If we failed to delete file because there wasn't a file like that in our directory,
       then we can easily just catch the error here. No need to stop the server, if there 
-      was no file in our dir, just delete the avatar the user reported!
-    
-    - NOTE: This is just defensive programming on my part. 
+      was no file in our dir, just delete the avatar the user reported! 
     */
     try {
       await fileUpload.deleteFromDisk(oldAvatarPath);
@@ -165,6 +159,12 @@ const deleteAvatar = asyncHandler(async(req, res) => {
   }
 })
 
+/**
+ * Middleware for updating a user's username
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const updateUsername = [
   userValidators.username,
   handleValidationErrors,
@@ -176,11 +176,16 @@ const updateUsername = [
     // Try to update username and return updated user as json
     await user.updateUsername(req.body.username);
 
-
     res.status(200).json(user);
   })
 ]
 
+/**
+ * Middleware for updating a user's email
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const updateEmail = [
   userValidators.email,
   handleValidationErrors,
@@ -198,6 +203,11 @@ const updateEmail = [
   })
 ]
 
+/**
+ * Middleware for updating the full name of a user
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const updateFullName = [
   userValidators.fullName,
   handleValidationErrors,
@@ -216,12 +226,12 @@ const updateFullName = [
   })
 ]
 
+/**
+ * Middleware updating/changing the password of a user.
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const changePassword = [
-  /*
-  - Validate old password, new password, and confirmed password 
-    for basic syntax. 'oldPassword' represents the user's current password, whilst
-    'password' is the new passwrod they want to change to.
-  */
   body("oldPassword").isLength({min: 1}).withMessage("Please enter in your old password!"),
   userValidators.password, // new password must be validated using our standards.
   userValidators.confirmPassword,
@@ -245,18 +255,10 @@ const changePassword = [
 
     /*
     1. A password change should log out the user, so log out the user on the 
-      backend by removing their refresh token 'cookie.
+      backend by removing their refresh token 'cookie. So on the front-end 
+      handle the logic for sending a request to our login endpoint, and 
+      the general log out logic for the front-end
     2. Indicate that password change was successful.
-    
-    - NOTE: Then on the client side, the application would make a request 
-      to the logout endpoint to log out the user, which will clear their 
-      refresh token cookie. In a RESTful API, redirects aren't typically used
-      in the same way that front end apps do it. Instead of redirects on the server-side,
-      the client is responsible for making those individual requests in tandem.
-
-      RESTful is stateless, as each request from the client must contain all info 
-      necessary. The server doesn't need to store data, and each request is a complete/independent
-      transaction. Basically one isolated request per interaction.
     */
     res.status(200).json({message: "Password change successful!"});
   })

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const {DateTime} = require("luxon");
-const roles_list = require("../config/roles_list");
+const roles_map = require("../config/roles_map");
 const queryUtils = require("../middleware/queryUtils");
 const ValidationError = require("../errors/ValidationError");
 
@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema(
     */
     role: {
       type: Number,
-      default: roles_list.user
+      default: roles_map.user
     },
 
     
@@ -206,7 +206,7 @@ userSchema.statics.signup = async function (
 	username,
 	password,
 	fullName,
-  role = roles_list.user,
+  role = roles_map.user,
   isEmployee = false
 ) {
 

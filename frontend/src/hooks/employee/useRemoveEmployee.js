@@ -4,7 +4,7 @@ import useSubmitDisabled from "../user/useSubmitDisabled";
 import useEmployeeContext from "./useEmployeeContext";
 import employeeActions from "../../constants/employeeActions";
 import useToast from "../useToast";
-
+import getErrorData from "../../utilities/getErrorData";
 /*
 - Custom hook for removing employees. 
 - NOTE: When we're talking about removing employees, we mean modifying 
@@ -53,7 +53,7 @@ export default function useRemoveEmployee() {
 				if (err.response.status === 429 && !submitDisabled) {
 					setSubmitDisabled(true);
 				}
-				setError(err.response.data.error.message);
+				setError(getErrorData(err, false));
 			} else if (err.request) {
 				setError("Network error!");
 			} else {

@@ -1,6 +1,6 @@
 /**
  * Custom error class for database validation errors. Specifically we'll use this 
- * when doing database checks on specific fields so that we get an 'error.details'
+ * when doing database checks on specific fields such as "username", "title", etc. so that we get an 'error.details'
  * object. It's the idea of aligning our error fomrat with the 'handleValidationErrors'
  * middleware.
  * @class ValidationError

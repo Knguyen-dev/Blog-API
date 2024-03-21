@@ -14,6 +14,11 @@ const tagSchema = new mongoose.Schema({
 })
 
 tagSchema.statics.findTagByID = queryUtils.findDocumentByID;
+
+/**
+ * Custom toJSON method for tag objects
+ * 
+ */
 tagSchema.methods.toJSON = function() {
   const tabObj = this.toObject();
   delete tabObj.createdAt;
@@ -76,22 +81,14 @@ tagSchema.pre("findOneAndDelete", async function (next) {
 // Create 'tagEvents' an emitter that we use to launch different types of events
 const tagEvents = new EventEmitter();
 
+
+/**
+ * Handles emitting a tagDeletion event before a tag is deleted. This will then be 
+ * caught and handle deleting tags in our posts.
+ * 
+ */
 tagSchema.pre("findOneAndDelete", function (next) {
-
-
-  /*
-  - When a tag is deleted, launch the 'tagDeleted' event.
-  Then pass in the id of the tag being deleted, which will use in the 
-  event listener that listens for 'tagDeleted'.
-  
-  
-  - NOTE: The reason the id of the deleted tag is in '._conditions._id'
-    is because here, 'this' refers to the query object. And so 
-    the condition of the query 'findByIdAndDelete(req.params.id)' would 
-    be 'req.params.id'. This is the 'id' of the tag we want deleted.
-  */
   tagEvents.emit("tagDeleted", this._conditions._id);
-
   next();
 })
 

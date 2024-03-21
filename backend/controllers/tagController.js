@@ -3,17 +3,20 @@ const asyncHandler = require("express-async-handler");
 const tagValidators = require("../middleware/validators/tagValidators");
 const handleValidationErrors = require("../middleware/handleValidationErrors")
 const ValidationError = require("../errors/ValidationError");
-
-
 const {Tag, tagEvents} = require("../models/Tag")
-
 const Post = require("../models/Post");
 
 // createTag: Creates a tag
+
+/**
+ * Creates a new tag
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const createTag = [
   tagValidators.title,
   handleValidationErrors,
-
   asyncHandler(async(req, res) => {
 
     // Check if a tag with that title already exists.
@@ -30,6 +33,12 @@ const createTag = [
     res.status(200).json(tag);
 })]
 
+/**
+ * Deletes an existing tag
+ *  
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 // deleteTag: Deletes a tag based on its ID
 const deleteTag = asyncHandler(async(req, res) => {
   // Check if tag ID is valid and the tag exists in the database
@@ -42,8 +51,6 @@ const deleteTag = asyncHandler(async(req, res) => {
   res.status(200).json(result);
 })
 
-
-
 /**
  * Event listener handles removing the deleted tag ID from the 'tags'
  * array for the posts in the database
@@ -51,7 +58,6 @@ const deleteTag = asyncHandler(async(req, res) => {
  * @param (string) deletedTagID - ID of the tag being deleted. Passed in when the pre('findOneAndDelete')
  *                                hook is called.
 */
-
 tagEvents.on("tagDeleted", async(deletedTagID) => {
   try {
     await Post.updateMany(
@@ -70,14 +76,14 @@ tagEvents.on("tagDeleted", async(deletedTagID) => {
     console.error("Error removing deleted tag ID from posts: ", err);
   }
 })
-/*
-- NOTE: Of course for the event listener to work, ensure that 'tagController'
-  is imported somewhere, so that the code in the file is executed. Since 
-  we're in a controller, and we export it for our tagRouter, and that router
-  is used in our express app, this is fine.  
-*/
 
-// updateTag: Updates a tag 
+ 
+/**
+ * Updates an existing tag 
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const updateTag = [
   tagValidators.title,
   handleValidationErrors,
@@ -96,7 +102,7 @@ const updateTag = [
     */
     const existingTag = await Tag.findOne({ _id: {$ne: req.params.id}, title: { $regex: new RegExp('^' + req.body.title + '$', 'i') } });
     if (existingTag) {
-      const err = new ValidationError("title", "A tag already exists with that title!");
+      const err = new ValidationError("title", "A tag already exists with that title!", 400);
       throw err;
     }
 
@@ -107,28 +113,33 @@ const updateTag = [
   })
 ];
 
-// 
+/**
+ * Get all existing tags
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const getTags = asyncHandler(async(req, res) => {
   const tagList = await Tag.find();
   res.status(200).json(tagList);
 })
 
-// getTagDetails: The tag and also the posts associated with that tag.
+/**
+ * Gets the tag and posts that have that tag
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
 const getTagDetails = asyncHandler(async(req, res) => {
-
   // Attempt to find tag, and posts associated with tag
   const [tag, posts] = await Promise.all([
     await Tag.findTagByID(req.params.id),
     await Post.find({tags: req.params.id})
   ]);
 
-
   // Return the tag, and posts associated with the tag
   res.status(200).json({tag, posts});
 })
-
-
-
 
 module.exports = {
   createTag,

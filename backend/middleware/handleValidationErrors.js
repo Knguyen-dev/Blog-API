@@ -1,16 +1,12 @@
-const {validationResult} = require("express-validator");
 const getErrorMap = require("./getErrorMap");
 
-
-
-/*
-+ Handles validation related errors that we define with express-validator.
-  
-
-- NOTE: When we define validation-related errors, we just mean errors involving 
-  user input. Things that the user inputs from the client side.
-*/
-
+/**
+ * Handles syntax/string validation 
+ * 
+ * @param {object} req - Request object
+ * @param {object} res - Response object
+ * @param {*} next - Function for going to the next middleware
+ */
 const handleValidationErrors = (req, res, next) => {
   const errorDetails = getErrorMap(req);
 

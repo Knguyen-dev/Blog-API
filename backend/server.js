@@ -51,16 +51,8 @@ app.use(function (req, res, next) {
 	next(error);
 });
 
-/*
-+ Error handler
-1. If the statusCode property wasn't defined, it was a programming or 
-  database error. It was something we couldn't control within our controllers, and
-  so it is unexpected. We'll use default status code and error message to indicate
-  that it was something on our end rather than the client's. The reason that 
-  we're replacing the error message is becasue with a programming or database 
-  error, it's likely going to be not understandable for the average user.
 
-*/
+// Error handler
 app.use(function (err, req, res, next) {
 
   console.log("Error Caught: ", err.message);
@@ -75,9 +67,9 @@ app.use(function (err, req, res, next) {
 
   // If it's a validation error, we can return it as JSON directly
   if (err instanceof ValidationError) {
-    res.status(err.statuscode).json(err);
+    res.status(err.statusCode).json(err);
   } else {
-    // Else, we manually create our standard error format.
+    // Else, we manually create our standard error format (unexpected or special error)
     res.status(err.statusCode).json({
       error: {
           status: err.statusCode,

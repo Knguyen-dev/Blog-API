@@ -10,6 +10,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PropTypes from "prop-types";
 import { useTheme } from "@emotion/react";
 
+/**
+ * Simple accordion component that allows us to create one accordion
+ */
 export default function BasicAccordion({
 	expanded,
 	handleChange,

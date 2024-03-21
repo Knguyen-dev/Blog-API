@@ -4,8 +4,6 @@
   sign up form, or the 'edit username' form. As a result 
   everything is kept in one place so whenever we want to change our 
   validation rules, we only have to make changes here.
-
-
 */
 
 import * as yup from "yup";
