@@ -11,7 +11,7 @@ const asyncHandler = require("express-async-handler");
  * @param {function} next - Next function
  * @returns 
  */
-const verifyJWT = (req, res, next) => {
+const verifyJWT = asyncHandler(async (req, res, next) => {
   /*
   1. Check capitalized and uncapitalized version. Since there's no standard, it's just better
     to check both.
@@ -22,21 +22,25 @@ const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
   const token = authHeader && authHeader.split(" ")[1]
 
-  const err = new Error("");
-  err.statusCode = 401;
-
 
   if (!token) {
-    err.message = "Unauthorized, you need to have an access token!";
+    const err = new Error("Unauthorized, you need to have an access token!")
+    err.statusCode = 401;
     throw err;
   }
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, asyncHandler(async (err, user) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, user) => {
     if (err) {
       err.message = "Unauthorized, access token you gave is invalid!";
-      throw err;
+      err.statusCode = 401;
+      /*
+      - Typically we can use 'throw' to give the error to the error handling middleware.
+        But here we have to use next so that the error gets sent to the error handling middleware 
+        rather than stopping our app. The reason for this is jwt.verify doesn't support throwing 
+        errors in a way that can be caught by asyncHandler.
+      */
+      next(err);
     }
-
 
     /*
     - Set the user property on the request object to represent the 
@@ -44,7 +48,8 @@ const verifyJWT = (req, res, next) => {
     */
     req.user = user;
     next();
-  }))
-}
+  })
+})
+
 
 module.exports = verifyJWT;

@@ -4,7 +4,6 @@ const Category = require("../models/Category");
 const Post = require("../models/Post");
 const categoryValidators = require("../middleware/validators/categoryValidators");
 const handledValidationErrors = require("../middleware/handleValidationErrors");
-const ValidationError = require("../errors/ValidationError");
 
 
 /**
@@ -33,7 +32,9 @@ const createCategory = [
     const existingCategory = await Category.findOne({ title: { $regex: new RegExp('^' + req.body.title + '$', 'i') }, slug: slug });
     if (existingCategory) {
       // if the title was matched
-      const err = new ValidationError("title", "", 400);
+      const err = new Error("");
+      err.statusCode = 400;
+
       if (existingCategory.title.toLowerCase() === req.body.title.toLowerCase()) {
         err.message = "A category already exists with that title!"
       } else {
@@ -97,7 +98,9 @@ const updateCategory = [
     */
     const existingCategory = await Category.findOne({_id: {$ne: req.params.id}, title: { $regex: new RegExp('^' + req.body.title + '$', 'i') }, slug: slug });
     if (existingCategory) {
-      const err = new ValidationError("title", "", 400);
+      const err = new Error("");
+      err.statusCode = 400;
+
       if (existingCategory.title.toLowerCase() === req.body.title.toLowerCase()) {
         err.message = "A category already exists with that title!"
       } else {

@@ -8,30 +8,34 @@ import {
 
 // Layouts
 import RootLayout from "./layouts/RootLayout";
-import AuthLayout from "./layouts/AuthLayout";
 import AppLayout from "./layouts/AppLayout";
-import EditorLayout from "./layouts/EditorLayout";
-import DashboardLayout from "./layouts/DashboardLayout";
 
 // Pages
 import NotFoundPage from "./pages/NotFoundPage";
 import NotAuthorizedPage from "./pages/NotAuthorizedPage";
+import BrowsePage from "./pages/Browse/BrowsePage";
 
-import BrowsePage from "./pages/BrowsePage";
-import ProfilePage from "./pages/dashboard/ProfilePage";
-import ManagePostsPage from "./pages/dashboard/ManagePostsPage";
-import TeamPage from "./pages/dashboard/TeamPage";
-import CreatePostPage from "./pages/CreatePostPage";
-import EditPostPage from "./pages/EditPostPage";
+// Dashboard
+import DashboardLayout from "./pages/Dashboard/DashboardLayout";
+import ProfilePage from "./pages/Dashboard/Profile/ProfilePage";
+import ManagePostsPage from "./pages/Dashboard/ManagePosts/ManagePostsPage";
+import TeamPage from "./pages/Dashboard/Team/TeamPage";
 
-// Components
-import SignUpForm from "./components/forms/SignUpForm";
-import LoginForm from "./components/forms/LoginForm";
+// Editor Suite
+import EditorLayout from "./pages/EditorSuite/EditorLayout";
+import CreatePostPage from "./pages/EditorSuite/CreatePostPage";
+import EditPostPage from "./pages/EditorSuite/EditPostPage";
+
+// Login and Signup
+import AuthLayout from "./pages/Auth/AuthLayout";
+import LoginForm from "./pages/Auth/LoginForm";
+import SignupForm from "./pages/Auth/SignupForm";
+
 import PersistLogin from "./components/PersistLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Contexts
-import useAuthContext from "./hooks/user/useAuthContext";
+import useAuthContext from "./hooks/useAuthContext";
 
 function App() {
 	const { auth } = useAuthContext();
@@ -46,18 +50,11 @@ function App() {
 						element={
 							!auth.user ? <AuthLayout /> : <Navigate to="/dashboard" />
 						}>
-						{/* 
-          - NOTE: 
-            1. Going to '/auth/' itself is valid, however we don't want users to do that
-            so in that case, we'll redirect them to the 'login' route if that happens.
-            2. If the user isn't authenticated, allow them to go to the pages where they sign 
-              up or log in. However if they are authenticated and they try to go to this route,
-              navigate them to their user dashboard!
-            */}
 						<Route index element={<Navigate to="login" />} />
-						<Route path="signup" element={<SignUpForm />} />
+						<Route path="signup" element={<SignupForm />} />
 						<Route path="login" element={<LoginForm />} />
 					</Route>
+
 					<Route path="/" element={<AppLayout />}>
 						<Route index element={<BrowsePage />} />
 

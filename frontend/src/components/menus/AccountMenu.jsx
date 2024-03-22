@@ -14,7 +14,7 @@ import { Box, Typography } from "@mui/material";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useLogout from "../../hooks/user/useLogout";
+import useLogout from "../../hooks/useLogout";
 
 import PropTypes from "prop-types";
 

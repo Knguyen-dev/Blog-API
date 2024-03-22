@@ -11,8 +11,6 @@ const employeeRouter = require("./routes/employeeRouter");
 const categoryRouter = require("./routes/categoryRouter");
 const tagRouter = require("./routes/tagRouter");
 const postRouter = require("./routes/postRouter");
-const ValidationError = require("./errors/ValidationError");
-
 
 const connectDB = require("./config/database");
 const corsOption = require("./config/corsOption");
@@ -64,19 +62,14 @@ app.use(function (err, req, res, next) {
     err.message = "Server Error!"
   }
 
-
-  // If it's a validation error, we can return it as JSON directly
-  if (err instanceof ValidationError) {
-    res.status(err.statusCode).json(err);
-  } else {
-    // Else, we manually create our standard error format (unexpected or special error)
-    res.status(err.statusCode).json({
-      error: {
-          status: err.statusCode,
-          message: err.message
-        }
-    });
-  }
+  
+  res.status(err.statusCode).json({
+    error: {
+        status: err.statusCode,
+        message: err.message
+      }
+  });
+  
 });
 
 

@@ -14,7 +14,7 @@ const handleValidationErrors = require("../middleware/handleValidationErrors");
  */
 function createAccessToken(user) {
 	return jwt.sign({id: user.id,
-      role: user.role}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15min" });
+      role: user.role}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15s" });
 }
 
 /**
@@ -33,7 +33,9 @@ function createRefreshToken(user) {
  * @param (express.Request) req - The request object
  * @param (express.Response) res - The response object
  */
-const refresh = asyncHandler(async (req, res) => {
+const refresh = asyncHandler(async (req, res, next) => {
+
+
   /*
   1. Assuming cookieParser middleware is used, access the cookies of our 
   request object.
@@ -45,7 +47,10 @@ const refresh = asyncHandler(async (req, res) => {
   */
   const cookies = req.cookies; 
   if (!cookies?.jwt) {
-    return res.status(401).json({message: "Unauthorized, you need to have the refresh token cookie to refresh!"})
+    const err = new Error("Unauthorized, you need to have the refresh token cookie to refresh!");
+    err.statusCode = 401;
+    return next(err);
+    
   }
   const refreshToken = cookies.jwt;
 
@@ -57,14 +62,18 @@ const refresh = asyncHandler(async (req, res) => {
   */
   const foundUser = await User.findOne({refreshToken});
   if (!foundUser) {
-    return res.status(403).json({message: "Forbidden, we couldn't find a user with your refresh token"})
+    const err = new Error("Forbidden, we couldn't find a user with your refresh token");
+    err.statusCode = 403;
+    return next(err);
   }
 
   // Verify the token, this can check things usch as when token expires
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler (async (error) => {
 
     if (error) {
-      return res.status(403).json({message: "Forbidden, refresh token was invalid. Probably expired."})
+      const err = new Error("Forbidden, refresh token was invalid. Probably expired.");
+      err.statusCode = 403;
+      return next(err);
     }
 
     // Else user exists and the refresh token is valid, so create and return the access token as json

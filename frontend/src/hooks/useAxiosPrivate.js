@@ -1,7 +1,7 @@
 import { axiosPrivate } from "../api/axios";
 import { useEffect } from "react";
-import useRefreshToken from "./user/useRefreshToken";
-import useAuthContext from "./user/useAuthContext";
+import useRefreshToken from "./useRefreshToken";
+import useAuthContext from "./useAuthContext";
 
 /*
 + useAxiosPrivate: A hook that will return our axiosPrivate instance

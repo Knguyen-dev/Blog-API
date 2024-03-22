@@ -6,7 +6,6 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const { body } = require("express-validator");
 const handleValidationErrors = require("../middleware/handleValidationErrors");
-const ValidationError = require("../errors/ValidationError");
 
 /**
  * Gets all users in the database
@@ -43,15 +42,12 @@ const deleteUser = [
     // Attempt to find user by ID
     const user = await User.findUserByID(req.params.id);
 
-    /*
-    - Check if password matches
-    - NOTE: We want to an error 'details' back to the client here 
-      so use 'ValidationError'
-    */
+    // check if password matches
     const isMatch = await bcrypt.compare(req.body.password, user.password);
     if (!isMatch) {
-      // throw a ValidationError to match error format sent 
-      const err = new ValidationError("password", "Password is incorrect!", 400);
+      
+      const err = new Error("Passowrd is incorrect!");
+      err.statusCode = 400;
       throw err;
     }
 
@@ -120,16 +116,18 @@ const updateAvatar = [
     await user.save();
 
     // Send the user back in json 
-    return res.status(200).json({user}
-    );
+    return res.status(200).json(user);
   })
 ]
 
 /**
- * Middleware for deleting an avatar
+ * Middleware for deleting a user's avatar.
  * 
  * @param (express.Request) req - The request object
  * @param (express.Response) res - The response object
+ * 
+ * NOTE: Even if the user doesn't have an avatar, and they're trying to delete, we'll
+ * still send back a status 200
  */
 const deleteAvatar = asyncHandler(async(req, res) => {
   const user = await User.findUserByID(req.params.id);
@@ -153,11 +151,10 @@ const deleteAvatar = asyncHandler(async(req, res) => {
     // Delete avatar from user in the database
     user.avatar = "";
     await user.save();
-    res.status(200).json({user});
-  } else {
-    res.status(404).json({message: "No avatar available to delete!"});
   }
-})
+
+  res.status(200).json(user);
+});
 
 /**
  * Middleware for updating a user's username
@@ -244,7 +241,8 @@ const changePassword = [
     // Check if the old password they entered matches the password on the account
     const match = await bcrypt.compare(req.body.oldPassword, user.password);
     if (!match) {
-      const err = ValidationError("oldPassword", "Old password you entered was incorrect!", 400)
+      const err = new Error("Old Password you entered was incorrect!");
+      err.statusCode = 400;
       throw err;
     }
 

@@ -3,7 +3,6 @@ const slugify = require("slugify");
 const queryUtils = require("../middleware/queryUtils");
 const Category = require('../models/Category');
 const {Tag} = require("../models/Tag");
-const ValidationError = require("../errors/ValidationError");
 const post_status_map = require("../config/post_status_map");
 
 const postSchema = new mongoose.Schema(
@@ -116,7 +115,8 @@ postSchema.statics.checkTitleAndSlug = async function(title, slug) {
       errMessage = `Slug generated for post is already taken '${existingPost.slug}'. Please make title more different!`;
     }
 
-    const err = new ValidationError("title", errMessage, 400);
+    const err = new Error(errMessage);
+    err.statusCode = 400;
     throw err;
   }
 }

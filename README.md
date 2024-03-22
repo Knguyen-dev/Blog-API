@@ -49,6 +49,24 @@ probably better if I personalize my website a bit.
   to have an nginx server running in front of your node server. This nginx server 
   acts as a 'reverse proxy'
 
+
+# BOOK MARK:
+I think our folder structure change is nearing its end. In the end, I think we did pretty good. It's a lot better than what we started out with that's for sure. Now the hooks and components are put in their separate pages which is good. After this you may be tempted to start building the ManagePost page, but no, we must add tests first. Though do the react-folder-structure commit first, and then start adding tests to the backend.
+
+# Commit
+
+Improved Frontend folder structure
+- Frontend:
+Major changes to the react folder structure. Components, files, and constants that are specific to a certain
+page will be stored in a folder for that page. While general components, hooks, and other items will be stored 
+in their respective root folders in the src directory.
+
+- Backend:
+1. Fixed an error with verifyJWT and how it threw errors back
+2. Simplified error handling by removing 'ValidationError'. After some deliberation we realized that it was adding unnecessary complexity to the application, and it wasn't really used all that much.
+
+
+
 # BOOK MARK:
 - Finished functionality for categories and tags. Now we need to add functionality to posts.For managing tags, we'll create a dedicated tag section for editors/admins where they can add, delete, or edit tags. This section will be in the editor tab, and it will show a shared table of all tags in the database, which will help editors know which tags are available. Then they can use those tags in a post. So in this case, if an editor wants to have a tag on a post, but that tag doesn't exist yet, they can just go to the editor page and add that tag. Finally they'll be able to go back to the editor suite and add that tag to the post.
 

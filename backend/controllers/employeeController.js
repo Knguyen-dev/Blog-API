@@ -4,7 +4,6 @@ const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 const {body}  = require("express-validator");
 const handleValidationErrors = require("../middleware/handleValidationErrors");
-const ValidationError = require("../errors/ValidationError");
 
 
 
@@ -80,8 +79,8 @@ const addEmployee = [
   // Try to find user with the passed in username
   const user = await User.findOne({username: req.body.username});
   if (!user) {
-    // use a validation error so the error gets a 'details' object sent back for json
-    const err = new ValidationError("username", `User with username '${req.body.username}' not found!`, 400);
+    const err = new Error( `User with username '${req.body.username}' not found!`);
+    err.statusCode = 400; // We use 400 to indicate invalid input here.
     throw err;
   }
 

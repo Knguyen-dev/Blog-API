@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const {DateTime} = require("luxon");
 const roles_map = require("../config/roles_map");
 const queryUtils = require("../middleware/queryUtils");
-const ValidationError = require("../errors/ValidationError");
 
 
 const userSchema = new mongoose.Schema(
@@ -140,7 +139,9 @@ userSchema.methods.updateUsername = async function (username) {
   // Check availability of username.
   const isAvailable = await this.constructor.isUsernameAvailable(username);
   if (!isAvailable) {
-    const err = new ValidationError("username", `Username '${username}' is already taken!`, 400)
+
+    const err = new Error(`Username '${username}' is already taken!`);
+    err.statusCode = 400;
     throw err;
   }
 
@@ -177,7 +178,8 @@ userSchema.methods.updateUsername = async function (username) {
   } else if (this.usernameChangeCount < USERNAME_CHANGE_LIMIT) {
     this.usernameChangeCount += 1;
   } else {
-    const err = new ValidationError("username", `Username change limit reached! Can only change username twice every 7 days.`, 400);
+    const err = new Error(`Username change limit reached! Can only change username twice every 7 days.`);
+    err.statusCode = 400;
     throw err;
   }
   
@@ -213,7 +215,8 @@ userSchema.statics.signup = async function (
   // Check if an existing user exists with that username already
   const isAvailable = await this.isUsernameAvailable(username);
   if (!isAvailable) {
-    const err = new ValidationError("username", "Username already taken!", 400);
+    const err = new Error("Username already taken!");
+    err.statusCode = 400;
     throw err;
   }
 

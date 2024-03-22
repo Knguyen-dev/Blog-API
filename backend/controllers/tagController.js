@@ -2,11 +2,9 @@ const getErrorMap = require("../middleware/getErrorMap");
 const asyncHandler = require("express-async-handler");
 const tagValidators = require("../middleware/validators/tagValidators");
 const handleValidationErrors = require("../middleware/handleValidationErrors")
-const ValidationError = require("../errors/ValidationError");
 const {Tag, tagEvents} = require("../models/Tag")
 const Post = require("../models/Post");
 
-// createTag: Creates a tag
 
 /**
  * Creates a new tag
@@ -22,7 +20,8 @@ const createTag = [
     // Check if a tag with that title already exists.
     const existingTag = await Tag.findOne({ title: { $regex: new RegExp('^' + req.body.title + '$', 'i') } });
     if (existingTag) {
-      const err = new ValidationError("title", "A tag already exists with that title!", 400);
+      const err = new Error("A tag already exists with that title!");
+      err.statusCode = 400;
       throw err;
     }
 
@@ -102,7 +101,9 @@ const updateTag = [
     */
     const existingTag = await Tag.findOne({ _id: {$ne: req.params.id}, title: { $regex: new RegExp('^' + req.body.title + '$', 'i') } });
     if (existingTag) {
-      const err = new ValidationError("title", "A tag already exists with that title!", 400);
+
+      const err = new Error("A tag already exists with that title!");
+      err.statusCode = 400;
       throw err;
     }
 
