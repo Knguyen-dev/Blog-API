@@ -1,11 +1,12 @@
 # Blog-API
+Create a blog fullstack blog application. Have a front end application for viewing and editing posts. Let people read and comment on posts. Basically the blog should make it so only you, imagine like the 'guardian' or 'the atlantic'. So I guess there should be a section that allows users. Some inspirations to take from that are similar are reddit, dogonews, ign, or something similar. It just has to involve posts, authors, comments, etcetera. Just takes things one at a time.
 
-- Create a blog fullstack blog application. Have a front end application for viewing and
-  editing posts. Let people read and comment on posts. Basically the blog should make it 
-  so only you, imagine like the 'guardian' or 'the atlantic'. So I guess there should 
-  be a section that allows users. Some inspirations to take from that are similar 
-  are reddit, dogonews, ign, or something similar. It just has to involve posts, authors, comments,
-  etcetera. Just takes things one at a time.
+
+## Scripts
+```
+npm run test:file -- path/to/your/test/file.test.js; runs individual test file
+```
+
 
 # Models:
 - Posts should have an author, title, description, content. Also 

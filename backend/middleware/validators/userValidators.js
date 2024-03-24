@@ -1,6 +1,16 @@
 const {body} = require("express-validator");
 const roles_map = require("../../config/roles_map");
 
+/**
+ * Checks whether the username is valid or not.
+ * @param {string} username - Username that the user wants to signup with.
+ * @return {boolean} Indicates whether username is valid or not
+ */
+const validateUsername = (username) => {
+  const regex = /^(?=.*[a-zA-Z])[a-zA-Z0-9_]{6,32}$/
+  return regex.test(username)
+}
+
 
 const userValidators = {
   /**
@@ -26,14 +36,10 @@ const userValidators = {
   username: body("username")
 		.trim()
 		.escape()
-		.isLength({ min: 1, max: 32 })
-		.withMessage(
-			"Username has to be within 1 to 32 characters and alphanumeric!"
-		)
-		.isAlphanumeric()
-		.withMessage(
-			"Username has to be within 1 to 32 characters and alphanumeric!"
-		),
+		.custom(username => {
+      const usernameRegex = /^(?=.*[a-zA-Z])[a-zA-Z0-9_]{6,32}$/
+      return usernameRegex.test(username)
+    }).withMessage("Username has to be between 6-32 characters. Can have letters, numbers, and underscores. Has to have at least one letter!"),
 
   /**
    * Validates the password of the user.

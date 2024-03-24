@@ -26,7 +26,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
   if (!token) {
     const err = new Error("Unauthorized, you need to have an access token!")
     err.statusCode = 401;
-    throw err;
+    next(err);
   }
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, user) => {

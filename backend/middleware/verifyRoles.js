@@ -8,10 +8,18 @@
 const verifyRoles = (...allowedRoles) => {
 
   return (req, res, next) => {
-    const rolesArr = [...allowedRoles];
 
+    // Ensure there is a logged in user.
+    if (!req.user) {
+      const err = new Error("Unauthorized, user needs to be logged in!");
+      err.statusCode = 401;
+      throw err;
+    }
+
+
+    const rolesArr = [...allowedRoles];
     /*
-    - Takeaway: If the user's role is included in the allow list ,then
+    - If the user's role is included in the allow list ,then
       we'll let then access the resource, else no.
     */
     const isAuthorized = rolesArr.includes(req.user.role);

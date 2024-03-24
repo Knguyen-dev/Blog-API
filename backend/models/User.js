@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 			lowercase: true,
+      
 			maxLength: 64,
 		},
 
@@ -19,6 +20,7 @@ const userSchema = new mongoose.Schema(
 			required: true,
 			lowercase: true,
 			unique: true,
+      minLength: 6,
 			maxLength: 32,
 		},
 

@@ -18,8 +18,8 @@ const usernameSchema = yup
 	.string()
 	.required("Username is required!")
 	.matches(
-		/^[a-zA-Z0-9]{1,32}$/,
-		"Username must be alphanumeric and 1-32 characters long."
+		/^(?=.*[a-zA-Z])[a-zA-Z0-9_]{6,32}$/,
+		"Username has to be between 6-32 characters. Can have letters, numbers, and underscores. Has to have at least one letter!"
 	);
 
 const fullNameSchema = yup
