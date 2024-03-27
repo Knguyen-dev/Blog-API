@@ -1,15 +1,6 @@
 const {body} = require("express-validator");
 const roles_map = require("../../config/roles_map");
 
-/**
- * Checks whether the username is valid or not.
- * @param {string} username - Username that the user wants to signup with.
- * @return {boolean} Indicates whether username is valid or not
- */
-const validateUsername = (username) => {
-  const regex = /^(?=.*[a-zA-Z])[a-zA-Z0-9_]{6,32}$/
-  return regex.test(username)
-}
 
 
 const userValidators = {
@@ -101,7 +92,7 @@ const userValidators = {
     .trim()
     .escape()
     .customSanitizer(role => parseInt(role))
-    .custom( (role, { req }) => {
+    .custom(role => {
       return Object.values(roles_map).includes(role);
     }).withMessage("Role is not valid!"),
 }

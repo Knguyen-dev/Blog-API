@@ -4,13 +4,12 @@
   collection. 
 */
 const router = require("express").Router();
-const verifyRoles = require("../middleware/verifyRoles");
 const employeeController = require("../controllers/employeeController");
-const roles_map = require("../config/roles_map");
+const roleVerification = require("../middleware/roleVerification");
 
 
 // Middleware to ensure requests made to these endpoints are made by admins
-router.use(verifyRoles(roles_map.admin));
+router.use(roleVerification.verifyAdmin);
 
 // Getting all users that are marked as employees
 router.get("/", employeeController.getEmployees);

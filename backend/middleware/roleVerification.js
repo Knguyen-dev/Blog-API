@@ -1,3 +1,6 @@
+const roles_map = require("../config/roles_map");
+
+
 /**
  * A higher-order function that creates middleware functions to protect routes based on the allowed roles.
  * 
@@ -35,4 +38,13 @@ const verifyRoles = (...allowedRoles) => {
   }
 }
 
-module.exports = verifyRoles;
+
+const verifyAdmin = verifyRoles(roles_map.admin);
+const verifyEditorOrAdmin = verifyRoles(roles_map.editor, roles_map.admin);
+
+
+module.exports = {
+  verifyRoles,
+  verifyAdmin,
+  verifyEditorOrAdmin,
+};

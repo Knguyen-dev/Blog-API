@@ -1,7 +1,11 @@
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import {
+	Dialog,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+	DialogActions,
+} from "@mui/material";
+
 import PropTypes from "prop-types";
 
 export default function AlertDialog({
@@ -23,7 +27,7 @@ export default function AlertDialog({
 					{dialogText}
 				</DialogContentText>
 			</DialogContent>
-			{dialogActions}
+			<DialogActions>{dialogActions}</DialogActions>
 		</Dialog>
 	);
 }

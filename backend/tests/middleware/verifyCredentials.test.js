@@ -1,7 +1,7 @@
-const credentials = require("../../middleware/credentials");
+const verifyCredentials = require("../../middleware/verifyCredentials");
 
 
-describe("credentials middleware", () => {
+describe("verifyCredentials middleware", () => {
   // if origin is in the allowed origin's list, set credentials headers
   test("set credentials headers when request origin is included in allowed origin", () => {
     const scenarios = [
@@ -27,8 +27,9 @@ describe("credentials middleware", () => {
       const next = jest.fn();
       const allowedOrigins = scenario.allowedOrigins;
 
-      credentials(req, res, next, allowedOrigins);
+      const middleware = verifyCredentials(allowedOrigins);
 
+      middleware(req, res, next);
 
       // Expect header function to be called to have the origins set
       expect(res.header).toHaveBeenCalledWith("Access-Control-Allow-Credentials", true);
@@ -64,8 +65,10 @@ describe("credentials middleware", () => {
       };
       const next = jest.fn();
       const allowedOrigins = scenario.allowedOrigins;
+      
+      const middleware = verifyCredentials(allowedOrigins);
 
-      credentials(req, res, next, allowedOrigins);
+      middleware(req, res, next);
 
       // Expect that the header function wasn't called
       expect(res.header).not.toHaveBeenCalled();

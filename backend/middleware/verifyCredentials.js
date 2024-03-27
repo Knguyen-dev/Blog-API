@@ -17,12 +17,15 @@
  * our tests. This keeps them separate, and so if the production origins change, they won't affect 
  * the tests since the tests are isolated.
  */
-const credentials = (req, res, next, allowedOrigins) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Credentials", true);
+const verifyCredentials = (allowedOrigins) => {
+  return (req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.header("Access-Control-Allow-Credentials", true);
+    }
+    next();
   }
-  next();
 }
 
-module.exports = credentials;
+
+module.exports = verifyCredentials;

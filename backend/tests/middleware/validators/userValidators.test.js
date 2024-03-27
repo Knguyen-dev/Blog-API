@@ -1,7 +1,14 @@
+// Create some mock roles
+jest.mock("../../../config/roles_map", () => ({
+  role_1: 1, 
+  role_2: 2,
+  role_3: 3,
+  role_4: 4,
+  role_5: 5,
+}));
+
+// Import our validators
 const userValidators = require("../../../middleware/validators/userValidators");
-
-
-
 
 describe("email validation", () => {
   test("should pass for valid email formats", async () => {
@@ -77,7 +84,7 @@ describe("email validation", () => {
       - If an email we expected to be invalid, as marked as valid, log it.
       */
       if (validationResult.isEmpty()) {
-        console.log(`Validation failed for email: ${email}`);
+        console.log(`Validation passed for email: ${email}`);
         console.log(validationResult.array());
       }
 
@@ -152,7 +159,7 @@ describe("username validation", () => {
 
       // If username was valid, log out the username.
       if (validationResult.isEmpty()) {
-        console.log(`Validation failed for username: ${username}`);
+        console.log(`Validation passed for username: ${username}`);
       }
 
       // Expecting validationResult to have errors
@@ -162,7 +169,6 @@ describe("username validation", () => {
 })
 
 describe("password validation", () => {
-
   test("should pass for valid passwords", async () => {
     const validPasswords = [
       'My#Password*123', 
@@ -219,7 +225,7 @@ describe("password validation", () => {
       const validationResult = await userValidators.password.run(req);
 
       if (validationResult.isEmpty()) {
-        console.log(`Validation failed for password: ${password}`);
+        console.log(`Validation passed for password: ${password}`);
       }
 
       // Expecting errors since these are invalid passwords
@@ -228,10 +234,136 @@ describe("password validation", () => {
   })
 })
 
-// describe("fullName validation", () => {
-  
-// })
+describe("confirmPassword validation", () => {
+  test("should pass when password and confirm password match", async () => {
 
-// describe("role validation", () => {
-  
-// })
+    const req = {
+      body: {
+        password: "MyPassword123",
+        confirmPassword: "MyPassword123"
+      }
+    }
+    const validationResult = await userValidators.confirmPassword.run(req);
+    
+    // We expect there to be no errors.
+    expect(validationResult.isEmpty()).toBe(true);
+
+  })
+
+  test("should fail when password and confirm password are different", async () => {
+    const req = {
+      body: {
+        password: "MyPassword123",
+        confirmPassword: "DifferentPassword"
+      }
+    }
+    const validationResult = await userValidators.confirmPassword.run(req);
+    
+    // We expect there to be errors.
+    expect(validationResult.isEmpty()).toBe(false);
+  })
+})
+
+describe("fullName validation", () => {
+  test("should pass for a valid fullNames", async () => {
+
+    const validFullNames = [
+      'John',
+      'Mary Johns0n',
+      'Alice Will1ams',
+      'Bob_Brown',
+      'Emma Jone#s',
+      'DB. Scooper',
+    ]
+    const req = {
+      body: {}
+    }
+
+    for (const fullName of validFullNames) {
+      req.body.fullName = fullName;
+      const validationResult = await userValidators.fullName.run(req);
+
+      if (!validationResult.isEmpty()) {
+        console.log(`Validation failed for fullName: ${fullName}`);
+      }
+
+      // Expecting no errors since these should be valid names
+      expect(validationResult.isEmpty()).toBe(true);
+    }
+  })
+
+  test("should fail for invalid fullNames", async () => {
+    const invalidFullNames = [
+      "",    // empty string
+      null,  // null
+      "   ", // purely white space
+      "a".repeat(65) // string length 65 character, when max is 64.
+    ]
+
+    const req = {
+      body: {}
+    }
+
+    for (const fullName of invalidFullNames) {
+      req.body.fullName = fullName;
+      const validationResult = await userValidators.fullName.run(req);
+
+      // If our validator didn't catch errors for the invalid name, log it.
+      if (validationResult.isEmpty()) {
+        console.log(`Validation passed for fullName: ${fullName}`);
+      }
+
+      // Expecting errors since these are invalid fullNames
+      expect(validationResult.isEmpty()).toBe(false);
+    }
+  })
+})
+
+describe("role validation", () => {
+  test("should pass for valid roles", async () => {
+    const validRoles = [5,4,3,2,1];
+    const req = {
+        body: {}
+      };
+
+    for (const role of validRoles) {
+      req.body.role = role;
+      const validationResult = await userValidators.role.run(req);
+
+      // If validator caught an error, log it
+      if (!validationResult.isEmpty()) {
+        console.log(`Validation failed for role: ${role}`);
+      }
+
+      // Expecting no errors since these should be valid roles
+      expect(validationResult.isEmpty()).toBe(true);
+    }
+  });
+
+  test("should fail for invalid roles", async () => {
+    const validRoles = [
+      "",     // empty string
+      null,   // null
+      0,      // valid roles are from 1-5
+      10,     // valid roles are from 1-5
+      "some-random-string", // not a value in the roles_map
+
+    ];
+    const req = {
+        body: {}
+      };
+
+    for (const role of validRoles) {
+      req.body.role = role;
+      const validationResult = await userValidators.role.run(req);
+
+      // If validator didn't catch an error with the invalid role, log it
+      if (validationResult.isEmpty()) {
+        console.log(`Validation passed for role: ${role}`);
+      }
+
+      // Expecting errors since we think these roles are invalid
+      expect(validationResult.isEmpty()).toBe(false);
+    }
+  });
+});

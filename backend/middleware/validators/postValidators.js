@@ -92,12 +92,12 @@ const postValidators = {
 
   
   /**
-   * Validates the status of the post to ensure it's a valid value.
+   * Validates the status of the post to ensure it's a valid value. 
    * 
    * @params {string} status - Status of the post
    */
   status: body("status")
-    .isIn(Object.keys(post_status_map))
+    .isIn(Object.values(post_status_map))
     .withMessage("Post must be in one of the following statuses: draft, published, private."),
 
   /**
@@ -122,20 +122,28 @@ const postValidators = {
    * 
    * @params {string} category - String representing ID of the category.
    */
-  category: body("category").isLength({min: 1}).withMessage("Category ID for the post is required!"),
+  category: body("category")
+    .trim()
+    .isString()
+    .isLength({min: 1})
+    .withMessage("Category ID for the post is required!"),
 
   /**
     * Validates the optional imgSrc property, and ensures it's a string if it's defined.
     * 
     * @params {string} imgSrc - String containing the image source for the post's thumbnail.
     */
-  imgSrc: body("imgSrc").optional().isString().withMessage("Image source for the post needs to be a string."),
+  imgSrc: body("imgSrc").optional().isString().trim().isLength({min: 1}).withMessage("Image source for the post needs to be a string."),
 
   /**
    * Validates the optional imgCredits property, and ensures it's a string if it's defined.
    * 
    * @params {string} imgCredits - String containing the credits for the post's thumbnail.
    */
-  imgCredits: body("imgCredits").optional().isString().withMessage("Image credits need to be a string."),
+  imgCredits: body("imgCredits").optional().isString().trim().isLength({min: 1}).withMessage("Image credits need to be a string."),
 }
-module.exports = postValidators;
+module.exports = {
+  ...postValidators, // export validators
+  validateWordCount, // export utility function so that we can test it
+};
+

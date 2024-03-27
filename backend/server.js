@@ -14,7 +14,7 @@ const postRouter = require("./routes/postRouter");
 
 const connectDB = require("./config/database");
 const corsOption = require("./config/corsOption");
-const credentials = require("./middleware/credentials");
+const verifyCredentials = require("./middleware/verifyCredentials");
 const allowedOrigins = require("./config/allowedOrigins");
 const verifyJWT = require("./middleware/verifyJWT")
 
@@ -25,7 +25,10 @@ const express = require("express");
 const app = express();
 
 app.use(express.static(path.join(__dirname, "public"))); // serve static assets such as our stored images on disk
-app.use(credentials(allowedOrigins)); // credentials/cookies configuration
+
+
+app.use(verifyCredentials(allowedOrigins)); // credentials/cookies configuration
+
 app.use(cors(corsOption)); // cors configuration
 app.use(logger("dev")); // logs out requests in the console
 app.use(express.json());  // json from request body

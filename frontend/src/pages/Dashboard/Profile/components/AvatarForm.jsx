@@ -2,7 +2,7 @@ import { Button, Box, Avatar } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useEffect, useState, useRef } from "react";
 import useChangeAvatar from "../hooks/useChangeAvatar";
-import BasicDialog from "../../../../components/dialog/BasicDialog";
+import AlertDialog from "../../../../components/dialog/AlertDialog";
 
 import PropTypes from "prop-types";
 
@@ -21,10 +21,14 @@ import PropTypes from "prop-types";
 */
 
 export default function AvatarForm({ user }) {
+	// States for the main avatar form
 	const [file, setFile] = useState();
 	const [imagePreview, setImagePreview] = useState();
 	const { error, isLoading, changeAvatar, submitDisabled } = useChangeAvatar();
 	const avatarInputRef = useRef(null);
+
+	// States for avatar dialog
+	const [open, setOpen] = useState(false);
 
 	/*
   + Effect: Updates image preview when user's avatar changes. As a result
@@ -65,6 +69,24 @@ export default function AvatarForm({ user }) {
 		avatarInputRef.current.value = null; // reset input type file's appearance after a good submission
 	};
 
+	const handleDeleteAvatar = async () => {
+		await changeAvatar();
+		setOpen(false);
+	};
+
+	const avatarDialogActions = (
+		<Box>
+			<Button onClick={() => setOpen(false)}>Cancel</Button>
+			<Button
+				onClick={handleDeleteAvatar}
+				color="warning"
+				type="submit"
+				disabled={isLoading || submitDisabled}>
+				Delete
+			</Button>
+		</Box>
+	);
+
 	return (
 		<form onSubmit={onSubmit}>
 			<Box sx={{ display: "flex", justifyContent: "center", marginY: 2 }}>
@@ -96,13 +118,19 @@ export default function AvatarForm({ user }) {
 						marginTop: 2,
 						justifyContent: "space-between",
 					}}>
-					<BasicDialog
-						isLoading={isLoading}
-						onSubmit={changeAvatar}
-						disabled={submitDisabled}
-						menuText="By agreeing, you confirm the permanent deletion of your avatar from your account. Please note that once deleted, your avatar cannot be recovered."
-						menuTitle="Delete Your Avatar?"
+					<AlertDialog
+						open={open}
+						title="Delete Your Avatar?"
+						dialogText="By agreeing, you confirm the permanent deletion of your avatar from your account. Please note that once deleted, your avatar cannot be recovered."
+						handleClose={() => setOpen(false)}
+						dialogActions={avatarDialogActions}
 					/>
+					<Button
+						variant="contained"
+						color="warning"
+						onClick={() => setOpen(true)}>
+						Delete Avatar?
+					</Button>
 					<Button
 						variant="contained"
 						type={"submit"}
