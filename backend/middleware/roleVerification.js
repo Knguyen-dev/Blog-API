@@ -16,7 +16,7 @@ const verifyRoles = (...allowedRoles) => {
     if (!req.user) {
       const err = new Error("Unauthorized, user needs to be logged in!");
       err.statusCode = 401;
-      throw err;
+      return next(err);
     }
 
 
@@ -30,7 +30,7 @@ const verifyRoles = (...allowedRoles) => {
     if (!isAuthorized) {
       const err = new Error("Unauthorized to access this resource!");
       err.statusCode = 401;
-      throw err;
+      return next(err);
     }
 
     // They're authorized at this point so go to the next middleware.

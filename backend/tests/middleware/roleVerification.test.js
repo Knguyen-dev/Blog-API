@@ -2,7 +2,7 @@ const roleVerification = require("../../middleware/roleVerification");
 
 describe("verifyRoles middleware", () => {  
   // call next if user role is included in the allowed roles
-  test("call next when role is included in allowed roles", () => {
+  test("call next with no error when role is included in allowed roles", () => {
 
     const scenarios = [
       {
@@ -20,20 +20,17 @@ describe("verifyRoles middleware", () => {
     ];
 
     const res = {}
-    const next = jest.fn();
-
     for (const scenario of scenarios) {
       const req = scenario.req;
+      const next = jest.fn();
+
       const middleware = roleVerification.verifyRoles(...scenario.allowedRoles);
       middleware(req, res, next);
       expect(next).toHaveBeenCalled();
-
-      // Clear the jest mock before the next test
-      next.mockClear()
     }    
   })
   
-  test("throw error when role isn't included in allowed roles", () => {
+  test("call next(err) when role isn't included in allowed roles", () => {
     const scenarios = [
       {
         req: {user: {role: "admin"}},
@@ -50,39 +47,44 @@ describe("verifyRoles middleware", () => {
     ];
 
     const res = {}
-    const next = jest.fn();
+    
      for (const scenario of scenarios) {
       const req = scenario.req;
+      const next = jest.fn();
+
       const middleware = roleVerification.verifyRoles(...scenario.allowedRoles);
-      expect(() => middleware(req, res, next)).toThrow();
-      expect(() => middleware(req, res, next)).toThrow(expect.objectContaining({
-        statusCode: 401
-      }));    
+
+      middleware(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(next.mock.calls[0][0].statusCode).toBe(401);
     }    
   })
 
-  test("throw unauthorized error when role isn't defined", () => {
+  test("should call next(err) unauthorized error when role isn't defined", () => {
     const req = {user: {stuff: 1}};
     const res = {}
     const next = jest.fn();
     const middleware = roleVerification.verifyRoles("user", "editor");
-    expect(() => middleware(req, res, next)).toThrow();    
 
-    expect(() => middleware(req, res, next)).toThrow(expect.objectContaining({
-      statusCode: 401
-    }));    
+    middleware(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
+    expect(next.mock.calls[0][0].statusCode).toBe(401);
+    
   })
 
-  test("throw error when user isn't defined", () => {
+  
+  test("should call next(err) when user isn't defined", () => {
     const req = {};
     const res = {}
     const next = jest.fn();
     const middleware = roleVerification.verifyRoles("user", "editor");
-    expect(() => middleware(req, res, next)).toThrow();    
 
-    expect(() => middleware(req, res, next)).toThrow(expect.objectContaining({
-      statusCode: 401
-    }));    
+    middleware(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
+    expect(next.mock.calls[0][0].statusCode).toBe(401);
   })
 })
 

@@ -1,11 +1,19 @@
-// Create some mock roles
-jest.mock("../../../config/roles_map", () => ({
+
+/*
++ Create some mock roles:
+Since we placed this outside of the 'describe' blocks, this mock is maintained
+for all tests, even if we configured it so that mocks are restored/reset after 
+each test case.
+*/
+
+const mockRoles = {
   role_1: 1, 
   role_2: 2,
   role_3: 3,
   role_4: 4,
   role_5: 5,
-}));
+}
+jest.mock("../../../config/roles_map", () => (mockRoles));
 
 // Import our validators
 const userValidators = require("../../../middleware/validators/userValidators");
@@ -320,11 +328,13 @@ describe("fullName validation", () => {
 })
 
 describe("role validation", () => {
+  
   test("should pass for valid roles", async () => {
-    const validRoles = [5,4,3,2,1];
+
+    const validRoles = Object.values(mockRoles)
     const req = {
-        body: {}
-      };
+      body: {}
+    };
 
     for (const role of validRoles) {
       req.body.role = role;
@@ -347,7 +357,6 @@ describe("role validation", () => {
       0,      // valid roles are from 1-5
       10,     // valid roles are from 1-5
       "some-random-string", // not a value in the roles_map
-
     ];
     const req = {
         body: {}

@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
-const queryUtils = require("../middleware/queryUtils");
 const categorySchema = new mongoose.Schema({
-  
   // Title of the category
   title: {
     type: String,
@@ -26,8 +24,6 @@ const categorySchema = new mongoose.Schema({
   }
 })
 
-// Finds categories by ID.
-categorySchema.statics.findCategoryByID = queryUtils.findDocumentByID;
 categorySchema.methods.toJSON = function() {
   const categoryObj = this.toObject();
   delete categoryObj.createdAt;

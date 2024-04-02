@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const queryUtils = require("../middleware/queryUtils");
 const EventEmitter = require("events");
 
 const tagSchema = new mongoose.Schema({
@@ -8,16 +7,14 @@ const tagSchema = new mongoose.Schema({
     required: true,
     maxLength: 50,
     unique: true,
-  }
+  },
+
 }, {
   timestamps: true
 })
 
-tagSchema.statics.findTagByID = queryUtils.findDocumentByID;
-
 /**
  * Custom toJSON method for tag objects
- * 
  */
 tagSchema.methods.toJSON = function() {
   const tabObj = this.toObject();
@@ -77,10 +74,8 @@ tagSchema.pre("findOneAndDelete", async function (next) {
 3. Then we create our event listener in tagController.js 
 */
 
-
 // Create 'tagEvents' an emitter that we use to launch different types of events
 const tagEvents = new EventEmitter();
-
 
 /**
  * Handles emitting a tagDeletion event before a tag is deleted. This will then be 

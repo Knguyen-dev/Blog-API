@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const {DateTime} = require("luxon");
 const roles_map = require("../config/roles_map");
-const queryUtils = require("../middleware/queryUtils");
-
+const { createError } = require("../middleware/errorUtils");
 
 const userSchema = new mongoose.Schema(
 	{
@@ -11,10 +10,8 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 			lowercase: true,
-      
 			maxLength: 64,
 		},
-
 		username: {
 			type: String,
 			required: true,
@@ -23,7 +20,6 @@ const userSchema = new mongoose.Schema(
       minLength: 6,
 			maxLength: 32,
 		},
-
     initialUsernameChangeDate: {
       type: Date,
       default: Date.now(),
@@ -32,19 +28,15 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-
-
 		password: {
 			type: String,
 			required: true,
 		},
-
     fullName: {
       type: String,
       required: true,
       maxLength: 64
     },
-
 
     /*
     - Roles: One role per user
@@ -56,7 +48,6 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: roles_map.user
     },
-
     
     /*
     - Whether the user is an employee or not. People with role of 
@@ -141,9 +132,7 @@ userSchema.methods.updateUsername = async function (username) {
   // Check availability of username.
   const isAvailable = await this.constructor.isUsernameAvailable(username);
   if (!isAvailable) {
-
-    const err = new Error(`Username '${username}' is already taken!`);
-    err.statusCode = 400;
+    const err = createError(400, `Username '${username}' is already taken!`);
     throw err;
   }
 
@@ -180,8 +169,7 @@ userSchema.methods.updateUsername = async function (username) {
   } else if (this.usernameChangeCount < USERNAME_CHANGE_LIMIT) {
     this.usernameChangeCount += 1;
   } else {
-    const err = new Error(`Username change limit reached! Can only change username twice every 7 days.`);
-    err.statusCode = 400;
+    const err = createError(400, `Username change limit reached! Can only change username twice every 7 days.`);
     throw err;
   }
   
@@ -189,9 +177,6 @@ userSchema.methods.updateUsername = async function (username) {
   this.username = username;
   await this.save();
 }
-
-
-
 
 /*
 + Sign up method: Saves user into the database.
@@ -217,8 +202,7 @@ userSchema.statics.signup = async function (
   // Check if an existing user exists with that username already
   const isAvailable = await this.isUsernameAvailable(username);
   if (!isAvailable) {
-    const err = new Error("Username already taken!");
-    err.statusCode = 400;
+    const err = createError(400, "Username already taken!");
     throw err;
   }
 
@@ -243,21 +227,13 @@ userSchema.statics.signup = async function (
 userSchema.statics.login = async function (username, password) {
 	const user = await this.findOne({ username });
 
-  /*
-  - For security purposes we can't really specify that this a problem with the 
-    username or password, so we just list the field as 'credentials'. This way we 
-    can still mark this as a database validation error.
-  */
-  const err = new Error("Incorrect username or password!");
-  err.statusCode = 400;
-  
 	if (!user) {
-		throw err;
+    return null;
 	}
 
 	const match = await bcrypt.compare(password, user.password);
 	if (!match) {
-		throw err;
+    return null;
 	}
 
   // Set the 'lastLogin' to now in UTC time. Changes to user will finally be 
@@ -300,14 +276,7 @@ userSchema.virtual("avatarInitials").get(function() {
   
   // Return the uppercased version of the initials.
   return initials.toUpperCase();   
-
 })
-
-// Static method for finding a user
-userSchema.statics.findUserByID = queryUtils.findDocumentByID;
-
-
-
 
 /*
 - Situation: When sending back a user as json, we don't want to include fields such as 
@@ -331,6 +300,5 @@ userSchema.methods.toJSON = function() {
   delete userObj.updatedAt;
   return userObj;
 }
-
 
 module.exports = mongoose.model("User", userSchema);

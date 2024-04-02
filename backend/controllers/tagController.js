@@ -1,10 +1,10 @@
-const getErrorMap = require("../middleware/getErrorMap");
 const asyncHandler = require("express-async-handler");
 const tagValidators = require("../middleware/validators/tagValidators");
-const handleValidationErrors = require("../middleware/handleValidationErrors")
+const {createError, handleValidationErrors } = require("../middleware/errorUtils");
+
 const {Tag, tagEvents} = require("../models/Tag")
 const Post = require("../models/Post");
-
+const findDocByID = require("../middleware/findDocByID");
 
 /**
  * Creates a new tag
@@ -15,14 +15,13 @@ const Post = require("../models/Post");
 const createTag = [
   tagValidators.title,
   handleValidationErrors,
-  asyncHandler(async(req, res) => {
+  asyncHandler(async(req, res, next) => {
 
     // Check if a tag with that title already exists.
     const existingTag = await Tag.findOne({ title: { $regex: new RegExp('^' + req.body.title + '$', 'i') } });
     if (existingTag) {
-      const err = new Error("A tag already exists with that title!");
-      err.statusCode = 400;
-      throw err;
+      const err = createError(400, "A tag already exists with that title!");
+      return next(err);
     }
 
     // Title is unique, so create the tag in the database.
@@ -39,11 +38,16 @@ const createTag = [
  * @param (express.Response) res - The response object
  */
 // deleteTag: Deletes a tag based on its ID
-const deleteTag = asyncHandler(async(req, res) => {
-  // Check if tag ID is valid and the tag exists in the database
-  await Tag.findTagByID(req.params.id);
+const deleteTag = asyncHandler(async(req, res, next) => {
 
-  // At this point tag exists so delete it
+  // Check if tag ID is valid and the tag exists in the database
+  const tag = await findDocByID(Tag, req.params.id);
+  if (!tag) {
+    const err = createError(404, "Tag not found!");
+    return next(err);
+  }
+  
+  // Tag exists, so delete it
   const result = await Tag.findByIdAndDelete(req.params.id);
 
   // Return the deleted tag 
@@ -86,13 +90,16 @@ tagEvents.on("tagDeleted", async(deletedTagID) => {
 const updateTag = [
   tagValidators.title,
   handleValidationErrors,
-  asyncHandler(async(req, res) => {
+  asyncHandler(async(req, res, next) => {
     // Check if tag ID is valid and the tag exists in the database
-    const tag = await Tag.findTagByID(req.params.id);
+    const tag = await findDocByID(Tag, req.params.id);
+    if (!tag) {
+      const err = createError(404, "Tag being updated wasn't found!");
+      return next(err);
+    }
 
     /*
     - Check if a tag with that title already exists. 
-    
     - However don't include the tag ID of the tag we're currently updating.
       This allows us to avoid accidentally tagging the current tag 
       for having a duplicate title. This is useful when simply
@@ -101,10 +108,8 @@ const updateTag = [
     */
     const existingTag = await Tag.findOne({ _id: {$ne: req.params.id}, title: { $regex: new RegExp('^' + req.body.title + '$', 'i') } });
     if (existingTag) {
-
-      const err = new Error("A tag already exists with that title!");
-      err.statusCode = 400;
-      throw err;
+      const err = createError(400, "A tag already exists with that title!");
+      return next(err);
     }
 
     // Appy changes to the tag, save to database, and send updated tag back as json.
@@ -131,12 +136,18 @@ const getTags = asyncHandler(async(req, res) => {
  * @param (express.Request) req - The request object
  * @param (express.Response) res - The response object
  */
-const getTagDetails = asyncHandler(async(req, res) => {
+const getTagDetails = asyncHandler(async(req, res, next) => {
   // Attempt to find tag, and posts associated with tag
   const [tag, posts] = await Promise.all([
-    await Tag.findTagByID(req.params.id),
+    await findDocByID(Tag, req.params.id),
     await Post.find({tags: req.params.id})
   ]);
+
+  // If tag wasn't found, then indicate it
+  if (!tag) {
+    const err = createError(404, "Tag wasn't found!");
+    return next(err);
+  }
 
   // Return the tag, and posts associated with the tag
   res.status(200).json({tag, posts});

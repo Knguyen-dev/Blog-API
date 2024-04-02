@@ -5,7 +5,9 @@ const fileUpload = require("../middleware/fileUpload");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const { body } = require("express-validator");
-const handleValidationErrors = require("../middleware/handleValidationErrors");
+const {createError, handleValidationErrors } = require("../middleware/errorUtils");
+const findDocByID = require("../middleware/findDocByID");
+
 
 /**
  * Gets all users in the database
@@ -22,8 +24,12 @@ const getUsers = asyncHandler(async (req, res) => {
  * @param (express.Request) req - The request object
  * @param (express.Response) res - The response object
  */
-const getUserById = asyncHandler(async (req, res) => {
-  const user = await User.findUserByID(req.params.id);
+const getUserById = asyncHandler(async (req, res, next) => {
+  const user = await findDocByID(User, req.params.id);
+  if (!user) {
+    const err = createError(404, "User not found!");
+    return next(err);
+  }
   res.status(200).json(user);
 })
 
@@ -37,18 +43,19 @@ const deleteUser = [
   body("password").isLength({min: 1}).withMessage("Please enter your current password!"),
   userValidators.confirmPassword,
   handleValidationErrors,
-
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req, res, next) => {
     // Attempt to find user by ID
-    const user = await User.findUserByID(req.params.id);
+    const user = await findDocByID(User, req.params.id);
+    if (!user) {
+      const err = createError(404, "User not found!");
+      return next(err);
+    }
 
     // check if password matches
     const isMatch = await bcrypt.compare(req.body.password, user.password);
-    if (!isMatch) {
-      
-      const err = new Error("Passowrd is incorrect!");
-      err.statusCode = 400;
-      throw err;
+    if (!isMatch) { 
+      const err = createError(400, "Passowrd is incorrect!");
+      return next(err);
     }
 
     /*
@@ -78,17 +85,20 @@ const deleteUser = [
 const updateAvatar = [  
   // Attempt to save the image file for the avatar, if it exists
   fileUpload.uploadFile.single("file"),
-  asyncHandler(async(req, res) => {
+  asyncHandler(async(req, res, next) => {
 
     // If no file, then stop function execution early
     if (!req.file) {
-      const err = new Error("File was not detected on our end!")
-      err.statusCode = 400;
-      throw err;
+      const err = createError(400, "File was not detected on our end!")
+      return next(err);
     }
 
     // Attempt to find a user with the parameter id
-    const user = await User.findUserByID(req.params.id);
+    const user = await findDocByID(User, req.params.id);
+    if (!user) {
+      const err = createError(404, "User not found!");
+      return next(err);
+    }
 
     /*
     - The user is changing avatars, so delete the old avatar 
@@ -98,7 +108,6 @@ const updateAvatar = [
       the old one with the new one. Or they are removing their avatar which 
       means we are just deleting the old one.
     */
-
     if (user.avatar) {      
       const oldAvatarPath = path.join(fileUpload.imageDirectory, user.avatar);
       try {
@@ -110,13 +119,11 @@ const updateAvatar = [
     }
 
     // Save the saved file name to the user in the database
-    // Then we'll be able to get this file later on the front end
-
     user.avatar = req.file.filename;
     await user.save();
 
     // Send the user back in json 
-    return res.status(200).json(user);
+    res.status(200).json(user);
   })
 ]
 
@@ -129,8 +136,15 @@ const updateAvatar = [
  * NOTE: Even if the user doesn't have an avatar, and they're trying to delete, we'll
  * still send back a status 200
  */
-const deleteAvatar = asyncHandler(async(req, res) => {
-  const user = await User.findUserByID(req.params.id);
+const deleteAvatar = asyncHandler(async(req, res, next) => {
+
+  // get the user; verify that they exist
+  const user = await findDocByID(User, req.params.id);
+  if (!user) {
+    const err = createError(404, "User not found!");
+    return next(err)
+  }
+
   // If the user has an existing avatar
   if (user.avatar) {
     // Delete avatar from disk
@@ -165,10 +179,14 @@ const deleteAvatar = asyncHandler(async(req, res) => {
 const updateUsername = [
   userValidators.username,
   handleValidationErrors,
-  asyncHandler(async(req, res) => {
+  asyncHandler(async(req, res, next) => {
     
     // Username syntax is valid, try to find user with target ID
-    const user = await User.findUserByID(req.params.id);
+    const user = await findDocByID(User, req.params.id);
+    if (!user) {
+      const err = createError(404, "User not found!");
+      return next(err);
+    }
     
     // Try to update username and return updated user as json
     await user.updateUsername(req.body.username);
@@ -186,17 +204,21 @@ const updateUsername = [
 const updateEmail = [
   userValidators.email,
   handleValidationErrors,
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req, res, next) => {
    
     // Attempt to find user
-    const user = await User.findUserByID(req.params.id); 
+    const user = await findDocByID(User, req.params.id);
+    if (!user) {
+      const err = createError(404, "User not found!");
+      return next(err);
+    }
 
     // User has been found so just update the email
     user.email = req.body.email;
     await user.save();
 
     // Return the updated user after success
-    return res.status(200).json(user);
+    res.status(200).json(user);
   })
 ]
 
@@ -208,18 +230,21 @@ const updateEmail = [
 const updateFullName = [
   userValidators.fullName,
   handleValidationErrors,
+  asyncHandler(async(req, res, next) => {
 
-  asyncHandler(async(req, res) => {
-
-    // Find user
-    const user = await User.findUserByID(req.params.id);
+    // Find user and verify that it exists
+    const user = await findDocByID(User, req.params.id);
+    if (!user) {
+      const err = createError(404, "User not found!");
+      return next(err);
+    }
 
     // Apply changes since the user exists!
     user.fullName = req.body.fullName;
     await user.save();
 
     // Return updated user as json
-    return res.status(200).json(user);
+    res.status(200).json(user);
   })
 ]
 
@@ -233,17 +258,19 @@ const changePassword = [
   userValidators.password, // new password must be validated using our standards.
   userValidators.confirmPassword,
   handleValidationErrors,
-  asyncHandler(async (req, res) => {
-
+  asyncHandler(async (req, res, next) => {
     // Attempt to find user via their ID
-    const user = await User.findUserByID(req.params.id);
+    const user = await findDocByID(User, req.params.id);
+     if (!user) {
+      const err = createError(404, "User not found!");
+      return next(err);
+    }
 
     // Check if the old password they entered matches the password on the account
     const match = await bcrypt.compare(req.body.oldPassword, user.password);
     if (!match) {
-      const err = new Error("Old Password you entered was incorrect!");
-      err.statusCode = 400;
-      throw err;
+      const err = createError(400, "Old Password you entered was incorrect!");
+      return next(err);
     }
 
     // Everything passes so hash and save the user's new password

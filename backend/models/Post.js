@@ -1,9 +1,12 @@
 const mongoose = require("mongoose");
-const slugify = require("slugify");
-const queryUtils = require("../middleware/queryUtils");
-const Category = require('../models/Category');
+const createSlug = require("../middleware/createSlug");
+
+
 const {Tag} = require("../models/Tag");
 const post_status_map = require("../config/post_status_map");
+const findDocByID = require("../middleware/findDocByID");
+const {createError } = require("../middleware/errorUtils");
+
 
 const postSchema = new mongoose.Schema(
 	{
@@ -85,11 +88,6 @@ const postSchema = new mongoose.Schema(
 	}
 );
 
-
-postSchema.statics.findPostByID = queryUtils.findDocumentByID;
-
-
-
 /**
  * Verifies whether a title and its generated slug are both unique and haven't 
  * been taken by another post yet.
@@ -100,8 +98,8 @@ postSchema.statics.findPostByID = queryUtils.findDocumentByID;
 postSchema.statics.checkTitleAndSlug = async function(title, slug) {
   /*
   - Find a post with same title (case insensitive) or slug
-  - If post exists, generate a corresponding error message, and throw back a status code 400
-    with a ValidationError, which gives us a error details object when sending back our json error.
+  - If post exists, generate a corresponding error message, and throw back a status code 400, which
+    will propagate to our route handler.
   */
   const existingPost = await this.findOne({$or: [
     {title: { $regex: new RegExp('^' + title + '$', 'i') }}, 
@@ -114,48 +112,30 @@ postSchema.statics.checkTitleAndSlug = async function(title, slug) {
     } else {
       errMessage = `Slug generated for post is already taken '${existingPost.slug}'. Please make title more different!`;
     }
-
-    const err = new Error(errMessage);
-    err.statusCode = 400;
+    const err = createError(400, errMessage);
     throw err;
   }
 }
 
 /**
- * Verify that categoryID is a valid ID. If not, then throw back a ValidationError 
+ * Verify that categoryID is a valid ID. If not, then throw back an error
  * that higlights the 'category' field as the issue.
  * 
  * @param {string} categoryID - String representing a potential id for a category
  */
 postSchema.statics.checkCategory = async function(categoryID) {
-
-  const err = ValidationError("category", "", 400);
-
-  // Check if valid mongoose object id 
-  if (!mongoose.Types.ObjectId.isValid(categoryID)) {
-    err.message = "Invalid category ID!";
-    throw err;
-  }
-
-  // Get category and check whether or not it was found
-  const category = await Category.findById(categoryID);
+  const category = await findDocByID(this, categoryID);
   if (!category) {
-    err.message = `Category with ID '${categoryID}' not found!`
+    const err = createError(404, `Category with ID '${categoryID}' not found!`);
     throw err;
   }
 }
 
-
-
 /**
- * Checks if IDs in tagIDs are existing IDs in the tags collection
+ * Checks if IDs in tagIDs are existing IDs in the tags collection.
  * 
  * @param {array} tagIDs - Array of strings that may be valid tag IDs
  * 
- * NOTE: Similar with checkCategory, 404 is accurate but doesn't convey the proper
- * idea that the 'tags' that were in the request body were invalid. Then we raise 
- * an error and indicate the 'tags' property, in the request body was the 'field'
- * that had an issue.
  */
 postSchema.statics.checkTags = async function(tagIDs) {
   /*
@@ -169,12 +149,11 @@ postSchema.statics.checkTags = async function(tagIDs) {
   const existingTagIDs = existingTags.map(tagObj => tagObj._id.toString());
   tagIDs.forEach(tagID => {
     if (!existingTagIDs.includes(tagID)) {
-      const err = ValidationError("tags", `Tag with ID ${tagID} doesn't exist!`, 400);
+      const err = createError(404, `Tag with ID ${tagID} not found!`)
       throw err; 
     }
   });
 }
-
 
 /**
  * Handles creating a new post in the database.
@@ -192,12 +171,8 @@ postSchema.statics.checkTags = async function(tagIDs) {
  */
 postSchema.statics.createPost = async function(title, body, categoryID, tagIDs=[], imgSrc, imgCredits, status, wordCount, userID) {
   // Create slug for post, now do a database check on the title and slug of the post
-  const slug = slugify(title, {
-    lower: true, 
-    replacement: "-",
-    strict: true,
-    trim: true, 
-  });
+  const slug = createSlug(title);
+
   await this.checkTitleAndSlug(title, slug);
 
   // Check the category ID sent for the post to see if it's valid.
@@ -249,12 +224,8 @@ postSchema.statics.createPost = async function(title, body, categoryID, tagIDs=[
 postSchema.methods.updatePost = async function(title, body, categoryID, tagIDs, imgSrc, imgCredits, status, wordCount) {
 
   // If new title is different from the current one, do a database check on the title and slug
-  const slug = slugify(title, {
-    lower: true, 
-    replacement: "-",
-    strict: true,
-    trim: true, 
-  });
+  const slug = createSlug(title);
+  
   if (this.title.toLowerCase() !== title.toLowerCase()) {
     await this.constructor.checkTitleAndSlug(title, slug);
   }

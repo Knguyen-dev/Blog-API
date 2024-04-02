@@ -1,3 +1,7 @@
+const tokenUtils = require("../../middleware/tokenUtils");
+const jwt = require("jsonwebtoken");
+
+
 
 /*
 - Create a custom implementation for verify function of the 'jsonwebtoken'
@@ -8,28 +12,19 @@
 - NOTE: This is why we mock the import first, and then we import verifyJWT after
   so that verifyJWT will use the mock when we run it from this file.
 */
-jest.mock("jsonwebtoken", () => ({
-  verify: jest.fn((token, secret, callback) => {
-    if (token === "valid-access-token") {
-
-      // If access token is valid, we call the callback with this, which will
-      // indicate error was null and user as the payload or user.
-      const user = {id: 1, username: "testUser"};
-      callback(null, user);
-    } else {
-      callback(new Error("Invalid token"));
-    }
-  })
-}))
-
-const verifyJWT = require("../../middleware/verifyJWT");
-
-
-
 
 
 
 describe("verifyJWT middleware", () => {
+
+  const mockJWTVerify = (token, secret, callback) => {
+    if (token === "valid-access-token") {
+        const user = {id: 1, username: "testUser"};
+        callback(null, user);
+      } else {
+        callback(new Error("Invalid token"));
+      }
+  }
   
   test("should call next(error) if authorization header isn't defined", () => {
     const req = {
@@ -38,7 +33,7 @@ describe("verifyJWT middleware", () => {
     const res = {}
     const next = jest.fn();
 
-    verifyJWT(req, res, next);
+    tokenUtils.verifyJWT(req, res, next);
 
     expect(next).toHaveBeenCalledWith(expect.any(Error));
     expect(next.mock.calls[0][0].statusCode).toBe(401);
@@ -53,7 +48,7 @@ describe("verifyJWT middleware", () => {
     const res = {}
     const next = jest.fn();
 
-    verifyJWT(req, res, next);
+    tokenUtils.verifyJWT(req, res, next);
 
     expect(next).toHaveBeenCalledWith(expect.any(Error));
     expect(next.mock.calls[0][0].statusCode).toBe(401);
@@ -69,7 +64,9 @@ describe("verifyJWT middleware", () => {
     const res = {}
     const next = jest.fn();
 
-    verifyJWT(req, res, next);
+    jest.spyOn(jwt, "verify").mockImplementation(mockJWTVerify);
+
+    tokenUtils.verifyJWT(req, res, next);
     expect(next).toHaveBeenCalledWith(expect.any(Error));
     expect(next.mock.calls[0][0].statusCode).toBe(401);
   })
@@ -84,8 +81,9 @@ describe("verifyJWT middleware", () => {
     const res = {}
     const next = jest.fn();
 
+    jest.spyOn(jwt, "verify").mockImplementation(mockJWTVerify);
 
-    verifyJWT(req, res, next);
+    tokenUtils.verifyJWT(req, res, next);
 
     // Assert that next was called with no arguments, meaning no errors were sent with it
     expect(next).toHaveBeenCalledWith();
@@ -93,6 +91,4 @@ describe("verifyJWT middleware", () => {
     // Assert that user is defined and it matches our user we defined above
     expect(req.user).toEqual({id: 1, username: "testUser"});
   });
-
-
 })

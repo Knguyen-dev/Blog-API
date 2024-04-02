@@ -1,29 +1,26 @@
 const asyncHandler = require("express-async-handler");
-const slugify = require("slugify");
+const createSlug = require("../middleware/createSlug");
+
 const Category = require("../models/Category");
 const Post = require("../models/Post");
 const categoryValidators = require("../middleware/validators/categoryValidators");
-const handledValidationErrors = require("../middleware/handleValidationErrors");
-
+const { createError, handleValidationErrors } = require("../middleware/errorUtils");
+const findDocByID = require("../middleware/findDocByID");
 
 /**
  * Function for creating a new cateogry
  * @param (express.Request) req - The request object
  * @param (express.Response) res - The response object
  */
+
 const createCategory = [
   categoryValidators.title,
   categoryValidators.description,
-  handledValidationErrors,
-  asyncHandler(async(req,res) => {
+  handleValidationErrors,
+  asyncHandler(async(req, res, next) => {
 
     // Create slug from the title
-    const slug = slugify(req.body.title, {
-      lower: true, // lowercases the string 
-      replacement: "-", // replaces spaces with '-'
-      strict: true, // removes all other special characters apart from replacement
-      trim: true , // trims leading and trailing replacement characters
-    })
+    const slug = createSlug(req.body.title);
 
     /*
     - Check if there's a category with that title and slug. Use regex to consider casing so 
@@ -31,17 +28,15 @@ const createCategory = [
     */
     const existingCategory = await Category.findOne({ title: { $regex: new RegExp('^' + req.body.title + '$', 'i') }, slug: slug });
     if (existingCategory) {
-      // if the title was matched
-      const err = new Error("");
-      err.statusCode = 400;
-
+      let message = "";
       if (existingCategory.title.toLowerCase() === req.body.title.toLowerCase()) {
-        err.message = "A category already exists with that title!"
+        message = "A category already exists with that title!"
       } else {
         // Else the slug must have matched, so warn the user.
-        err.message = `The title "${req.body.title}" generates a slug that already exists for category "${existingCategory.title}"! Please make your title more unique!`;
+        message = `The title creates a slug that already exists for category "${existingCategory.title}"! Please make your title more unique!`;
       }
-      throw err; // Throw error to middleware function
+      const err = createError(400, message);
+      return next(err); // call next for the error to middleware function
     }
 
     // Input is valid, so save the new category to the database
@@ -61,9 +56,13 @@ const createCategory = [
  * @param (express.Request) req - The request object
  * @param (express.Response) res - The response object
  */
-const deleteCategory = asyncHandler(async(req, res) => {
-  // Attempt to find category by given ID
-  await Category.findCategoryByID(req.params.id);
+const deleteCategory = asyncHandler(async(req, res, next) => {
+  // Attempt to find category
+  const category = await findDocByID(Category, req.params.id);
+  if (!category) {
+    const err = createError(404, "Category not found!");
+    return next(err);
+  }
 
   // At this point, category exists, so delete the category
   const result = await Category.findByIdAndDelete(req.params.id);
@@ -79,18 +78,20 @@ const deleteCategory = asyncHandler(async(req, res) => {
 const updateCategory = [
   categoryValidators.title,
   categoryValidators.description,
-  handledValidationErrors,
-  asyncHandler(async(req,res) => {
-    // At this point, attempt to find Category based on the ID given
-    const category = await Category.findCategoryByID(req.params.id);
+  handleValidationErrors,
+  asyncHandler(async(req,res, next) => {
+
+    // Try to find category
+    const category = await findDocByID(Category, req.params.id);
+    if (!category) {
+      const err = createError(404, "Category not found!");
+      return next(err);
+    }
+    
 
     // Create slug based on title
-    const slug = slugify(req.body.title, {
-      lower: true, 
-      replacement: "-",
-      strict: true,
-      trim: true , 
-    })
+    const slug = createSlug(req.body.title)
+
     /*
     - Exclude the category being updated by ensuring its _id is not included. This prevents 
       falsely flagging the current category as a duplicate title or slug. Good for when they're 
@@ -98,17 +99,15 @@ const updateCategory = [
     */
     const existingCategory = await Category.findOne({_id: {$ne: req.params.id}, title: { $regex: new RegExp('^' + req.body.title + '$', 'i') }, slug: slug });
     if (existingCategory) {
-      const err = new Error("");
-      err.statusCode = 400;
-
+      let message = "";
       if (existingCategory.title.toLowerCase() === req.body.title.toLowerCase()) {
-        err.message = "A category already exists with that title!"
+        message = "A category already exists with that title!"
       } else {
         // Else the slug must have matched, so warn the user.
-        err.message = `The title "${req.body.title}" generates a slug that already exists for category "${existingCategory.title}"! Please make your title more unique!`;
+        message = `The title "${req.body.title}" generates a slug that already exists for category "${existingCategory.title}"! Please make your title more unique!`;
       }
-
-      throw err; // Throw error to middleware function
+      const err = createError(400, message);
+      return next(err); // Throw error to middleware function
     }
 
     // Good data, so assign and save changes
@@ -144,15 +143,20 @@ const getCategories = asyncHandler(async(req, res) => {
  * @param (express.Request) req - The request object
  * @param (express.Response) res - The response object
  */
-const getCategoryDetails = asyncHandler(async(req, res) => {
+const getCategoryDetails = asyncHandler(async(req, res, next) => {
 
   // Attempt to find associated category and all posts that are under that category
   const [category, posts] = await Promise.all([
-    Category.findCategoryByID(req.params.id),
+    findDocByID(Category, req.params.id),
     Post.find({
       category: req.params.id
     })
   ]);
+
+  if (!category) {
+    const err = createError(404, "Category not found!");
+    return next(err);
+  }
 
   // Then return category and all posts
   res.status(200).json({

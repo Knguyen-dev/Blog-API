@@ -2,7 +2,8 @@ const asyncHandler = require("express-async-handler");
 const Post = require("../models/Post");
 const User = require("../models/User");
 const postValidators = require("../middleware/validators/postValidators");
-const handleValidationErrors = require("../middleware/handleValidationErrors");
+const {createError, handleValidationErrors } = require("../middleware/errorUtils");
+const findDocByID = require("../middleware/findDocByID");
 
 /**
  * Middleware for creating new post
@@ -23,13 +24,17 @@ const createPost = [
   postValidators.status,
   postValidators.wordCount,
   handleValidationErrors, 
-  asyncHandler(async(req, res) => {   
+  asyncHandler(async(req, res, next) => {   
     
     /*
     - Check existence of the currently logged in user. Want to ensure the user 
       that's wanting to create a post still exists.
     */
-    await User.findUserByID(req.user.id);
+    const user = findDocByID(User, req.user.id);
+    if (!user) {
+      const err = createError(403, "Cannot create post because you are not a registered user!")
+      return next(err);
+    }
 
     // Attempt to create a new post
     const post = await Post.createPost(
@@ -67,21 +72,22 @@ const updatePost = [
   postValidators.status,
   postValidators.wordCount,
   handleValidationErrors, 
-  asyncHandler(async(req, res) => {
+  asyncHandler(async(req, res, next) => {
 
-    /*
-    - Find the post by ID and ensure the user making the request is the owner 
-      of the post. As a result we're ensuring that only the author of the post 
-      can 'edit' the content of the post.
-    */
-    const post = await Post.findPostByID(req.params.id);
+    // attempt to find the post; verify it exists
+    const post = await findDocByID(Post, req.params.id);
+    if (!post) {
+      const err = createError(404, "Post not found!")
+      return next(err);
+    }
+
+    // check if the requestor is the author of the post; if not then don't allow them to update it
     if (post.user.toString() !== req.user.id) {
-      const err = new Error("Cannot update this post because you are not the owner of this post!");
-      err.statusCode = 403;
-      throw err;
+      const err = createError(403, "Cannot update this post because you are not the owner of this post!");
+      return next(err);
     } 
     
-    // At this point update the post
+    // Update the post and return the updated post as json
     await post.updatePost(
       req.body.title,
       req.body.body,
@@ -93,11 +99,9 @@ const updatePost = [
       req.body.wordCount,
     )
 
-    // Return updated post as json
     res.status(200).json(post);
   })
 ]
-
 
 /**
  * Middleware for deleting an existing post.
@@ -107,9 +111,14 @@ const updatePost = [
  * 
  * NOTE: A user can only edit their own post.
  */
-const deletePost = asyncHandler(async(req, res) => {
+const deletePost = asyncHandler(async(req, res, next) => {
   // Checks for the existence of the post, if not, this throws error
-  await Post.findPostByID(req.params.id);
+
+  const post = await findDocByID(Post, req.params.id);
+  if (!post) {
+    const err = createError(404, "Post wasn't found!");
+    return next(err);
+  }
 
   // Post exists so delete the post; send back result as json to indicate a success
   const result = await Post.findByIdAndDelete(req.params.id);
@@ -134,9 +143,14 @@ const getPosts = asyncHandler(async(req, res) => {
  * @param (express.Request) req - The request object
  * @param (express.Response) res - The response object
  */
-const getPost = asyncHandler(async(req, res) => {
+const getPost = asyncHandler(async(req, res, next) => {
   // Attempt to find Post by ID; ensure to populate the 'user', 'category', and 'tags' fields 
-  const post = await Post.findPostByID(req.params.id, ['user', 'category' , 'tags']);
+  const post = await findDocByID(Post, req.params.id, ['user', 'category' , 'tags']);
+  if (!post) {
+    const err = createError(404, "Post wasn't found!");    
+    return next(err);
+  }
+  
   res.status(200).json(post);
 })
 
