@@ -4,8 +4,10 @@ const createSlug = require("../middleware/createSlug");
 
 const {Tag} = require("../models/Tag");
 const post_status_map = require("../config/post_status_map");
-const findDocByID = require("../middleware/findDocByID");
+const {findDocByID} = require("../middleware/dbUtils");
 const {createError } = require("../middleware/errorUtils");
+
+const Category = require("../models/Category");
 
 
 const postSchema = new mongoose.Schema(
@@ -60,7 +62,6 @@ const postSchema = new mongoose.Schema(
       }
     ],
 
-
     // Source to the post's thumbnail or display image
     imgSrc: String,
 
@@ -71,7 +72,7 @@ const postSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: Object.keys(post_status_map),
-      default: "draft",
+      default: post_status_map.draft,
       lowercase: true,
     },
 
@@ -124,7 +125,7 @@ postSchema.statics.checkTitleAndSlug = async function(title, slug) {
  * @param {string} categoryID - String representing a potential id for a category
  */
 postSchema.statics.checkCategory = async function(categoryID) {
-  const category = await findDocByID(this, categoryID);
+  const category = await findDocByID(Category, categoryID);
   if (!category) {
     const err = createError(404, `Category with ID '${categoryID}' not found!`);
     throw err;

@@ -10,7 +10,7 @@ const validationSchema = yup.object().shape({
 	fullName: fullNameSchema,
 });
 
-export default function EditFullNameForm({ fullName, handleCloseForm }) {
+export default function EditFullNameForm({ fullName, onSuccess }) {
 	const { control, handleSubmit, setError } = useForm({
 		resolver: yupResolver(validationSchema),
 		defaultValues: {
@@ -37,9 +37,8 @@ export default function EditFullNameForm({ fullName, handleCloseForm }) {
 		}
 
 		const success = await changeFullName(formData);
-		// If successful, close the form
-		if (success) {
-			handleCloseForm();
+		if (success && onSuccess) {
+			onSuccess();
 		}
 	};
 
@@ -84,6 +83,6 @@ export default function EditFullNameForm({ fullName, handleCloseForm }) {
 	);
 }
 EditFullNameForm.propTypes = {
-	handleCloseForm: PropTypes.func,
+	onSuccess: PropTypes.func,
 	fullName: PropTypes.string,
 };

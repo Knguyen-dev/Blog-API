@@ -2,6 +2,8 @@ import { useState } from "react";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import DOMPurify from "dompurify";
 import useSubmitDisabled from "../../../hooks/useSubmitDisabled";
+import getErrorData from "../../../utils/getErrorData";
+
 /*
 - Note that DOMPurify allows svgs whilst TinyMce does not. So I don't think
   that should pose a problem as 
@@ -46,7 +48,7 @@ export default function useSavePost() {
 				if (err.response.status === 429 && !submitDisabled) {
 					setSubmitDisabled(true);
 				}
-				setError(err.response.data?.error?.message);
+				setError(getErrorData(err, false));
 			} else if (err.request) {
 				setError("Network Error!");
 			} else {

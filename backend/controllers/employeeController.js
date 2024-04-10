@@ -5,8 +5,7 @@ const asyncHandler = require("express-async-handler");
 const {body}  = require("express-validator");
 
 const {createError, handleValidationErrors } = require("../middleware/errorUtils");
-const findDocByID = require("../middleware/findDocByID");
-
+const {findDocByID} = require("../middleware/dbUtils");
 
 /**
  * Gets all users that are employees.

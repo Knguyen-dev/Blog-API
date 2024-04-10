@@ -18,50 +18,108 @@
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
+
 import ResponsiveDrawer from "../../components/drawers/ResponsiveDrawer";
 
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import GroupsIcon from "@mui/icons-material/Groups";
+import CategoryIcon from "@mui/icons-material/Category";
+import TagIcon from "@mui/icons-material/Tag";
+import { useState, useEffect, useMemo } from "react";
 import useAuthContext from "../../hooks/useAuthContext";
-
-import { useState, useEffect } from "react";
 
 export default function DashboardLayout() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { auth } = useAuthContext();
+
+	/*
+  - activeTabID: You should probably define an id on every tab rather than
+    rely on index because there may be mutiple 'sections' containing tabs
+    rather than one. 
+    section1 = {
+      tab1,
+      tab2,
+      tab3
+    }
+    section2 = {
+      tab4,
+      tab5,
+      tab6,
+    }
+
+    If we relied on indexing in our components, index 0 would highlight two
+    different tabs due to them being in different sections:
+    section1 = {
+      tab0,
+      tab1,
+      tab2
+    }
+    section2 = {
+      tab0,
+      tab1,
+      tab2,
+    }
+  */
 	const [activeTabID, setActiveTabID] = useState(null);
 
-	const tabs = [
-		{
-			icon: <AccountCircleIcon />,
-			text: "Profile",
-			onClick: () => navigate(""),
-			id: 1,
-			visible: true,
-		},
-		{
-			icon: <PostAddIcon />,
-			text: "Manage Posts",
-			onClick: () => navigate("manage-posts"),
-			id: 2,
-			visible:
-				auth.user.role === parseInt(import.meta.env.VITE_ROLE_EDITOR) ||
-				auth.user.role === parseInt(import.meta.env.VITE_ROLE_ADMIN),
-		},
-		{
-			icon: <GroupsIcon />,
-			text: "Team",
-			onClick: () => navigate("team"),
-			id: 3,
-			visible: auth.user.role === parseInt(import.meta.env.VITE_ROLE_ADMIN),
-		},
-	];
+	// Tabs for the sidebar
+	const tabs = useMemo(() => {
+		return [
+			{
+				id: 1,
+				icon: <AccountCircleIcon />,
+				text: "Profile",
+				path: "/dashboard",
+				onClick: () => navigate(""),
+				visible: true,
+			},
+			{
+				id: 2,
+				icon: <PostAddIcon />,
+				text: "Manage Posts",
+				path: "/dashboard/manage-posts",
+				onClick: () => navigate("manage-posts"),
+				visible:
+					auth.user.role === parseInt(import.meta.env.VITE_ROLE_EDITOR) ||
+					auth.user.role === parseInt(import.meta.env.VITE_ROLE_ADMIN),
+			},
+			{
+				id: 3,
+				icon: <CategoryIcon />,
+				text: "Manage Categories",
+				path: "/dashboard/manage-categories",
+				onClick: () => navigate("manage-categories"),
+				visible:
+					auth.user.role === parseInt(import.meta.env.VITE_ROLE_EDITOR) ||
+					auth.user.role === parseInt(import.meta.env.VITE_ROLE_ADMIN),
+			},
+			{
+				id: 4,
+				icon: <TagIcon />,
+				text: "Manage Tags",
+				path: "/dashboard/manage-tags",
+				onClick: () => navigate("manage-tags"),
+				visible:
+					auth.user.role === parseInt(import.meta.env.VITE_ROLE_EDITOR) ||
+					auth.user.role === parseInt(import.meta.env.VITE_ROLE_ADMIN),
+			},
+			{
+				id: 5,
+				icon: <GroupsIcon />,
+				text: "Team",
+				path: "/dashboard/team",
+				onClick: () => navigate("team"),
+				visible: auth.user.role === parseInt(import.meta.env.VITE_ROLE_ADMIN),
+			},
+		];
+	}, [auth.user.role, navigate]);
 
 	/*
   + Effect:  Set the active tab ID when the user navigates to the dashboard.
-   This effect runs whenever the location pathname changes.
+   This effect runs whenever the location pathname changes. This then results 
+   to the highlighting for the active tab.
 
   1. Get the path. If the path ends with '/', then we remove the slash so that 
     we can map it to a tabID. This is because "/some_path" and "/some_path/" route 
@@ -71,21 +129,20 @@ export default function DashboardLayout() {
   */
 	useEffect(() => {
 		const path = location.pathname;
-		const normalizePath = path.endsWith("/") ? path.slice(0, -1) : path;
+		const normalizedPath = path.endsWith("/") ? path.slice(0, -1) : path;
 
-		setActiveTabID(
-			{
-				"/dashboard": 1,
-				"/dashboard/manage-posts": 2,
-				"/dashboard/team": 3,
-			}[normalizePath]
-		);
+		const pathMap = {};
+		tabs.map((tab) => {
+			pathMap[tab.path] = tab.id;
+		});
+
+		setActiveTabID(pathMap[normalizedPath]);
 
 		// Run effect only once after component mounts.
-	}, [location.pathname]);
+	}, [location.pathname, tabs]);
 
 	const dashboardDrawer = [
-		// Just going to be one section for this sidebar
+		// Just going to be one section for this dashboard sidebar
 		{
 			tabs: tabs.filter((tab) => tab.visible),
 		},
@@ -93,8 +150,11 @@ export default function DashboardLayout() {
 
 	/*
   + Handles tab clicks for the DashboardLayout:
-  
   1. Run the onClick() function for the tab that was clicked.
+
+  NOTE: Why not use tabObj.onClick. By passing handleTabClick, it makes it 
+    easier to do things such as call the .onClick, but also potentially do other 
+    things with access to data only available in the DashboardLayout.
   */
 	const handleTabClick = (tabObj) => {
 		tabObj.onClick();

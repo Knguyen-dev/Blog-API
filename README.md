@@ -51,104 +51,11 @@ probably better if I personalize my website a bit.
   acts as a 'reverse proxy'
 
 
-# BOOK MARK:
-I think our folder structure change is nearing its end. In the end, I think we did pretty good. It's a lot better than what we started out with that's for sure. Now the hooks and components are put in their separate pages which is good. After this you may be tempted to start building the ManagePost page, but no, we must add tests first. Though do the react-folder-structure commit first, and then start adding tests to the backend.
-
-# Commit
-
-Improved Frontend folder structure
-- Frontend:
-Major changes to the react folder structure. Components, files, and constants that are specific to a certain
-page will be stored in a folder for that page. While general components, hooks, and other items will be stored 
-in their respective root folders in the src directory.
-
-- Backend:
-1. Fixed an error with verifyJWT and how it threw errors back
-2. Simplified error handling by removing 'ValidationError'. After some deliberation we realized that it was adding unnecessary complexity to the application, and it wasn't really used all that much.
-
-
-
-# BOOK MARK:
-Now we need to add functionality to posts.For managing tags, we'll create a dedicated tag section for editors/admins where they can add, delete, or edit tags. This section will be in the editor tab, and it will show a shared table of all tags in the database, which will help editors know which tags are available. Then they can use those tags in a post. So in this case, if an editor wants to have a tag on a post, but that tag doesn't exist yet, they can just go to the editor page and add that tag. Finally they'll be able to go back to the editor suite and add that tag to the post.
-
-
-
-- For tag and category creation, we should record the user that makes the tag or 
-category. This creates accountability and discourages misuse or unauthorized changes to tags.
-
-
-- Note that if a user logs out, we should probably clear the postData in their
-  local storage. You should probably need to save their postData to the database 
-  as a post that's a draft. I see that makes more sense 
-
-
-### Planned
-- Now: Uniformalize our error handling so all of the appropriate controllers and 
-  all of the frontend hooks accept this new error system. For the front-end portion,
-  it's probably a good idea to create some kind of facade pattern or something like
-  'getErrorDetails' or 'getErrorMessage', when given the 'err' object from axios.
-  Or you could combine it into one function separate things with a boolean flag, but 
-  we want to make it so we don't have to do 'err.response.data.error.details' everytime
-  or 'err.response.data.error.message'.
-
-  
-- One good idea would be having your database errors raise
-a field, such as 'username' or 'title'. Then when they're 
-sent down the error pipeline, you can create the 'details'
-property, so {username: "Username was already taken!"}. Of course 
-will happen when err.field is defined. Anyways this can give us 
-leeway on how the frontend can use these error messages. Let's imagine
-this with our 'signupUser' controller. If the database error had 'Username already taken!',
-then our error object we send back will be {error: {..., details: {username: "Username already taken!"}}}.
-So this pattern would be good for database errors. But also for validation errors, we would still have
-{errors: {..., details: {username: "Some username rule", email: "Some email rule", etc.}}}. In either case,
-this allows the front-end to do 'err.response.data.error.details' to render error messages for each respective
-field. As well as this, it laso gives the frontend the flexibility to simply do 'err.response.data.error.message' if they prefer to render one big error message. Yes, as long as we differentiate validation errors
- with status code 400, this could be a good plan. As well as this, as long as we have those front-end 
- helper functions 'getErrorMessage' or 'getErrorDetails', we would be able to flexibly switch.
-
-
-
-
-
-1. Changing up the react folder structure. Decide between 'intermediate' and 'advanced'.
-2. Add markup and functionality for showing 'published on' and last edited
-  on dates.
-3. Adding tests and practicing making tests for existing things ('probably with the help of tabnine').
-  Get some practice with TDD and thinking like TDD
-4. Adding certain permissions for posts, maybe an admin can only update the status. Who can
-  delete the post, etc.
-5. Switch to using JSDocs convention for commenting functions. Learn more about that
-6. Adding markup and logic for managing tags and categories
-7. Probably switching to TypeScript.
-
-
-# Commit 
-
-## Frontend
-- Added pages for creating new post and saving changes to existing posts.
-- Removed PrismJS code highlighting for PostPreview at the moment since it only highlights JS code, and can't detect other code.
-- Updated most of the hooks so that they accomodate the new way that we handle errors. 
-
-## Backend
-- Add routes for CRUD operations with Posts.
-- Partially updated the way we handle validation errors and database errors.
-  The changes have been applied in our new controllers 'Post' 'Tags' and 
-  'Category'. But we will still need to migrate these changes over to the 
-  other controllers.
-
-
-
-
-
-
-
-
-2. You likely want to get looking into api caching when getting data 
-  such as Employees, Posts for hte posts grid, but also posts and comments.
-  For now basic caching for express should do the job nicely. In the future 
-  though, try to look into things such as Redis. 
-
+# Commit:
++ Frontend
+- Created tabs for managing categories and tags. Also created tab for 
+  managing posts. Soon we'll need to add role-based logic so that 
+  editors can only see posts they've created, and admins can see all posts.
 
 
 

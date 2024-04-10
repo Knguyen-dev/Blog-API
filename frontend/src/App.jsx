@@ -10,7 +10,7 @@ import {
 import RootLayout from "./layouts/RootLayout";
 import AppLayout from "./layouts/AppLayout";
 
-// Pages
+// Misc Pages
 import NotFoundPage from "./pages/NotFoundPage";
 import NotAuthorizedPage from "./pages/NotAuthorizedPage";
 import BrowsePage from "./pages/Browse/BrowsePage";
@@ -20,6 +20,8 @@ import DashboardLayout from "./pages/Dashboard/DashboardLayout";
 import ProfilePage from "./pages/Dashboard/Profile/ProfilePage";
 import ManagePostsPage from "./pages/Dashboard/ManagePosts/ManagePostsPage";
 import TeamPage from "./pages/Dashboard/Team/TeamPage";
+import ManageCategoriesPage from "./pages/Dashboard/ManageCategories/ManageCategoriesPage";
+import ManageTagsPage from "./pages/Dashboard/ManageTags/ManageTagsPage";
 
 // Editor Suite
 import EditorLayout from "./pages/EditorSuite/EditorLayout";
@@ -80,6 +82,32 @@ function App() {
 											import.meta.env.VITE_ROLE_ADMIN,
 										]}>
 										<ManagePostsPage />
+									</ProtectedRoute>
+								}
+							/>
+
+							<Route
+								path="manage-categories"
+								element={
+									<ProtectedRoute
+										allowedRoles={[
+											import.meta.env.VITE_ROLE_EDITOR,
+											import.meta.env.VITE_ROLE_ADMIN,
+										]}>
+										<ManageCategoriesPage />
+									</ProtectedRoute>
+								}
+							/>
+
+							<Route
+								path="manage-tags"
+								element={
+									<ProtectedRoute
+										allowedRoles={[
+											import.meta.env.VITE_ROLE_EDITOR,
+											import.meta.env.VITE_ROLE_ADMIN,
+										]}>
+										<ManageTagsPage />
 									</ProtectedRoute>
 								}
 							/>

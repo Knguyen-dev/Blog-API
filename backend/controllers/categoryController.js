@@ -1,11 +1,12 @@
 const asyncHandler = require("express-async-handler");
 const createSlug = require("../middleware/createSlug");
 
+const User = require("../models/Category");
 const Category = require("../models/Category");
 const Post = require("../models/Post");
 const categoryValidators = require("../middleware/validators/categoryValidators");
 const { createError, handleValidationErrors } = require("../middleware/errorUtils");
-const findDocByID = require("../middleware/findDocByID");
+const {findDocByID} = require("../middleware/dbUtils");
 
 /**
  * Function for creating a new cateogry
@@ -43,7 +44,8 @@ const createCategory = [
     const category = await Category.create({
       title: req.body.title,
       description: req.body.description,
-      slug
+      slug,
+      lastUpdatedBy: req.user.id
     });
 
     // Return category as json
@@ -81,13 +83,16 @@ const updateCategory = [
   handleValidationErrors,
   asyncHandler(async(req,res, next) => {
 
-    // Try to find category
+    
+    /*
+    - Try to find category, confirming that the req.params.id
+      is valid?
+    */
     const category = await findDocByID(Category, req.params.id);
     if (!category) {
       const err = createError(404, "Category not found!");
       return next(err);
     }
-    
 
     // Create slug based on title
     const slug = createSlug(req.body.title)
@@ -114,6 +119,7 @@ const updateCategory = [
     category.title = req.body.title;
     category.description = req.body.description;
     category.slug = slug;
+    category.lastUpdatedBy = req.user.id;
 
     await category.save()
 
@@ -134,6 +140,7 @@ const updateCategory = [
 const getCategories = asyncHandler(async(req, res) => {
   const categoryList = await Category.find();
   res.status(200).json(categoryList);
+
 })
 
 

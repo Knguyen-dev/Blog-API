@@ -6,8 +6,10 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const { body } = require("express-validator");
 const {createError, handleValidationErrors } = require("../middleware/errorUtils");
-const findDocByID = require("../middleware/findDocByID");
-
+const {findDocByID} = require("../middleware/dbUtils");
+const Post = require("../models/Post");
+const Tag = require("../models/Tag");
+const roles_map = require("../config/roles_map");
 
 /**
  * Gets all users in the database
@@ -68,9 +70,20 @@ const deleteUser = [
       await fileUpload.deleteFromDisk(avatarPath);
     }
 
-    // Delete user 
-    await User.findByIdAndDelete(req.params.id);
+    
+    /*
+    - If user being deleted is an admin or editor, delete their posts and tags
+    */
+    if (user.role === roles_map.admin || roles_map.editor) {
+      await Promise.all([
+        Post.deleteMany({author: user._id}),
+        Tag.deleteMany({createdBy: user._id})
+      ])
+    }
 
+    // Finally delete the user
+    await User.findByIdAndDelete(req.params.id);
+    
     // Return the user that was deleted
     res.status(200).json(user);
   })

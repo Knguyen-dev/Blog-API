@@ -178,7 +178,7 @@ export default function EditPostAccordion({
 						}
 					/>
 					{error && <div className="error">{error}</div>}
-					{/* Action Buttons for hte form */}
+					{/* Action Buttons for the form */}
 					<Box
 						className="tw-flex tw-justify-end tw-gap-x-4"
 						onClick={handleSubmitPost}>

@@ -11,7 +11,7 @@ const validationSchema = yup.object().shape({
 	username: usernameSchema,
 });
 
-export default function EditUsernameForm({ username, handleCloseForm }) {
+export default function EditUsernameForm({ username, onSuccess }) {
 	const { control, handleSubmit, setError } = useForm({
 		resolver: yupResolver(validationSchema),
 		defaultValues: {
@@ -38,9 +38,9 @@ export default function EditUsernameForm({ username, handleCloseForm }) {
 		}
 		const success = await changeUsername(formData);
 
-		// If successful, then we close the form's dialog/pop up
-		if (success) {
-			handleCloseForm();
+		// If success and onSuccess is defined, call our optional onSuccess function
+		if (success && onSuccess) {
+			onSuccess();
 		}
 	};
 
@@ -85,6 +85,6 @@ export default function EditUsernameForm({ username, handleCloseForm }) {
 	);
 }
 EditUsernameForm.propTypes = {
-	handleCloseForm: PropTypes.func,
+	onSuccess: PropTypes.func,
 	username: PropTypes.string,
 };

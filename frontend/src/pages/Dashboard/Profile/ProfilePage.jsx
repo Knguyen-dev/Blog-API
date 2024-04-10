@@ -74,7 +74,7 @@ export default function ProfilePage() {
 									form={
 										<EditUsernameForm
 											username={auth.user.username}
-											handleCloseForm={handleCloseDialog}
+											onSuccess={handleCloseDialog}
 										/>
 									}
 									modalTitle="Edit Your Username"
@@ -94,7 +94,7 @@ export default function ProfilePage() {
 									form={
 										<EditEmailForm
 											email={auth.user.email}
-											handleCloseForm={handleCloseDialog}
+											onSuccess={handleCloseDialog}
 										/>
 									}
 									modalTitle="Edit Your Username"
@@ -115,7 +115,7 @@ export default function ProfilePage() {
 									form={
 										<EditFullNameForm
 											fullName={auth.user.fullName}
-											handleCloseForm={handleCloseDialog}
+											onSuccess={handleCloseDialog}
 										/>
 									}
 									modalTitle="Edit Your Full Name"
@@ -126,7 +126,9 @@ export default function ProfilePage() {
 					</main>
 				</Box>
 				<Divider className="tw-my-5" />
-				{/* Authentication & Security: Changing Password and logging out */}
+				{/* Authentication & Security: Changing Password and logging out. Note that we 
+          shouldn't need to pass handleCloseDialog to onSuccess to changing password and account deletion forms 
+          because successful submissions will redirect the user to the login screen. */}
 				<Box>
 					<header className="tw-mb-3">
 						<Typography variant="h4">Authentication & Security</Typography>

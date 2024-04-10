@@ -3,8 +3,7 @@ const Post = require("../models/Post");
 const User = require("../models/User");
 const postValidators = require("../middleware/validators/postValidators");
 const {createError, handleValidationErrors } = require("../middleware/errorUtils");
-const findDocByID = require("../middleware/findDocByID");
-
+const {findDocByID} = require("../middleware/dbUtils");
 /**
  * Middleware for creating new post
  * 
@@ -26,16 +25,6 @@ const createPost = [
   handleValidationErrors, 
   asyncHandler(async(req, res, next) => {   
     
-    /*
-    - Check existence of the currently logged in user. Want to ensure the user 
-      that's wanting to create a post still exists.
-    */
-    const user = findDocByID(User, req.user.id);
-    if (!user) {
-      const err = createError(403, "Cannot create post because you are not a registered user!")
-      return next(err);
-    }
-
     // Attempt to create a new post
     const post = await Post.createPost(
       req.body.title,
@@ -132,7 +121,7 @@ const deletePost = asyncHandler(async(req, res, next) => {
  * @param (express.Response) res - The response object
  */
 const getPosts = asyncHandler(async(req, res) => {
-  const posts = await Post.find();
+  const posts = await Post.find().populate("user category");
   res.status(200).json(posts);
 })
 

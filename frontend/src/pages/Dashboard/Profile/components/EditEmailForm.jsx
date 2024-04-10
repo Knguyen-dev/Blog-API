@@ -12,7 +12,7 @@ const validationSchema = yup.object().shape({
 	email: emailSchema,
 });
 
-export default function EditNameForm({ email, handleCloseForm }) {
+export default function EditNameForm({ email, onSuccess }) {
 	const { control, handleSubmit, setError } = useForm({
 		resolver: yupResolver(validationSchema),
 		defaultValues: {
@@ -39,8 +39,8 @@ export default function EditNameForm({ email, handleCloseForm }) {
 		const success = await changeEmail(formData);
 
 		// If successful, close the form
-		if (success) {
-			handleCloseForm();
+		if (success && onSuccess) {
+			onSuccess();
 		}
 	};
 
@@ -85,6 +85,6 @@ export default function EditNameForm({ email, handleCloseForm }) {
 	);
 }
 EditNameForm.propTypes = {
-	handleCloseForm: PropTypes.func,
+	onSuccess: PropTypes.func,
 	email: PropTypes.string,
 };

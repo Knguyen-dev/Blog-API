@@ -21,6 +21,18 @@ const categorySchema = new mongoose.Schema({
     lowercase: true,
     unique: true,
     required: true,
+  },
+
+  /*
+  - Represents the user that had last updated/edited the category's information.
+
+  - NOTE: When a category is first created, the user who created the Category
+    will fill the lastUpdatedBy field with their ID.
+  */
+  lastUpdatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   }
 })
 

@@ -44,7 +44,7 @@ export default function PostCard({
 		<Card sx={{ maxWidth, height: cardHeight }} className="tw-cursor-pointer">
 			<CardMedia
 				sx={{ height: imageHeight }}
-				image={postObj.image}
+				image={postObj.imgSrc}
 				title={postObj.title} // appears when you hover over image
 			/>
 			<CardContent className="tw-flex tw-gap-x-3">

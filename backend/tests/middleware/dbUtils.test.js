@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const findDocByID = require("../../middleware/findDocByID");
+const {findDocByID} = require("../../middleware/dbUtils");
 
 
 

@@ -176,6 +176,11 @@ const EditorProvider = ({ children }) => {
 			return;
 		}
 
+		if (!state.imgSrc) {
+			setError("Please have an image for the post!");
+			return;
+		}
+
 		// If true, that means a status simply wasn't selected.
 		if (!state.status) {
 			setError("Please pick a status for the post!");

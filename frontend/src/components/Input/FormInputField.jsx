@@ -38,6 +38,9 @@ export default function FormInputField({
 	fullWidth,
 	variant = "outlined",
 	autoComplete,
+	defaultValue,
+	multiline = false,
+	rows,
 }) {
 	return (
 		<Controller
@@ -58,6 +61,9 @@ export default function FormInputField({
 					variant={variant}
 					className={className}
 					fullWidth={fullWidth}
+					defaultValue={defaultValue}
+					multiline={multiline}
+					rows={rows}
 					inputProps={{
 						autoComplete: autoComplete,
 					}}
@@ -76,4 +82,7 @@ FormInputField.propTypes = {
 	fullWidth: PropTypes.bool,
 	variant: PropTypes.string,
 	autoComplete: PropTypes.string,
+	defaultValue: PropTypes.string,
+	multiline: PropTypes.bool,
+	rows: PropTypes.number,
 };

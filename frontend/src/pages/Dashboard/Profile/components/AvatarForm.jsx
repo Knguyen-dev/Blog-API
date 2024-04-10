@@ -1,4 +1,4 @@
-import { Button, Box, Avatar } from "@mui/material";
+import { Button, Box, Avatar, Typography } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useEffect, useState, useRef } from "react";
 import useChangeAvatar from "../hooks/useChangeAvatar";
@@ -121,7 +121,13 @@ export default function AvatarForm({ user }) {
 					<AlertDialog
 						open={open}
 						title="Delete Your Avatar?"
-						dialogText="By agreeing, you confirm the permanent deletion of your avatar from your account. Please note that once deleted, your avatar cannot be recovered."
+						dialogText={
+							<Typography>
+								By agreeing, you confirm the permanent deletion of your avatar
+								from your account. Please note that once deleted, your avatar
+								cannot be recovered.
+							</Typography>
+						}
 						handleClose={() => setOpen(false)}
 						dialogActions={avatarDialogActions}
 					/>

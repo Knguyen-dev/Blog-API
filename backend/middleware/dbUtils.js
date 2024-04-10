@@ -42,6 +42,11 @@ const findDocByID = async function(model, docID, populateOptions = null) {
   return document;
 };
 
+function isValidObjectId(id) {
+  return mongoose.Types.ObjectId.isValid(id);
+} 
 
-
-module.exports = findDocByID;
+module.exports = {
+  findDocByID,
+  isValidObjectId
+};

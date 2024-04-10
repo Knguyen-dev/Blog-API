@@ -1,5 +1,6 @@
 /*
-+ validationSchemas: File where we create and export all of the yup
++ validationSchemas: 
+  File where we create and export all of the yup
   validation schemas that we use in some of our forms such as the 
   sign up form, or the 'edit username' form. As a result 
   everything is kept in one place so whenever we want to change our 

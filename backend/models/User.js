@@ -258,7 +258,7 @@ userSchema.virtual("avatarSrc").get(function() {
   }
 })
 
-userSchema.virtual("avatarInitials").get(function() {
+userSchema.virtual("avatarInitials").get(function() {  
 
   // Split the name into an array based on spaces, which represent sections of the name
   const nameArr = this.fullName.split(" ");

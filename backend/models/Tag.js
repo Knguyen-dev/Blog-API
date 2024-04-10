@@ -9,6 +9,11 @@ const tagSchema = new mongoose.Schema({
     unique: true,
   },
 
+  // User who last updated the tag; could be the creator or maybe an admin?
+  lastUpdatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }
 }, {
   timestamps: true
 })
@@ -37,33 +42,14 @@ tagSchema.methods.toJSON = function() {
   posts.
 
 - NOTE: Pre-hook middleware functions are only triggered by certain commands. Here, this 
-  is triggered by using the findOneAndDelete and findByIdAndDelete commands. 
+  is triggered by using the findOneAndDelete and findByIdAndDelete commands.
   So to ensure this pre hook runs, we'll make sure to only use those commands.
-
-+ Credits: https://mongoosejs.com/docs/api/model.html#Model.findByIdAndDelete()
-
+  Credits: https://mongoosejs.com/docs/api/model.html#Model.findByIdAndDelete()
 
 + Circular dependencies error:
 Well 'Tag' is used in Post. And now we're referencing 
 'Post' in tag? Which one is supposed to come first? That's 
 what it is trying to tell us. But how do we solve this and solve our problem?
-
-// Here's the bad function for future reference: 
-tagSchema.pre("findOneAndDelete", async function (next) {
-  // Id of the tag being deleted
-  const tagId = this._conditions._id
-  await Post.updateMany(
-    {
-      tags: this._id, // find all posts with the id in their tags array
-    },
-    {
-      $pull: {
-        tags: this._id, // remove the tag from the tags array
-      }
-    }
-  )
-  next();
-})
 
 - How to solve:
 1. First remove import of Post.
