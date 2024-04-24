@@ -56,7 +56,7 @@ export default function useChangePassword() {
 					setSubmitDisabled(true);
 				}
 
-				setError(getErrorData(err, false));
+				setError(getErrorData(err));
 			} else if (err.request) {
 				setError("Network error!");
 			} else {

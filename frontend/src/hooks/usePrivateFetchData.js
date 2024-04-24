@@ -1,6 +1,7 @@
 import useAxiosPrivate from "./useAxiosPrivate";
 import { useState, useEffect } from "react";
 import getErrorData from "../utils/getErrorData";
+
 export default function usePrivateFetchData(url) {
 	const [isLoading, setIsLoading] = useState(true);
 	const [data, setData] = useState(null);
@@ -12,7 +13,6 @@ export default function usePrivateFetchData(url) {
     it only fetches the data when the user is logged in. So just note that. 
   
   - Though, now I think we could use this effect a couple of times!
-  
   */
 
 	// Effect loads in the posts in the database
@@ -30,7 +30,7 @@ export default function usePrivateFetchData(url) {
 					return;
 				}
 				if (err.response) {
-					setError(getErrorData(err, false));
+					setError(getErrorData(err));
 				} else if (err.request) {
 					setError("Network error!");
 				} else {

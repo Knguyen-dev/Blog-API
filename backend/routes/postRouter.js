@@ -5,21 +5,19 @@ const roleVerification = require("../middleware/roleVerification");
 // Getting all posts
 router.get("/", postController.getPosts);
 
-
 // Creating a post; must be an editor or admin to do this
 router.post("/", roleVerification.verifyEditorOrAdmin, postController.createPost);
 
-// Get, delete, and update posts via id
-router.get("/:id", postController.getPost);
+// Getting a specific post's details
+router.get("/:id", postController.getPostDetails);
 
-/*
-- Routes for deleting or updating a post; We'll verify that the user is 
-  an editor or admin before proceeding with the request. Then we 
-  will apply permissiosn middleware on the post
-
-
-*/
+// Deleting a post 
 router.delete("/:id", roleVerification.verifyEditorOrAdmin, postController.deletePost);
+
+// Updating the status of a post only (for admins only)
+router.patch("/:id/status", roleVerification.verifyAdmin, postController.updatePostStatus);
+
+// Updating a post in its entirety
 router.patch("/:id", roleVerification.verifyEditorOrAdmin, postController.updatePost);
 
 

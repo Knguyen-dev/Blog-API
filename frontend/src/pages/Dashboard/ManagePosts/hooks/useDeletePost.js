@@ -1,6 +1,6 @@
 import { useState } from "react";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import getErrorData from "../../../utils/getErrorData";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+import getErrorData from "../../../../utils/getErrorData";
 
 // Maybe pass in a state setter
 export default function useDeletePost() {
@@ -20,7 +20,7 @@ export default function useDeletePost() {
 			success = true;
 		} catch (err) {
 			if (err.response) {
-				setError(getErrorData(err, false));
+				setError(getErrorData(err));
 			} else if (err.request) {
 				setError("Network error!");
 			} else {

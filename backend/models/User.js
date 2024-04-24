@@ -287,6 +287,7 @@ userSchema.virtual("avatarInitials").get(function() {
   javascript object. THen we delete some fields we don't want to include. So here we 
   delete password, refreshToken, and the '__v' which has something to do with indexes in
   mongoDB. These info is either critical or irrelevant to the frontend, so we don't need it.
+  
 */
 userSchema.methods.toJSON = function() {
   const userObj = this.toObject();
@@ -298,6 +299,8 @@ userSchema.methods.toJSON = function() {
   delete userObj.usernameChangeCount;
   delete userObj.createdAt;
   delete userObj.updatedAt;
+  delete userObj.isEmployee; // isEmployee is only used on the backend to track and return all users that are employees
+  
   return userObj;
 }
 

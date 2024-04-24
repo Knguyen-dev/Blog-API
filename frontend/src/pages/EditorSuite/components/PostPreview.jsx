@@ -1,12 +1,7 @@
 import { Box, Typography, Divider } from "@mui/material";
-
 import { TagContainer } from "../../../components/styles/TagContainer.styled";
 import PropTypes from "prop-types";
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-	year: "numeric",
-	month: "long",
-	day: "numeric",
-});
+import { formatBlogDate } from "../../../api/intl";
 
 PostPreview.propTypes = {
 	title: PropTypes.string,
@@ -37,6 +32,13 @@ export default function PostPreview({
 	imgCredits,
 	tags,
 }) {
+	/*
+  - Let's say we're passed a date string
+  
+  
+  
+  */
+
 	return (
 		<Box component="main" className="tw-p-4">
 			{/* Header of the post: has title, date published, category, author*/}
@@ -51,7 +53,7 @@ export default function PostPreview({
 					{title}
 				</Typography>
 				<Box className="tw-flex tw-justify-center">
-					<Typography>{dateFormatter.format(dateObj)}</Typography>
+					<Typography>{dateObj && formatBlogDate(dateObj)}</Typography>
 					<Typography variant="span" sx={{ marginX: "0.5em" }}>
 						|
 					</Typography>
@@ -101,7 +103,8 @@ export default function PostPreview({
 				{/* Fake copyright section */}
 				<Box className="tw-mt-5">
 					<Typography variant="body2" className="tw-text-gray-500">
-						&copy; {dateObj.getFullYear()} BlogSphere. All rights reserved.
+						&copy; {dateObj && dateObj.getFullYear()} BlogSphere. All rights
+						reserved.
 					</Typography>
 				</Box>
 			</Box>

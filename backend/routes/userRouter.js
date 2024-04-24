@@ -2,6 +2,7 @@ const router = require("express").Router();
 
 const roleVerification = require("../middleware/roleVerification");
 const userController = require("../controllers/userController");
+const postController = require("../controllers/PostController");
 const userPerms = require("../middleware/permissions/userPerms");
 const userLimiter = require("../middleware/limiters/userLimiter");
 
@@ -14,6 +15,12 @@ router.get("/", roleVerification.verifyAdmin, userController.getUsers);
 
 // Get user by id
 router.get("/:id", userController.getUserById)
+
+
+// Get the posts created by a user
+router.get("/:id/posts", postController.getPostsByUser);
+
+
 
 // Limit amount of requests for editing a user account
 router.use(userLimiter.editUserLimiter)

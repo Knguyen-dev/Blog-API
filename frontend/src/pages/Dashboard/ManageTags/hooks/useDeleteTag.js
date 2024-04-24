@@ -22,7 +22,7 @@ export default function useDeleteTag() {
 				if (err.response.status === 429 && !submitDisabled) {
 					setSubmitDisabled(true);
 				}
-				setError(getErrorData(err, false));
+				setError(getErrorData(err));
 			} else if (err.request) {
 				setError("Network Error!");
 			} else {

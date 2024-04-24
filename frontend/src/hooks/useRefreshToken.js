@@ -1,4 +1,6 @@
 import useAuthContext from "./useAuthContext";
+import useLogout from "./useLogout";
+
 import axios from "../api/axios";
 import authActions from "../constants/authActions";
 import useToast from "./useToast";
@@ -7,6 +9,7 @@ const endpoint = "/auth/refresh";
 
 export default function useRefreshToken() {
 	const { auth, dispatch } = useAuthContext();
+	const logout = useLogout();
 
 	const { showToast } = useToast();
 	/*
@@ -54,38 +57,26 @@ export default function useRefreshToken() {
 			console.log("Failed to refresh 'access token': ", err);
 
 			/*
-      - Situation: Our refresh token cookie is expired and we try to 
-        change our name, or do a request that requires a valid access token.
-        Our initial request fails, then our refresh fails, and then our retry
-        fails because of that. Then the user would receive an error message like
-        'bad access token' on the form. Rather than keeping them to see a confusing
-        error message, if the user's refresh token expires, which is indicated by 
-        this catch block, then we want to redirect the user to the login page 
-        to reauthenticate.
-
-      - Solution: 
-      1. If catch block, then refresh token cookie expired, so clear the 
-        global auth state.
-      2. Now the user would trigger a ProtectedRoute. This route would 
-        redirect the user to the route that renders the LoginForm. Here the protected 
-        route tracks the route that the user was trying to access before being redirected.
-      3. Then the user logs in with correct credentials. Assuming they didn't go to 
-        any other route, then we'd be able to log them in and redirect them to 
-        the route they were trying to access before, or our default route.
-
-      - NOTE: We first make sure our auth state is defined to prevent 
+      - If catch block: Refresh token cookie expired, so the user has to enter
+        their credentials again.
+      1. Call logout function. This clears the auth state, clears our expired refresh
+        token cookie, and it redirects the user to the login page.
+      2. Show the toast to indicate that the user's 'session' has expired so 
+        they have to log back in.
+      
+      - NOTE: 
+      - We first make sure our auth state is defined to prevent 
         unnecessary state updates. For example, the user logs out and nulls
         the auth state. Then we refresh, and PersistLogin will try to refresh the 
         user's access token but fail. That failure will trigger this catch block. 
-        If we didn't have this conditional, the auth state be cleared, even though
+        If we didn't have this conditional, the auth state be cleared via logout(), even though
         it's already clear. So with this conditional, we just prevent that unnecessary
-        auth state update from happening. 'auth.user' still being defined also means 
-        the user's credentials expired, but the auth state wasn't cleared yet so they 
-        could still move around in the protected routes, but once they made a request
-        to the backend, they'd update the auth state.
+        auth state update from happening. This 'auth.user' still being defined just means 
+        the user's credentials expired, but the auth state wasn't cleared yet so we 
+        just need to clear it.
       */
 			if (auth.user) {
-				dispatch({ type: authActions.logout });
+				await logout();
 				showToast({
 					message: "User session has expired! Please log back in.",
 					severity: "info",

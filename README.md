@@ -50,15 +50,23 @@ probably better if I personalize my website a bit.
   to have an nginx server running in front of your node server. This nginx server 
   acts as a 'reverse proxy'
 
-
-# Commit:
-+ Frontend
-- Created tabs for managing categories and tags. Also created tab for 
-  managing posts. Soon we'll need to add role-based logic so that 
-  editors can only see posts they've created, and admins can see all posts.
+# BOOK MARK:
+- Also try to implement usePrivateFetchData in other places. Some other places 
+  are still repeating that original effect, which obv doesn't promote code readability
+- Work on paginated API. Let's do that for tags first. 
 
 
 
+
+
+## Commit 
++ Front end:
+- For the manage post page, we've updated the actions for admins. If logged in user is an admin, the edit button for a post that is not theirs will just let the admin edit the status of a post. 
+- For editor-suite/:id, if no post was found, then application redirects user to '404 not found' page.
+
++ Back end:
+- Created routes for getting a posts associated with a user ('/users/:id/posts') and a route for admins that allows them to update the status of other users' posts.
+- Created attribute 'lastUpdatedBy' to track who last updated a post, since either the user who created the post can edit the post, or the admin can edit the post's status.
 
 # Hosting 
 - Definitely not hosting on Netlify considering that you can get 

@@ -107,8 +107,6 @@ export default function BlogPostCard({
 		setAnchorEl(e.currentTarget);
 	};
 
-	const username = "kbizzzyy_centralis3098whatasdjisdfjidj";
-
 	// Here, isLoading is false, so we should have a 'post' with info to render
 	return (
 		<Card
@@ -131,7 +129,7 @@ export default function BlogPostCard({
 				}
 				title={
 					<Typography noWrap sx={{ width: truncateWidth }}>
-						{username}
+						{post.user.username}
 					</Typography>
 				}
 				subheader={formatBlogPostDate(post.createdAt)}

@@ -80,6 +80,17 @@ const postSchema = new mongoose.Schema(
     wordCount: {
       type: Number,
       required: true,
+    },
+
+
+    
+    /*
+    - ID of the user who last updated this. This is needed because the user who
+      last updated a post could be the author themselves, or an admin.
+    */
+    lastUpdatedBy: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User"
     }
 
 	},
@@ -221,12 +232,12 @@ postSchema.statics.createPost = async function(title, body, categoryID, tagIDs=[
  * @param {string} imgCredits - Credits for the display image
  * @param {string} status - Status of the post
  * @param {int} wordCount - Amount of words in the post's body
+ * @param {string} userID - ID of the user who is updating the post
  */
-postSchema.methods.updatePost = async function(title, body, categoryID, tagIDs, imgSrc, imgCredits, status, wordCount) {
+postSchema.methods.updatePost = async function(title, body, categoryID, tagIDs, imgSrc, imgCredits, status, wordCount, userID) {
 
   // If new title is different from the current one, do a database check on the title and slug
   const slug = createSlug(title);
-  
   if (this.title.toLowerCase() !== title.toLowerCase()) {
     await this.constructor.checkTitleAndSlug(title, slug);
   }
@@ -276,8 +287,20 @@ postSchema.methods.updatePost = async function(title, body, categoryID, tagIDs, 
   }
 
   this.wordCount = wordCount;
+  this.lastUpdatedBy = userID;
 
   // Save changes
+  await this.save();
+}
+
+/**
+ * 
+ * @param {string} status - New status of the post
+ * @param {string} userID - ID of the user who is updating the post
+ */
+postSchema.methods.updateStatus = async function(status, userID) {
+  this.status = status;
+  this.lastUpdatedBy = userID;
   await this.save();
 }
 

@@ -6,19 +6,45 @@
   editors as well. And how we need to modify the data-grid for that, how to create endpoints 
   with authorization rules for that, etc.
 
-+ BOOK MARK:
-1. Complete AlertDialog, and check that the delete functionality will work
-2. Probably
++ Rules:
+- Admin:
+1. Should see all posts.
+2. Should be able to edit (in entirety) only their own posts. However 
+  they should be able to edit the status of another user's posts.
+3. Should be able to delete any post, either their own or someone else's 
 
+- Editor:
+1. Should see only the posts that they've created.
+2. Should only be able to edit their own posts.
+3. Should only be able to delete their own posts.
+
++ Explanation and plan:
+Since editors can only see their and manage (edit and delete) own posts, then
+the edit and delete buttons are simple. Edit button should redirect them to the 
+editor suite, while the delete button will delete their own post.
+
+However admins are a little more complicated. When the user is an admin, we will
+show all posts. So they see posts that they've created and others have created. 
+So the delete button stays the same, it should delete a post since admins can delete their 
+own or someone else's post. However, there are two modes for the edit button:
+1. If it's the admin's own post, then the edit button should redirect them to the 
+  editor-suite to allow them to edit their entire post.
+2. If it's someone else's post, then the 'edit' button should render a dialog
+  that allows the admin to edit the status of the user's post.
 */
 
 import { Typography, Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import BlogPostCard from "../../../components/card/BlogPostCard";
 import { useState } from "react";
 
-import DeletePostDialog from "./DeletePostDialog";
+import BlogPostCard from "../../../components/card/BlogPostCard";
+
+import DeletePostDialog from "./components/DeletePostDialog";
+import EditPostStatusDialog from "./components/EditPostStatusDialog";
+
 import usePrivateFetchData from "../../../hooks/usePrivateFetchData";
+import useAuthContext from "../../../hooks/useAuthContext";
+import { verifyAdmin } from "../../../utils/roleUtils";
 
 // Prepare the array of skeletons to be rendered
 const numSkeletons = 8;
@@ -27,16 +53,28 @@ const cardSkeletons = Array.from({ length: numSkeletons }, (_, index) => (
 ));
 
 export default function ManagePostsPage() {
+	const { auth } = useAuthContext();
 	const navigate = useNavigate();
+
+	// Check if the user is an admin; if not they're an editor
+	const isAdmin = verifyAdmin(auth.user.role);
+
+	let endPoint = "";
+	if (isAdmin) {
+		endPoint = "/posts";
+	} else {
+		endPoint = `/users/${auth.user._id}/posts`;
+	}
+
 	const {
 		isLoading,
 		data: posts,
 		setData: setPosts,
 		error: loadError,
-	} = usePrivateFetchData("/posts");
+	} = usePrivateFetchData(endPoint);
 
 	// Open state for the delete post dialog
-	const [isOpen, setIsOpen] = useState(false);
+	const [activeDialog, setActiveDialog] = useState(null);
 	const [activePostIndex, setActivePostIndex] = useState(null);
 
 	// Opens page for editing a post
@@ -52,9 +90,9 @@ export default function ManagePostsPage() {
   - handleOpenDialog: Opens the 'delete post' dialog and sets the 
     'activePostIndex' to set the index of the post being deleted.
   */
-	const handleCloseDialog = () => setIsOpen(false);
-	const handleOpenDialog = (index) => {
-		setIsOpen(true);
+	const handleCloseDialog = () => setActiveDialog(null);
+	const handleOpenDialog = (index, dialogName) => {
+		setActiveDialog(dialogName);
 		setActivePostIndex(index);
 	};
 
@@ -62,7 +100,7 @@ export default function ManagePostsPage() {
 	const activePost = activePostIndex !== null ? posts[activePostIndex] : null;
 
 	return (
-		<Box className="tw-flex tw-flex-col tw-h-full">
+		<Box className="tw-flex tw-flex-col">
 			<Box variant="header" className="tw-mb-4 ">
 				<Typography variant="h5" className="tw-mb-2">
 					Manage Posts
@@ -74,8 +112,15 @@ export default function ManagePostsPage() {
 
 			{/* Dialog for deleting a post */}
 			<DeletePostDialog
-				open={isOpen}
+				open={activeDialog === "deletePost"}
 				post={activePost}
+				handleClose={handleCloseDialog}
+				setPosts={setPosts}
+			/>
+
+			<EditPostStatusDialog
+				open={activeDialog === "editPostStatus"}
+				selectedPost={activePost}
 				handleClose={handleCloseDialog}
 				setPosts={setPosts}
 			/>
@@ -95,22 +140,36 @@ export default function ManagePostsPage() {
 						No posts have been created. Please make a post!
 					</Typography>
 				) : (
-					posts.map((post, index) => (
-						<BlogPostCard
-							key={index}
-							post={post}
-							cardActions={[
-								{
-									label: "Delete",
-									onClick: () => handleOpenDialog(index),
-								},
-								{
-									label: "Edit",
-									onClick: () => handleEditPost(post),
-								},
-							]}
-						/>
-					))
+					posts.map((post, index) => {
+						// Default card actions
+						let cardActions = [
+							{
+								label: "Edit",
+								onClick: () => handleEditPost(post),
+							},
+
+							{
+								label: "Delete",
+								onClick: () => handleOpenDialog(index, "deletePost"),
+							},
+						];
+
+						/*
+            - If an admin, but isn't author of the post, the edit button will open
+              the a dialog to edit the post's status, rather than redirecting the user 
+              to the editor suite.
+            */
+						if (isAdmin && auth.user._id != post.user._id) {
+							cardActions[0] = {
+								label: "Edit Status",
+								onClick: () => handleOpenDialog(index, "editPostStatus"),
+							};
+						}
+
+						return (
+							<BlogPostCard key={index} post={post} cardActions={cardActions} />
+						);
+					})
 				)}
 			</Box>
 		</Box>

@@ -9,7 +9,7 @@ const ITEM_HEIGHT = 48;
 
 BasicMenu.propTypes = {
 	open: PropTypes.bool,
-	anchorEl: PropTypes.element,
+	anchorEl: PropTypes.object, // It's an html element
 	items: PropTypes.arrayOf(
 		PropTypes.shape({
 			label: PropTypes.string.isRequired,
@@ -31,7 +31,8 @@ export default function BasicMenu({ open, anchorEl, items, handleClose }) {
 			onClose={handleClose}
 			slotProps={{
 				paper: {
-					maxHeight: ITEM_HEIGHT * 4.5,
+					// maxHeight; apparently not a property
+					height: ITEM_HEIGHT * 4.5,
 					width: "20ch",
 				},
 			}}>

@@ -1,14 +1,13 @@
-import AlertDialog from "../../../components/dialog/AlertDialog";
+import AlertDialog from "../../../../components/dialog/AlertDialog";
 import { Typography, Box, Button } from "@mui/material";
 import PropTypes from "prop-types";
-import useDeletePost from "./useDeletePost";
+import useDeletePost from "../hooks/useDeletePost";
 
 DeletePostDialog.propTypes = {
 	post: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 		title: PropTypes.string.isRequired,
 	}),
-	isLoading: PropTypes.bool,
 	open: PropTypes.bool,
 	handleClose: PropTypes.func,
 	setPosts: PropTypes.func,
@@ -48,7 +47,8 @@ export default function DeletePostDialog({
 	);
 
 	const dialogText = (
-		<Box>
+		// Use react fragment, since div's can't appear as descendent of p tags
+		<>
 			<Typography component="span">
 				Are you sure you want to delete the post titled &apos;{post?.title}
 				&apos;?
@@ -60,7 +60,7 @@ export default function DeletePostDialog({
 					Error: {error}
 				</Typography>
 			)}
-		</Box>
+		</>
 	);
 
 	return (
