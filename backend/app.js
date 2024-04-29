@@ -16,7 +16,6 @@ const express = require("express");
 const corsOption = require("./config/corsOption");
 const verifyCredentials = require("./middleware/verifyCredentials");
 const allowedOrigins = require("./config/allowedOrigins");
-const { verifyJWT } = require("./middleware/tokenUtils");
 const { jsonifyError } = require("./middleware/errorUtils");
 
 const app = express();
@@ -29,11 +28,7 @@ app.use(express.json());  // json from request body
 app.use(express.urlencoded({ extended: true })); // json from forms
 app.use(cookieParser()); // let's us access cookies from request object
 
-// Public routes
 app.use("/auth", authRouter);
-
-// Api (protected) routes
-app.use(verifyJWT);
 app.use("/users", userRouter);
 app.use("/employees", employeeRouter);
 app.use("/categories", categoryRouter);

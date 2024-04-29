@@ -14,9 +14,16 @@ BasicAuto.propTypes = {
 		value: PropTypes.string,
 	}),
 	label: PropTypes.string,
+	isOptionEqualToValue: PropTypes.func,
 };
 
-export default function BasicAuto({ options, onChange, value, label }) {
+export default function BasicAuto({
+	options,
+	onChange,
+	value,
+	label,
+	isOptionEqualToValue,
+}) {
 	return (
 		<Autocomplete
 			disablePortal
@@ -27,7 +34,7 @@ export default function BasicAuto({ options, onChange, value, label }) {
 			// If value has keys, then return value, else nothing was picked so default to options[0]
 			value={value}
 			renderInput={(params) => <TextField {...params} label={label} />}
-			isOptionEqualToValue={(option, value) => option.value === value.value}
+			isOptionEqualToValue={isOptionEqualToValue}
 		/>
 	);
 }

@@ -34,14 +34,11 @@ own or someone else's post. However, there are two modes for the edit button:
 */
 
 import { Typography, Box, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-
-import BlogPostCard from "../../../components/card/BlogPostCard";
-
+import BlogPostCard from "./components/BlogPostCard";
 import DeletePostDialog from "./components/DeletePostDialog";
 import EditPostStatusDialog from "./components/EditPostStatusDialog";
-
+import usePostRedirect from "../../Browse/hooks/usePostRedirect";
 import usePrivateFetchData from "../../../hooks/usePrivateFetchData";
 import useAuthContext from "../../../hooks/useAuthContext";
 import { verifyAdmin } from "../../../utils/roleUtils";
@@ -54,7 +51,12 @@ const cardSkeletons = Array.from({ length: numSkeletons }, (_, index) => (
 
 export default function ManagePostsPage() {
 	const { auth } = useAuthContext();
-	const navigate = useNavigate();
+
+	const {
+		handlePostRedirect,
+		handleEditPostRedirect,
+		handleCreatePostRedirect,
+	} = usePostRedirect();
 
 	// Check if the user is an admin; if not they're an editor
 	const isAdmin = verifyAdmin(auth.user.role);
@@ -77,13 +79,6 @@ export default function ManagePostsPage() {
 	const [activeDialog, setActiveDialog] = useState(null);
 	const [activePostIndex, setActivePostIndex] = useState(null);
 
-	// Opens page for editing a post
-	const handleEditPost = (post) => {
-		navigate(`/editor-suite/${post._id}`);
-	};
-
-	const handleCreatePost = () => navigate("/editor-suite");
-
 	/*
   - handleCloseDialog: Closes the delete post dialog
   
@@ -105,7 +100,7 @@ export default function ManagePostsPage() {
 				<Typography variant="h5" className="tw-mb-2">
 					Manage Posts
 				</Typography>
-				<Button variant="outlined" onClick={handleCreatePost}>
+				<Button variant="outlined" onClick={handleCreatePostRedirect}>
 					Create Post
 				</Button>
 			</Box>
@@ -126,11 +121,7 @@ export default function ManagePostsPage() {
 			/>
 
 			{/* Grid: Renders loading skeletons, error messages, and Blog Post cards*/}
-			<Box
-				className="tw-grid tw-gap-2 tw-items-start"
-				sx={{
-					gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-				}}>
+			<Box className="tw-flex tw-w-full tw-flex-wrap tw-justify-evenly tw-gap-4 tw-p-5">
 				{isLoading ? (
 					cardSkeletons
 				) : loadError ? (
@@ -145,7 +136,7 @@ export default function ManagePostsPage() {
 						let cardActions = [
 							{
 								label: "Edit",
-								onClick: () => handleEditPost(post),
+								onClick: () => handleEditPostRedirect(post._id),
 							},
 
 							{
@@ -167,7 +158,12 @@ export default function ManagePostsPage() {
 						}
 
 						return (
-							<BlogPostCard key={index} post={post} cardActions={cardActions} />
+							<BlogPostCard
+								key={index}
+								post={post}
+								onCardClick={() => handlePostRedirect(post.slug)}
+								cardActions={cardActions}
+							/>
 						);
 					})
 				)}

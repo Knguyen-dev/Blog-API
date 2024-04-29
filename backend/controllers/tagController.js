@@ -156,7 +156,7 @@ const getTags = asyncHandler(async(req, res) => {
  * not, so to avoid throwing a cast error. Also despite this using 'req.params.id'
  * we don't use setTag because we want to keep the concurrent query.
  */
-const getTagDetails = asyncHandler(async(req, res, next) => {
+const getTagAndPosts = asyncHandler(async(req, res, next) => {
 
   // Check object id before going on to both queries, if it's wrong, 
   // just return 404 saying the tag wasn't found
@@ -180,10 +180,46 @@ const getTagDetails = asyncHandler(async(req, res, next) => {
   res.status(200).json({tag, posts});
 })
 
+const getTagAndPublishedPosts = asyncHandler(async(req, res, next) => {
+
+  // Check object id before going on to both queries, if it's wrong, 
+  // just return 404 saying the tag wasn't found
+  if (!dbUtils.isValidObjectId(req.params.id)) {
+    const err = createError(404, "Tag wasn't found!");
+    return next(err);
+  }
+
+  const basePostQuery = {
+    tags: req.params.id, 
+    isPublished: true
+  }
+
+  // If there was a 'title' query parameter, then add filter parameter for the title
+  if (req.query.title) {
+    const titleRegex = new RegExp(req.query.title, "i");
+    basePostQuery.title = titleRegex;
+  }
+
+  const [tag, posts] = await Promise.all([
+    await dbUtils.findDocByID(Tag, req.params.id),
+    await Post.find(basePostQuery).populate("tags category user")
+  ]);
+
+  // If tag wasn't found, then indicate it
+  if (!tag) {
+    const err = createError(404, "Tag wasn't found!");
+    return next(err);
+  }
+
+  // Return the tag, and posts associated with the tag
+  res.status(200).json({tag, posts});
+})
+
 module.exports = {
   createTag,
   deleteTag,
   updateTag,
   getTags,
-  getTagDetails
+  getTagAndPosts,
+  getTagAndPublishedPosts
 }

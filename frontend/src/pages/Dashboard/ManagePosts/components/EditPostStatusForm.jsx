@@ -3,7 +3,8 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 
 import useSavePostStatus from "../hooks/useSavePostStatus";
-import submissionTypes from "../../../EditorSuite/data/submissionOptions";
+import { postStatuses } from "../../../EditorSuite/data/postConstants";
+
 import BasicSelect from "../../../../components/select/BasicSelect";
 
 EditPostStatusForm.propTypes = {
@@ -42,7 +43,7 @@ export default function EditPostStatusForm({ postID, onSuccess }) {
 					value={status}
 					setValue={setStatus}
 					label="Status"
-					options={submissionTypes}
+					options={postStatuses}
 					placeholder="Select post status"
 				/>
 

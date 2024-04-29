@@ -1,19 +1,23 @@
 import PropTypes from "prop-types";
-import { InputBase } from "@mui/material";
+import { InputBase, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { styled } from "@mui/material/styles";
 
-const Search = styled("div")(({ theme }) => ({
-	position: "relative",
-	borderRadius: theme.shape.borderRadius,
-	backgroundColor: theme.palette.inputBg,
+// Contains the input element and button
+const Search = styled("div")(() => ({
+	position: "relative", // For search icon positioning
 	display: "flex",
+	borderRadius: "2px",
+	overflow: "hidden",
+	columnGap: "4px",
 }));
 
+// Search icon
 const SearchIconWrapper = styled("div")(({ theme }) => ({
 	padding: theme.spacing(0, 2),
 	height: "100%",
 	position: "absolute",
+	zIndex: 10,
 	pointerEvents: "none",
 	display: "flex",
 	alignItems: "center",
@@ -29,6 +33,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 		paddingLeft: `calc(1em + ${theme.spacing(4)})`,
 	},
 
+	backgroundColor: theme.palette.inputBg,
+
 	// Ensures that input stretches out to fill 'search container.
 	flex: "auto",
 }));
@@ -43,6 +49,7 @@ export default function SearchBar({
 	onSubmit,
 	placeholder = "Search",
 	className,
+	name = "search",
 }) {
 	return (
 		<form onSubmit={onSubmit} className={className}>
@@ -53,7 +60,12 @@ export default function SearchBar({
 				<StyledInputBase
 					placeholder={placeholder}
 					inputProps={{ "aria-label": "search" }}
+					name={name}
 				/>
+
+				<Button variant="contained" sx={{ borderRadius: 0 }} type="submit">
+					Search
+				</Button>
 			</Search>
 		</form>
 	);
@@ -63,4 +75,5 @@ SearchBar.propTypes = {
 	onSubmit: PropTypes.func,
 	placeholder: PropTypes.string,
 	className: PropTypes.string,
+	name: PropTypes.string,
 };

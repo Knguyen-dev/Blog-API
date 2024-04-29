@@ -174,10 +174,72 @@ const deletePost = asyncHandler(async(req, res, next) => {
  * NOTE: You may use this for 'admin' as well since it gets all posts. 
  */
 const getPosts = asyncHandler(async(req, res) => {
-  const posts = await Post.find().populate("user category");
+  const posts = await Post.find().populate("user category tags");
+  res.status(200).json(posts);
+})
+
+
+/**
+ * Returns published posts, posts that can be seen by users
+ * 
+ * 
+ * Potentially defined query parameters:
+ * 1. title
+ */
+const getPublishedPosts = asyncHandler(async(req, res) => {
+  const {title, category, tags} = req.query;
+
+  const baseQuery = {isPublished: true};
+
+  if (title) {
+    const titleRegex = new RegExp(title, "i");
+    baseQuery.title = titleRegex;
+  }
+
+
+  /*
+  - In the future, we may want to allow for many categories!
+    
+  
+  */
+  if (category) {
+    // If it's invalid, return with an error
+    if (!isValidObjectId(category)) { 
+      return createError(400, "Invalid category ID!")
+    }
+
+    // Valid object id, so include it in our query
+    baseQuery.category = category;
+  }
+
+
+  /*
+  - If there are tags, we've been passed an array of tagIDs. As a result 
+  we will have an 'OR' operation. So, if someone put in tags '1' and '3', we 
+  will interpret that as the posts must have tags 1 or 3, and so on.  
+  */
+  if (tags && tags.length > 0) {
+    for (let i = 0; i < tags.length; i++) {
+      if (!isValidObjectId(tags[i])) {
+        const err = createError(`Invalid tag ID: ${tags[i]}`);
+        return err;
+      }
+    }
+    baseQuery.tags = {
+      $in: tags
+    }
+  }
+ 
+
+
+
+
+
+  const posts = await Post.find(baseQuery).populate("user category tags");
 
   res.status(200).json(posts);
 })
+
 
 /**
  * Returns the posts created by a given user
@@ -189,6 +251,8 @@ const getPosts = asyncHandler(async(req, res) => {
  * related to users, then it's good. As long as we prioritize maintainability and making sure things 
  * are easy to change and fix.
  * 
+ * NOTE 2: Of course, now anyone can use this to see all of the posts created by another user.
+ * So later you may decide on the rules about how this can be used. Whether or not
  */
 const getPostsByUser = asyncHandler(async(req, res, next) => {
 
@@ -216,16 +280,47 @@ const getPostsByUser = asyncHandler(async(req, res, next) => {
  * @param (express.Request) req - The request object
  * @param (express.Response) res - The response object
  */
-const getPostDetails = asyncHandler(async(req, res, next) => {
+const getPostByID = asyncHandler(async(req, res, next) => {
   // Attempt to find Post by ID; ensure to populate the 'user', 'category', and 'tags' fields 
   const post = await findDocByID(Post, req.params.id, ['user', 'category' , 'tags']);
   if (!post) {
     const err = createError(404, "Post wasn't found!");    
     return next(err);
   }
-  
   res.status(200).json(post);
 })
+
+
+const getPublishedPostByID = asyncHandler(async(req, res, next) => {
+
+  // If bad id, indicate it wasn't found
+  if (!isValidObjectId(id)) {
+    const err = createError(404, "Post not found!");
+    return next(err);
+  } 
+
+  // Attempt to find post with the matching object id and it must be published
+  const post = await Post.findOne({_id: req.params.id, isPublished: true}).populate("user category, tags");
+  if (!post) {
+    const err = createError(404, "Post not found!");
+    return next(err);
+  }
+
+  // Return post as json
+  res.status(200).json(post);
+})
+
+const getPublishedPostBySlug = asyncHandler(async(req, res, next) => {
+  // Attempt to find post with matching slug and is published
+  const post = await Post.findOne({slug: req.params.slug, isPublished: true}).populate("user category tags");
+  if (!post) {
+    const err = createError(404, "Post not found!");
+    return next(err);
+  }
+
+  res.status(200).json(post);
+})
+
 
 module.exports = {
   createPost,
@@ -233,6 +328,9 @@ module.exports = {
   updatePostStatus,
   deletePost,
   getPosts,
+  getPublishedPosts,
   getPostsByUser,
-  getPostDetails
+  getPostByID,
+  getPublishedPostByID,
+  getPublishedPostBySlug
 }

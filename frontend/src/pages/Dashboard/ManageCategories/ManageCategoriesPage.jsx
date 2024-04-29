@@ -4,15 +4,10 @@ import FormDialog from "../../../components/dialog/FormDialog";
 import CategoryForm from "./components/CategoryForm";
 import CategoryCard from "./components/CategoryCard";
 import DeleteCategoryDialog from "./components/DeleteCategoryDialog";
-import usePrivateFetchData from "../../../hooks/usePrivateFetchData";
+import useGetCategories from "../../EditorSuite/hooks/useGetCategories";
 
 export default function ManageCategoriesPage() {
-	const {
-		isLoading,
-		data: categories,
-		setData: setCategories,
-		error,
-	} = usePrivateFetchData("/categories");
+	const { categories, setCategories, isLoading, error } = useGetCategories();
 
 	// The index of the selected category;
 	const [activeIndex, setActiveIndex] = useState(null);

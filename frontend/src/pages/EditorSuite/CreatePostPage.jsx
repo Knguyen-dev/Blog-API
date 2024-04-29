@@ -1,29 +1,36 @@
 /*
 + CreatePostPage: Page for creating posts. It contains a sidebar for editing 
   and a post preview on the right side to show changes made to the post in real time.
+
+
++ Clean up the logic here:
+
+1. Fix or maybe change the way we save the data to local storage.
+
+2. Also front end validation for word count.
+
+
 */
 
 import { Grid } from "@mui/material";
 import { useCallback, useEffect } from "react";
 import { Typography } from "@mui/material";
-
 import useLocalStorage from "../../hooks/useLocalStorage";
 import useToast from "../../hooks/useToast";
 import useAuthContext from "../../hooks/useAuthContext";
-
 import useEditorContext from "./hooks/useEditorContext";
 import EditPostAccordion from "./components/EditPostAccordion";
-import postActions from "./data/postActions";
-import PostPreview from "./components/PostPreview";
 
-const today = new Date();
+import { postActions } from "./data/postConstants";
+import NewPostPreview from "../Browse/NewPostPreview";
+import getCurrentDateStr from "../../utils/getCurrentDateStr";
+
+const todayStr = getCurrentDateStr();
 
 export default function CreatePostPage() {
 	const { auth } = useAuthContext();
 
 	const {
-		categoryList,
-		tagList,
 		state,
 		dispatch,
 		initialState,
@@ -31,6 +38,8 @@ export default function CreatePostPage() {
 		isLoading,
 		submitDisabled,
 		onSubmitPost,
+		categories,
+		tags,
 	} = useEditorContext();
 
 	const { showToast } = useToast();
@@ -39,13 +48,11 @@ export default function CreatePostPage() {
 
 	/*
   + customDispatch: Custom dispatch function for CreatePostPage.
-  - Handles state updates differently in CreatePostPage and EditPostPage.
-  - Saves unsaved post data in 'postData' key for new posts.
+  Handles updating the state, but also passing a 'callback' function to our 
+  reducer. This callback function will accept the new state, and update the 
+  post data in local storage.
 
-  2. customDispatch is a dependency of useEffect, so we memoize it to prevent useEffect
-    from running on every render.
-
-  3. Calling 'setValue' in customDispatch for the callback will cause an error as we'd 
+  - NOTE: Calling 'setValue' in customDispatch for the callback will cause an error as we'd 
     be trying to update a state in 'CreatePostPage whilst rendering 'EditLayout'.
     Instead, just do 'localStorage.setItem'. This will update our localStorage successfully
     and it doesn't trigger a re-render. This should be safe because we only use the postData
@@ -70,8 +77,9 @@ export default function CreatePostPage() {
 		customDispatch({ type: postActions.SET_POST, payload: value });
 	}, [customDispatch, value]);
 
+	// Handle submitting a post for the createPostPage
 	const handleSubmitPost = async () => {
-		// Call function to submit the post
+		// Call function to submit the post to backend
 		const success = await onSubmitPost();
 
 		// If successful, show message and clear post
@@ -84,6 +92,8 @@ export default function CreatePostPage() {
 		}
 	};
 
+	const currentCategory = categories?.find((c) => c._id === state.category);
+
 	return (
 		<div className="tw-flex tw-flex-col tw-flex-1 tw-p-5">
 			<Grid
@@ -95,22 +105,32 @@ export default function CreatePostPage() {
 						Creating New Post
 					</Typography>
 					<EditPostAccordion
-						state={state}
+						// Data for the posts
+						title={state.title}
+						body={state.body}
+						category={state.category}
+						selectedTags={state.tags}
+						imgSrc={state.imgSrc}
+						imgCredits={state.imgCredits}
+						status={state.status}
+						// Updates the data states
 						dispatch={customDispatch}
-						categoryList={categoryList}
-						tagList={tagList}
+						// Data for post submission
 						handleSubmitPost={handleSubmitPost}
 						error={error}
 						isLoading={isLoading}
 						submitDisabled={submitDisabled}
+						// Tags and categories needed for options and selections
+						categories={categories}
+						tags={tags}
 					/>
 				</Grid>
 				<Grid item xs={12} sm={7} className="tw-h-full tw-overflow-y-auto">
-					<PostPreview
+					<NewPostPreview
 						title={state.title}
-						category={state.category} // 'category' is an id, get the human-readable title
+						category={currentCategory}
 						body={state.body}
-						dateObj={today}
+						dateStr={todayStr}
 						authorName={auth.user.fullName}
 						imgSrc={state.imgSrc}
 						imgCredits={state.imgCredits}

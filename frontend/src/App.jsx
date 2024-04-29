@@ -13,7 +13,12 @@ import AppLayout from "./layouts/AppLayout";
 // Misc Pages
 import NotFoundPage from "./pages/NotFoundPage";
 import NotAuthorizedPage from "./pages/NotAuthorizedPage";
+
+// Blog/Browse Section
 import BrowsePage from "./pages/Browse/BrowsePage";
+import PostPage from "./pages/Browse/PostPage";
+import TagPage from "./pages/Browse/TagPage";
+import CategoryPage from "./pages/Browse/CategoryPage";
 
 // Dashboard
 import DashboardLayout from "./pages/Dashboard/DashboardLayout";
@@ -58,7 +63,12 @@ function App() {
 					</Route>
 
 					<Route path="/" element={<AppLayout />}>
-						<Route index element={<BrowsePage />} />
+						<Route path="browse">
+							<Route index element={<BrowsePage />} />
+							<Route path="tags/:id" element={<TagPage />} />
+							<Route path="categories/:id" element={<CategoryPage />} />
+							<Route path=":slug" element={<PostPage />} />
+						</Route>
 
 						{/* Dashboard: Put protected route on the layout element since the layout requires us to 
               access the 'auth' property.   */}

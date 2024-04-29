@@ -107,16 +107,28 @@ const postSchema = new mongoose.Schema(
  * @param {string} title - Title of the post 
  * @param {string} slug - Slug generated based on the title
  */
-postSchema.statics.checkTitleAndSlug = async function(title, slug) {
+postSchema.statics.checkTitleAndSlug = async function(title, slug, id = null) {
   /*
   - Find a post with same title (case insensitive) or slug
   - If post exists, generate a corresponding error message, and throw back a status code 400, which
     will propagate to our route handler.
   */
-  const existingPost = await this.findOne({$or: [
+  const basePostQuery = {$or: [
     {title: { $regex: new RegExp('^' + title + '$', 'i') }}, 
     {slug}
-  ]});
+  ]}
+
+  /*
+  - If id is defined, we're checking we'll ensure the post we're looking for 
+    can't have the ID specified. This is useful when updating posts, and excluding the 
+    current post from the collection being queried.
+  */
+  if (id) {
+    basePostQuery._id = {$ne: id};
+  }
+
+  const existingPost = await this.findOne(basePostQuery);
+
   if (existingPost) {
     let errMessage = "";
     if (existingPost.title.toLowerCase() === title.toLowerCase()) {
@@ -235,11 +247,21 @@ postSchema.statics.createPost = async function(title, body, categoryID, tagIDs=[
  * @param {string} userID - ID of the user who is updating the post
  */
 postSchema.methods.updatePost = async function(title, body, categoryID, tagIDs, imgSrc, imgCredits, status, wordCount, userID) {
+  /*
+  - As per our business rules, we want every post to have a unique title.
+  1. If the title has changed, check the title and slug for duplication. We will
+    include the current posts's id. This prevents the case where the title changes, but 
+    the slug doesn't change, so we don't accidentally flag our current post as the one with 
+    a duplicate slug.
 
-  // If new title is different from the current one, do a database check on the title and slug
+  - NOTE: A slug can stay the same even if the title changes. For example 'Zelda' and 'zelda!'
+    generate the same slug, but are different titles. If this happens, we want to avoid throwing 
+    an error due to duplicate slug, when the found post and current post being updated are the same.
+    So we pass in the current post's id to the checkTitleAndSlug function.
+  */
   const slug = createSlug(title);
   if (this.title.toLowerCase() !== title.toLowerCase()) {
-    await this.constructor.checkTitleAndSlug(title, slug);
+    await this.constructor.checkTitleAndSlug(title, slug, this._id);
   }
 
   /*

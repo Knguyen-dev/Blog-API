@@ -28,7 +28,6 @@ export default function EditPostStatusDialog({
      we edited, with the updated version.
   */
 	const onSuccess = (newPost) => {
-		console.log("New post: ", newPost);
 		handleClose();
 		setPosts((posts) => {
 			const newPosts = posts.map((post) =>

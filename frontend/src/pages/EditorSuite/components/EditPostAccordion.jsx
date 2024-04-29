@@ -5,65 +5,63 @@
 */
 
 import { useState } from "react";
+
+import NewBasicSelect from "../../../components/select/NewBasicSelect";
 import FilteredAutoSelect from "../../../components/autocomplete/FilteredAutoSelect";
-import BasicAuto from "../../../components/autocomplete/BasicAuto";
 import BasicSelect from "../../../components/select/BasicSelect";
 import BasicAccordion from "../../../components/accordion/BasicAccordion";
 import { Box, TextField, Button } from "@mui/material";
-
-import submissionTypes from "../data/submissionOptions";
-import postActions from "../data/postActions";
+import { postActions, postStatuses } from "../data/postConstants";
 import PostEditor from "./PostEditor";
-
 import PropTypes from "prop-types";
 
 EditPostAccordion.propTypes = {
-	state: PropTypes.shape({
-		title: PropTypes.string,
-		category: PropTypes.shape({
-			label: PropTypes.string,
-			value: PropTypes.string,
-		}),
-		body: PropTypes.string,
-
-		tags: PropTypes.arrayOf(
-			PropTypes.shape({
-				label: PropTypes.string,
-				value: PropTypes.string,
-			})
-		),
-		imgSrc: PropTypes.string,
-		imgCredits: PropTypes.string,
-		status: PropTypes.string,
-	}),
+	title: PropTypes.string,
+	category: PropTypes.string,
+	body: PropTypes.string,
+	selectedTags: PropTypes.arrayOf(
+		PropTypes.shape({
+			title: PropTypes.string,
+			_id: PropTypes.string,
+		})
+	),
+	imgSrc: PropTypes.string,
+	imgCredits: PropTypes.string,
+	status: PropTypes.string,
 	dispatch: PropTypes.func,
-	categoryList: PropTypes.arrayOf(
-		PropTypes.shape({
-			label: PropTypes.string,
-			value: PropTypes.string,
-		})
-	),
-	tagList: PropTypes.arrayOf(
-		PropTypes.shape({
-			label: PropTypes.string,
-			value: PropTypes.string,
-		})
-	),
 	handleSubmitPost: PropTypes.func,
 	error: PropTypes.string,
 	isLoading: PropTypes.bool,
 	submitDisabled: PropTypes.bool,
+	categories: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string,
+			title: PropTypes.string,
+		})
+	),
+	tags: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.string,
+			title: PropTypes.string,
+		})
+	),
 };
 
 export default function EditPostAccordion({
-	state,
+	title,
+	category,
+	body,
+	selectedTags,
+	imgSrc,
+	imgCredits,
+	status,
 	dispatch,
-	categoryList,
-	tagList,
 	handleSubmitPost, // Depending on whether it's the edit or create page, the function could be different
 	error,
 	isLoading,
 	submitDisabled,
+	categories,
+	tags,
 }) {
 	// State that indicates the current accordion that's expanded.
 	const [activeIndex, setActiveIndex] = useState(0);
@@ -96,23 +94,24 @@ export default function EditPostAccordion({
 						label="Title"
 						id="title"
 						name="title"
-						value={state.title}
+						value={title}
 						onChange={(e) =>
 							dispatch({ type: postActions.SET_TITLE, payload: e.target.value })
 						}
 					/>
 
-					<BasicAuto
-						options={categoryList}
-						onChange={(e, newCategory) =>
+					<NewBasicSelect
+						value={category || ""}
+						setValue={(newCategory) =>
 							dispatch({ type: postActions.SET_CATEGORY, payload: newCategory })
 						}
-						value={state.category}
-						label="Categories"
+						options={categories}
+						getOptionLabel={(option) => option.title}
+						getOptionValue={(option) => option._id}
 					/>
 
 					<PostEditor
-						value={state.body}
+						value={body}
 						// 'payload' will be an object with values for {body, wordCount}
 						setValue={(payload) =>
 							dispatch({ type: postActions.SET_BODY, payload })
@@ -127,13 +126,15 @@ export default function EditPostAccordion({
 				<FilteredAutoSelect
 					id="tags"
 					label="Post Tags"
-					placeholder="Enter tags for your post!"
-					selectedValues={state.tags}
-					options={tagList}
-					isOption
+					placeholder="Select Tags"
+					options={tags}
+					selectedValues={selectedTags}
 					setSelectedValues={(newValues) =>
 						dispatch({ type: postActions.SET_TAGS, payload: newValues })
 					}
+					getOptionLabel={(option) => option.title}
+					isOptionEqualToValue={(option, value) => option._id === value._id}
+					limitTags={3}
 				/>
 			),
 		},
@@ -144,7 +145,7 @@ export default function EditPostAccordion({
 					<TextField
 						label="Post Image"
 						helperText="The src link of the image will be the thunmbnail of the post"
-						value={state.imgSrc}
+						value={imgSrc}
 						onChange={(e) =>
 							dispatch({ type: postActions.SET_IMAGE, payload: e.target.value })
 						}
@@ -153,7 +154,7 @@ export default function EditPostAccordion({
 					<TextField
 						label="Image Credits"
 						helperText="Credits to the photographer of the image and platform it came from"
-						value={state.imgCredits}
+						value={imgCredits}
 						onChange={(e) =>
 							dispatch({
 								type: postActions.SET_IMAGE_CREDITS,
@@ -171,8 +172,8 @@ export default function EditPostAccordion({
 					<BasicSelect
 						label="Status"
 						placeholder="Enter the submission type"
-						options={submissionTypes}
-						value={state.status || ""}
+						options={postStatuses}
+						value={status || ""}
 						setValue={(status) =>
 							dispatch({ type: postActions.SET_STATUS, payload: status })
 						}

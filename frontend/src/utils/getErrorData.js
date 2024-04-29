@@ -9,5 +9,5 @@
  */
 export default function getErrorData(err, isDetailed = false) {
 	const serverError = err.response.data.error;
-	return isDetailed ? serverError?.details : serverError.message;
+	return isDetailed ? serverError : serverError.message;
 }

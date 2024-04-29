@@ -6,7 +6,10 @@
 const router = require("express").Router();
 const employeeController = require("../controllers/employeeController");
 const roleVerification = require("../middleware/roleVerification");
+const {verifyJWT} = require("../middleware/tokenUtils");
 
+// All subsequent routes require authentication to use
+router.use(verifyJWT);
 
 // Middleware to ensure requests made to these endpoints are made by admins
 router.use(roleVerification.verifyAdmin);

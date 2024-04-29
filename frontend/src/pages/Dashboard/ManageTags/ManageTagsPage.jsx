@@ -4,15 +4,10 @@ import TagCard from "./components/TagCard";
 import TagForm from "./components/TagForm";
 import FormDialog from "../../../components/dialog/FormDialog";
 import DeleteTagDialog from "./components/DeleteTagDialog";
-import usePrivateFetchData from "../../../hooks/usePrivateFetchData";
+import useGetTags from "../../EditorSuite/hooks/useGetTags";
 
 export default function ManageTagsPage() {
-	const {
-		isLoading,
-		data: tags,
-		setData: setTags,
-		error,
-	} = usePrivateFetchData("/tags");
+	const { tags, setTags, isLoading, error } = useGetTags();
 
 	const [activeIndex, setActiveIndex] = useState(null);
 	const [activeForm, setActiveForm] = useState(null);

@@ -1,20 +1,14 @@
-// Let them be two separate components right now until we find a solution
-
 import { Box, Grid, Typography } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-
+import { useState, useEffect } from "react";
 import useToast from "../../hooks/useToast";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useEditorContext from "./hooks/useEditorContext";
-import postActions from "./data/postActions";
-import EditPostAccordion from "./components/EditPostAccordion";
-import PostPreview from "./components/PostPreview";
 
-/*
-- The error is probably happening because on the first render, .createdAt is undefined, and we're 
-trying to do getFullYear. In that case, let's modify things so that the date is a string instead.
-*/
+import { postActions } from "./data/postConstants";
+import EditPostAccordion from "./components/EditPostAccordion";
+import getErrorData from "../../utils/getErrorData";
+import NewPostPreview from "../Browse/NewPostPreview";
 
 export default function EditPostPage() {
 	// Get the id of the post from the route parameters
@@ -22,17 +16,20 @@ export default function EditPostPage() {
 	const navigate = useNavigate();
 	const { showToast } = useToast();
 	const {
-		categoryList,
-		tagList,
 		state,
 		dispatch,
 		error,
 		isLoading,
 		submitDisabled,
 		onSubmitPost,
+		categories,
+		tags,
 	} = useEditorContext();
 	const axiosPrivate = useAxiosPrivate();
 
+	const [postError, setPostError] = useState(null);
+
+	// Effect that loads existing data for a post!
 	useEffect(() => {
 		const abortController = new AbortController();
 		const fetchPostData = async () => {
@@ -40,6 +37,7 @@ export default function EditPostPage() {
 				const response = await axiosPrivate.get(`/posts/${id}`, {
 					signal: abortController.signal,
 				});
+
 				/*
 		    - Format the postData to work with the UI. So just have 'category' be
 		      an object {label, value} and 'tags' be an array of objects {label, value}
@@ -52,61 +50,34 @@ export default function EditPostPage() {
 					title: response.data.title,
 					body: response.data.body,
 					wordCount: response.data.wordCount,
-					category: {
-						label: response.data.category.title,
-						value: response.data.category._id,
-					},
-					tags: response.data.tags.map((tag) => ({
-						label: tag.title,
-						value: tag._id,
-					})),
+
+					// Helps protect in cases where category was deleted
+					category: response.data.category?._id,
+					tags: response.data.tags,
 					imgSrc: response.data.imgSrc,
 					imgCredits: response.data.imgCredits,
 					status: response.data.status,
 					authorName: response.data.user.fullName,
-					createdAt: new Date(response.data.createdAt),
+					createdAt: response.data.createdAt,
 				};
 				dispatch({ type: postActions.SET_POST, payload: postData });
 			} catch (err) {
 				// If the request wasn't aborted, then a real error happened with the request
 				if (!abortController.signal.aborted) {
-					console.log("Failed to fetch post: ", err.response);
-				}
-				// If 404, navigate to our not found page
-				if (err.response.status === 404) {
-					navigate("/not-found");
+					console.log("Failed to fetch post: ", err);
+					setPostError(getErrorData(err));
+
+					if (err.response.status === 404) navigate("/not-found");
 				}
 			}
 		};
 		fetchPostData();
 		return () => abortController.abort();
-		/*
-    - Let's work on making it so we're sure that all props are 
-    defined, before rendering PostPreview, so we don't have to worry
-    about what is defined and undefined. As well as this, let's 
-    add a isLoading prop, so that we can create a loading skeleton
-    for PostPreview when it's loading.
-
-    - Also let's make it so our postError can contain the error 
-    message and the status code
-
-    
-    
-    */
 	}, [dispatch, axiosPrivate, navigate, id]);
 
-	/*
-  + handleSubmitPost: Submits the existing post to be updated
-  */
+	// handleSubmitPost: Submits the existing post to be updated
 	const handleSubmitPost = async () => {
-		// Call function to submit the post
 		const success = await onSubmitPost();
-
-		/*
-    - If successful, show message that the post was successfully
-      updated.
-    - NOTE: In this case we don't need to clear the 'state' for the post. 
-    */
 		if (success) {
 			showToast({
 				message: "Post successfully updated!",
@@ -114,6 +85,8 @@ export default function EditPostPage() {
 			});
 		}
 	};
+
+	const currentCategory = categories.find((c) => c._id === state.category);
 
 	return (
 		<Box className="tw-flex tw-flex-col tw-flex-1 tw-p-5">
@@ -126,27 +99,49 @@ export default function EditPostPage() {
 						Editing Existing Post
 					</Typography>
 					<EditPostAccordion
-						state={state}
+						// Data for the posts
+						title={state.title}
+						body={state.body}
+						category={state.category}
+						selectedTags={state.tags}
+						imgSrc={state.imgSrc}
+						imgCredits={state.imgCredits}
+						status={state.status}
+						// Updates the data states
 						dispatch={dispatch}
-						categoryList={categoryList}
-						tagList={tagList}
+						// Data for post submission
 						handleSubmitPost={handleSubmitPost}
 						error={error}
 						isLoading={isLoading}
 						submitDisabled={submitDisabled}
+						// categories and tags needed
+						categories={categories}
+						tags={tags}
 					/>
 				</Grid>
 				<Grid item xs={12} sm={7} className="tw-h-full tw-overflow-y-auto">
-					<PostPreview
-						title={state.title}
-						category={state.category}
-						body={state.body}
-						dateObj={state.createdAt} // replace it with the date for the post
-						authorName={state.authorName} // replace it with full name of the author who wrote the post
-						imgSrc={state.imgSrc}
-						imgCredits={state.imgCredits}
-						tags={state.tags}
-					/>
+					{/* Only render once we have the data. We can do this by checking one of the properties of 
+          the state to be truthy. We will check 'authorName' since that is truthy when we actually got
+          a post, and the user can't make it falsy. We don't is a 'isLoading' state because if isLoading=false,
+          our post's data could still be undefined or falsy. Take 'dateStr', it needs to be an ISOformat string, and we 
+          only know it meets this criteria when we get the post's data, state.authorName defined. IF we used isLoading, 
+          due to the async nature of state updates, it could still be an empty string/invalid, causing an error.*/}
+					{state.authorName ? (
+						<NewPostPreview
+							title={state.title}
+							category={currentCategory}
+							body={state.body}
+							dateStr={state.createdAt}
+							authorName={state.authorName}
+							imgSrc={state.imgSrc}
+							imgCredits={state.imgCredits}
+							tags={state.tags}
+						/>
+					) : postError ? (
+						<Typography>{error}</Typography>
+					) : (
+						<Typography>Loading in the post!</Typography>
+					)}
 				</Grid>
 			</Grid>
 		</Box>

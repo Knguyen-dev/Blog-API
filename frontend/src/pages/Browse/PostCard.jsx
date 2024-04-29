@@ -1,93 +1,67 @@
-/*
-+ Intro to cards in Mui: 
-
-
-1. Card: Surface level container for grouping related components.
-2. Card Content: The warpper for the card's content
-3. Card header: Optional wrapper for your card's header
-4. Card Media: Optional container for displaying stuff like images on your card
-5. Card Actions: Optional wrpaper that groups a set of buttons. So this is where 
-  you'd put the 'action' buttons on your card
-6. Card action area: Optional wrapper that allows users ot interact with a 
-  specific area on the card. So like just another 'actions' wrapper, but you'd 
-  use it if you want to cover other cases.
-*/
-import {
-	Typography,
-	CardMedia,
-	CardContent,
-	Card,
-	Avatar,
-	Box,
-} from "@mui/material";
-
-import CommentIcon from "@mui/icons-material/Comment";
-
+import { Typography, Avatar, Stack } from "@mui/material";
+import { formatBlogPostDate } from "../../api/intl";
+import useTagRedirect from "./hooks/useTagRedirect";
+import usePostRedirect from "./hooks/usePostRedirect";
+import { TagContainer } from "../../components/styles/TagContainer.styled";
 import PropTypes from "prop-types";
 
-/*
-- Amount of characters we'll show before we truncate the title string. Youtube
-  has similar amounts of length, and also it seems like if we want to have multiple lines 
-  of text, but also be able to truncate it, then this is the best way to go. There 
-  are other methods, but they are considered hacks and don't cross over to other platforms.
-*/
+export default function PostCard({ postObj }) {
+	const handleTagRedirect = useTagRedirect();
+	const { handlePostRedirect } = usePostRedirect();
 
-const truncateLength = 75;
+	const handleClick = () => {
+		handlePostRedirect(postObj.slug);
+	};
 
-export default function PostCard({
-	maxWidth,
-	imageHeight,
-	postObj,
-	cardHeight,
-}) {
+	const handleTagClick = (e, id) => {
+		e.stopPropagation();
+		handleTagRedirect(id);
+	};
+
 	return (
-		<Card sx={{ maxWidth, height: cardHeight }} className="tw-cursor-pointer">
-			<CardMedia
-				sx={{ height: imageHeight }}
-				image={postObj.imgSrc}
-				title={postObj.title} // appears when you hover over image
+		<div
+			className="tw-flex tw-flex-col tw-pb-6 tw-max-w-96 tw-overflow-hidden tw-shadow-2xl tw-gap-2 tw-rounded-lg hover:tw-cursor-pointer"
+			onClick={handleClick}>
+			<img
+				width={400}
+				height={200}
+				className="tw-rounded-t-md tw-max-w-full tw-object-cover tw-mb-4"
+				src={postObj.imgSrc}
 			/>
-			<CardContent className="tw-flex tw-gap-x-3">
-				<Avatar src={postObj.image}></Avatar>
 
-				<Box className="">
-					<Typography
-						variant="p"
-						component="div"
-						sx={{
-							overflow: "hidden",
-							textOverflow: "ellipsis",
-							whiteSpace: "normal",
-						}}>
-						{postObj.title.length > truncateLength
-							? `${postObj.title.slice(0, truncateLength)}...`
-							: postObj.title}
+			{postObj.tags.length > 0 && (
+				<div className="tw-flex tw-flex-wrap tw-justify-start tw-items-center tw-px-4 tw-mb-2 tw-gap-2">
+					{postObj.tags.map((tag, index) => (
+						<TagContainer
+							onClick={(e) => handleTagClick(e, tag._id)}
+							className="tw-text-xs"
+							key={index}>
+							{tag.title}
+						</TagContainer>
+					))}
+				</div>
+			)}
+
+			<div className="tw-line-clamp-2 tw-px-4 tw-text-xl tw-font-medium lg:tw-text-xl tw-text-slate-500">
+				{postObj.title}
+			</div>
+			<div className="tw-px-4 tw-font-medium tw-flex tw-items-center">
+				<Avatar src={postObj.user.avatarSrc} className="tw-mr-2">
+					{postObj.user.avatarInitials}
+				</Avatar>
+				<Stack>
+					<Typography className="tw-font-bold">
+						{postObj.user.username}
 					</Typography>
-
-					{/* Author name has muted text color */}
-					<Typography variant="span" className="tw-text-gray-400" fontSize={14}>
-						{postObj.authorName}
+					<Typography className="tw-text-slate-500">
+						{formatBlogPostDate(postObj.createdAt)}
 					</Typography>
-
-					<Box className="tw-flex tw-text-gray-400">
-						<Box className="tw-flex tw-items-center tw-gap-x-1">
-							<CommentIcon sx={{ fontSize: 16 }} />
-							<Typography>{postObj.numComments}</Typography>
-						</Box>
-
-						<Typography className="tw-mx-1">&#8226;</Typography>
-
-						<Typography>{postObj.timePosted}</Typography>
-					</Box>
-				</Box>
-			</CardContent>
-		</Card>
+				</Stack>
+			</div>
+		</div>
 	);
 }
 
 PostCard.propTypes = {
-	maxWidth: PropTypes.number,
-	imageHeight: PropTypes.number,
-	cardHeight: PropTypes.number,
 	postObj: PropTypes.object,
 };

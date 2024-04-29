@@ -5,11 +5,12 @@
 
 */
 
-import { createContext, useState, useEffect, useReducer } from "react";
-import postActions from "../data/postActions";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import useSavePost from "../hooks/useSavePost";
+import { createContext, useReducer } from "react";
 
+import { minWordCount, postActions } from "../data/postConstants";
+import useSavePost from "../hooks/useSavePost";
+import useGetCategories from "../hooks/useGetCategories";
+import useGetTags from "../hooks/useGetTags";
 import PropTypes from "prop-types";
 const EditorContext = createContext();
 
@@ -73,7 +74,7 @@ const initialState = {
 	title: "",
 	body: "",
 	wordCount: 0, // wordCount is closely associated with 'body'
-	category: null, // category object
+	category: null, // category id value of the selected category
 	tags: [], // array of tag objects
 	imgSrc: "",
 	imgCredits: "",
@@ -82,77 +83,15 @@ const initialState = {
 
 /*
 + EditorProvider: Context provider that provides the shared variables and 
-  functionality for the 'CreatePostPage' and 'EditPostPage'
-
-
+  functionality for the 'CreatePostPage' and 'EditPostPage'.
 */
 const EditorProvider = ({ children }) => {
-	const axiosPrivate = useAxiosPrivate();
 	const [state, dispatch] = useReducer(postReducer, initialState);
 	const { error, setError, isLoading, submitDisabled, savePost } =
 		useSavePost();
-	/*
-  + States
-  - Arrays of categories and tags that are valid for the editor to 
-    use in their post. Each category or tag is an object 
-    {
-      label: title of the category or tag
-      value: database id of the category or tag
-    }
-  */
-	const [categoryList, setCategoryList] = useState([]);
-	const [tagList, setTagList] = useState([]);
 
-	// Effect loads in and sets the array of categories and tags
-	useEffect(() => {
-		const abortController = new AbortController();
-
-		const fetchTags = async () => {
-			try {
-				const response = await axiosPrivate.get("/tags", {
-					signal: abortController.signal,
-				});
-
-				const tagList = response.data.map((tag) => ({
-					// Have a label and value for each tag to work with the autocomplete
-					label: tag.title,
-					value: tag._id,
-				}));
-
-				setTagList(tagList);
-			} catch (err) {
-				if (err.name !== "CanceledError") {
-					console.error("Error fetching categories:", err);
-				}
-			}
-		};
-
-		const fetchCategories = async () => {
-			try {
-				const response = await axiosPrivate.get("/categories", {
-					signal: abortController.signal,
-				});
-
-				const categoryList = response.data.map((category) => ({
-					// Have a label and value for each tag to work with BasicSelect
-					label: category.title,
-					value: category._id,
-				}));
-
-				setCategoryList(categoryList);
-			} catch (err) {
-				if (err.name !== "CanceledError") {
-					console.error("Error fetching categories:", err);
-				}
-			}
-		};
-
-		// You'll want this to trigger a re-render
-		fetchCategories();
-		fetchTags();
-
-		return () => abortController.abort();
-	}, [axiosPrivate]);
+	const { categories, isLoading: categoriesLoading } = useGetCategories();
+	const { tags, isLoading: tagsLoading } = useGetTags();
 
 	const onSubmitPost = async () => {
 		/*
@@ -187,26 +126,33 @@ const EditorProvider = ({ children }) => {
 			return;
 		}
 
+		// Front end validation on the wordCount of the post
+		if (state.wordCount < minWordCount) {
+			setError(`Posts need to have at least ${minWordCount} words!`);
+			return;
+		}
+
 		// Format postData to only contain its ids
 		const postData = {
 			...state,
-			category: state.category.value,
-			tags: state.tags.map((tag) => tag.value),
+			tags: state.tags.map((tag) => tag._id),
 		};
 
-		// Call function to save post and indicate we're creating a new post
 		const success = await savePost(postData);
-
-		// return 'success' flag. The CreatePostPage and EditPostPage
-		// will have their logic for showing the success
 		return success;
 	};
+
+	// Wait until our categories and tags are initialized before provider and children.
+	// Prevents any errors in edit post accordion where we're trying to access a null value.
+	if (categoriesLoading || tagsLoading) {
+		return;
+	}
 
 	return (
 		<EditorContext.Provider
 			value={{
-				categoryList,
-				tagList,
+				categories,
+				tags,
 				state,
 				dispatch,
 				initialState,

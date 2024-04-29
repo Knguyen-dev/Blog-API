@@ -6,7 +6,7 @@ const Category = require("../models/Category");
 const Post = require("../models/Post");
 const categoryValidators = require("../middleware/validators/categoryValidators");
 const { createError, handleValidationErrors } = require("../middleware/errorUtils");
-const {findDocByID} = require("../middleware/dbUtils");
+const {findDocByID, isValidObjectId} = require("../middleware/dbUtils");
 
 /**
  * Function for creating a new cateogry
@@ -150,7 +150,12 @@ const getCategories = asyncHandler(async(req, res) => {
  * @param (express.Request) req - The request object
  * @param (express.Response) res - The response object
  */
-const getCategoryDetails = asyncHandler(async(req, res, next) => {
+const getCategoryAndPosts = asyncHandler(async(req, res, next) => {
+
+  if (!isValidObjectId(req.params.id)) {
+    const err = createError(404, "Category wasn't found!");
+    return next(err);
+  }
 
   // Attempt to find associated category and all posts that are under that category
   const [category, posts] = await Promise.all([
@@ -172,10 +177,54 @@ const getCategoryDetails = asyncHandler(async(req, res, next) => {
   });
 })
 
+/**
+ * Get the category details
+ * 
+ * @param (express.Request) req - The request object
+ * @param (express.Response) res - The response object
+ */
+const getCategoryAndPublishedPosts = asyncHandler(async(req, res, next) => {
+
+  // Validate id before we actually query
+  if (!isValidObjectId(req.params.id)) {
+    const err = createError(404, "Category wasn't found!");
+    return next(err);
+  }
+
+  const basePostQuery = {
+    category: req.params.id,
+    isPublished: true,
+  }
+
+  // If title was passed, we'll add a title filter parameter
+  if (req.query.title) {
+    const titleRegex = new RegExp(req.query.title, "i");
+    basePostQuery.title = titleRegex;
+  }
+
+  // Attempt to find associated category and all published posts associated with it
+  const [category, posts] = await Promise.all([
+    findDocByID(Category, req.params.id),
+    Post.find(basePostQuery).populate("tags user category")
+  ]);
+
+  if (!category) {
+    const err = createError(404, "Category not found!");
+    return next(err);
+  }
+
+  // Then return category and all posts
+  res.status(200).json({
+    category,
+    posts
+  });
+})
+
 module.exports = {
   createCategory,
   deleteCategory,
   updateCategory,
   getCategories,
-  getCategoryDetails
+  getCategoryAndPosts,
+  getCategoryAndPublishedPosts
 }

@@ -10,12 +10,11 @@ import {
 	Skeleton,
 	IconButton,
 } from "@mui/material";
-import { formatBlogPostDate } from "../../api/intl";
+import { formatBlogPostDate } from "../../../../api/intl";
 import PropTypes from "prop-types";
 
-import BasicMenu from "../menus/BasicMenu";
+import BasicMenu from "../../../../components/menus/BasicMenu";
 import { useState } from "react";
-
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 BlogPostCard.propTypes = {
@@ -34,6 +33,11 @@ BlogPostCard.propTypes = {
 		imgSrc: PropTypes.string.isRequired,
 		createdAt: PropTypes.string.isRequired,
 		status: PropTypes.string.isRequired,
+		tags: PropTypes.arrayOf(
+			PropTypes.shape({
+				title: PropTypes.string.isRequired,
+			})
+		),
 	}),
 	className: PropTypes.string,
 	cardActions: PropTypes.array,
@@ -51,29 +55,14 @@ idea is when isLoading, you'll rendering say maybe 10 skeletons for the sake of 
 
 
 + BOOK MARK:
-
 1. Looking good on the cards. They look better, but maybe you can optimize 
 the states? Have ManagePostsPage use one state?
-
-2. You should update the skeleton to match what we currently have now
-
-3. If you want, you may want to create a skeleton for categories 
-  and tags for fun.
-
-4. Then I think we should tweak things with category selection on both
-  ends so that you aren't forced to put a post inside a category.
-
-5. Make a post page where we can see the post in action. So 'browse/:id
-
-
 */
 
 const minCardWidth = 300;
 const truncateWidth = minCardWidth - 125;
-
 export default function BlogPostCard({
 	post,
-	className,
 	onCardClick,
 	cardActions,
 	isLoading = false,
@@ -86,7 +75,10 @@ export default function BlogPostCard({
 	// If loading is true, return the loading skeleton representation of the card
 	if (isLoading) {
 		return (
-			<Card className={className}>
+			<Card
+				sx={{
+					minWidth: minCardWidth,
+				}}>
 				<CardHeader
 					avatar={<Skeleton variant="circular" width={40} height={40} />}
 					title={<Skeleton variant="text" height={20} width="80%" />}
@@ -109,10 +101,7 @@ export default function BlogPostCard({
 
 	// Here, isLoading is false, so we should have a 'post' with info to render
 	return (
-		<Card
-			sx={{
-				minWidth: minCardWidth,
-			}}>
+		<Card className="tw-overflow-hidden tw-shadow-2xl  tw-rounded-lg tw-max-w-96">
 			<CardHeader
 				avatar={
 					<Avatar
@@ -135,19 +124,33 @@ export default function BlogPostCard({
 				subheader={formatBlogPostDate(post.createdAt)}
 			/>
 			<CardActionArea onClick={onCardClick}>
-				<CardMedia sx={{ height: 175 }} image={post.imgSrc} />
+				<CardMedia
+					sx={{
+						width: 400,
+						height: 200,
+					}}
+					className="tw-max-w-full tw-object-cover"
+					image={post.imgSrc}
+				/>
 				<CardContent>
-					<Box>
-						<Typography gutterBottom variant="h6" component="div">
-							{post.category.title}
-						</Typography>
-					</Box>
-					<Box>
-						<Typography sx={{ fontSize: 14 }}>{post.title}</Typography>
-						<Typography sx={{ fontSize: 14, fontWeight: 700 }}>
-							Status: {post.status}
-						</Typography>
-					</Box>
+					<Typography className="tw-line-clamp-2 tw-text-xl tw-font-medium lg:tw-text-xl">
+						{post.title}
+					</Typography>
+					<Typography>
+						{/* 
+              - Could happen when a posts's category is deleted. In that case we 
+              use conditional chaining, and this logic to indicate that.
+              */}
+						Category: {post.category?.title || "No category"}
+					</Typography>
+					{post.tags.length > 0 && (
+						<Box>
+							<Typography className="tw-inline-block tw-text-sm tw-font-medium tw-text-gray-500">
+								Tags: {post.tags.map((tag) => tag.title).join(", ")}
+							</Typography>
+						</Box>
+					)}
+					<Typography>Status: {post.status}</Typography>
 				</CardContent>
 			</CardActionArea>
 

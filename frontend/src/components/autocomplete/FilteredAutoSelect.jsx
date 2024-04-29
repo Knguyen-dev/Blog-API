@@ -32,6 +32,9 @@ FilteredAutoSelect.propTypes = {
 		})
 	),
 	setSelectedValues: PropTypes.func,
+	getOptionLabel: PropTypes.func,
+	isOptionEqualToValue: PropTypes.func,
+	limitTags: PropTypes.number,
 };
 
 export default function FilteredAutoSelect({
@@ -41,6 +44,9 @@ export default function FilteredAutoSelect({
 	options,
 	selectedValues,
 	setSelectedValues,
+	getOptionLabel,
+	isOptionEqualToValue,
+	limitTags,
 }) {
 	const handleTagsChange = (event, newValues) => {
 		setSelectedValues(newValues);
@@ -49,16 +55,17 @@ export default function FilteredAutoSelect({
 	return (
 		<Autocomplete
 			multiple
+			limitTags={limitTags}
 			id={id}
 			options={options}
-			getOptionLabel={(option) => option.label}
+			getOptionLabel={getOptionLabel}
 			value={selectedValues}
-			isOptionEqualToValue={(option, value) => option.value === value.value}
-			filterSelectedOptions
+			isOptionEqualToValue={isOptionEqualToValue}
 			onChange={handleTagsChange}
 			renderInput={(params) => (
 				<TextField {...params} label={label} placeholder={placeholder} />
 			)}
+			filterSelectedOptions
 		/>
 	);
 }

@@ -1,14 +1,19 @@
-import { Typography, Fab, Grid, Tooltip, Button, Divider } from "@mui/material";
-import SearchBar from "./Input/SearchBar";
+import {
+	Typography,
+	Fab,
+	Grid,
+	Tooltip,
+	Button,
+	Divider,
+	Box,
+	Link,
+} from "@mui/material";
 import ContrastIcon from "@mui/icons-material/Contrast";
 import AccountMenu from "./menus/AccountMenu";
 import useAuthContext from "../hooks/useAuthContext";
 import useColorContext from "../hooks/useColorContext";
-import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
 import { styled, useTheme } from "@mui/material/styles";
-
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // Import Link from react-router-dom
 
 const CustomHeader = styled("header")(({ theme }) => ({
 	backgroundColor: theme.palette.headerBg,
@@ -24,21 +29,67 @@ export default function Header() {
 		<CustomHeader className="tw-pt-2 tw-px-5">
 			<Grid container className="tw-items-center">
 				<Grid item xs={12} md={3} className="xs:max-md:tw-mb-4">
-					<div className="xs:max-md:tw-text-center">
+					<Box className="xs:max-md:tw-text-center">
 						<Typography variant="h4">
 							<Link
-								href="/"
+								component="button"
 								style={{ color: theme.palette.brandColor }}
 								underline="none"
-								className="tw-no-underline">
+								onClick={() => navigate("/browse")}>
 								Blog Sphere
 							</Link>
 						</Typography>
-					</div>
+					</Box>
 				</Grid>
 
 				<Grid item xs={10} md={5} className="tw-mx-auto xs:max-md:tw-mb-2">
-					<SearchBar />
+					<Box className="tw-list-none tw-flex xs:max-sm:tw-flex-col tw-items-center tw-justify-evenly tw-gap-2">
+						<li>
+							<Link
+								component="button"
+								style={{ color: theme.palette.brandColor }}
+								underline="none"
+								onClick={() => navigate("/home")}>
+								Home
+							</Link>
+						</li>
+						<li>
+							<Link
+								component="button"
+								style={{ color: theme.palette.brandColor }}
+								underline="none"
+								onClick={() => navigate("/about")}>
+								About
+							</Link>
+						</li>
+						<li>
+							<Link
+								component="button"
+								style={{ color: theme.palette.brandColor }}
+								underline="none"
+								onClick={() => navigate("/projects")}>
+								Projects
+							</Link>
+						</li>
+						<li>
+							<Link
+								component="button"
+								style={{ color: theme.palette.brandColor }}
+								underline="none"
+								onClick={() => navigate("/browse")}>
+								Blog
+							</Link>
+						</li>
+						<li>
+							<Link
+								component="button"
+								style={{ color: theme.palette.brandColor }}
+								underline="none"
+								onClick={() => navigate("/contact")}>
+								Contact
+							</Link>
+						</li>
+					</Box>
 				</Grid>
 
 				<Grid item xs={12} md={4}>
@@ -68,7 +119,3 @@ export default function Header() {
 		</CustomHeader>
 	);
 }
-
-Header.propTypes = {
-	setDesktopOpen: PropTypes.func,
-};
