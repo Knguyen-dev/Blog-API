@@ -1,21 +1,21 @@
 import { Typography, Avatar, Stack } from "@mui/material";
 import { formatBlogPostDate } from "../../api/intl";
-import useTagRedirect from "./hooks/useTagRedirect";
-import usePostRedirect from "./hooks/usePostRedirect";
+import useTagNavigation from "./hooks/useTagNavigation";
+import usePostNavigation from "./hooks/usePostNavigation";
 import { TagContainer } from "../../components/styles/TagContainer.styled";
 import PropTypes from "prop-types";
 
 export default function PostCard({ postObj }) {
-	const handleTagRedirect = useTagRedirect();
-	const { handlePostRedirect } = usePostRedirect();
+	const goToTagPage = useTagNavigation();
+	const { goToPostPage } = usePostNavigation();
 
 	const handleClick = () => {
-		handlePostRedirect(postObj.slug);
+		goToPostPage(postObj.slug);
 	};
 
 	const handleTagClick = (e, id) => {
 		e.stopPropagation();
-		handleTagRedirect(id);
+		goToTagPage(id);
 	};
 
 	return (

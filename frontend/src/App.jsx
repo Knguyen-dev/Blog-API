@@ -14,8 +14,17 @@ import AppLayout from "./layouts/AppLayout";
 import NotFoundPage from "./pages/NotFoundPage";
 import NotAuthorizedPage from "./pages/NotAuthorizedPage";
 
+// Home Page
+import HomePage from "./pages/Home/HomePage";
+
+// About Page
+import AboutPage from "./pages/About/AboutPage";
+
+// Contact Page
+import ContactPage from "./pages/Contact/ContactPage";
+
 // Blog/Browse Section
-import BrowsePage from "./pages/Browse/BrowsePage";
+import BlogPage from "./pages/Browse/BlogPage";
 import PostPage from "./pages/Browse/PostPage";
 import TagPage from "./pages/Browse/TagPage";
 import CategoryPage from "./pages/Browse/CategoryPage";
@@ -63,8 +72,13 @@ function App() {
 					</Route>
 
 					<Route path="/" element={<AppLayout />}>
+						<Route index element={<HomePage />} />
+
+						<Route path="contact" element={<ContactPage />} />
+						<Route path="about" element={<AboutPage />} />
+
 						<Route path="browse">
-							<Route index element={<BrowsePage />} />
+							<Route index element={<BlogPage />} />
 							<Route path="tags/:id" element={<TagPage />} />
 							<Route path="categories/:id" element={<CategoryPage />} />
 							<Route path=":slug" element={<PostPage />} />

@@ -38,7 +38,7 @@ import { useState } from "react";
 import BlogPostCard from "./components/BlogPostCard";
 import DeletePostDialog from "./components/DeletePostDialog";
 import EditPostStatusDialog from "./components/EditPostStatusDialog";
-import usePostRedirect from "../../Browse/hooks/usePostRedirect";
+import usePostNavigation from "../../Browse/hooks/usePostNavigation";
 import usePrivateFetchData from "../../../hooks/usePrivateFetchData";
 import useAuthContext from "../../../hooks/useAuthContext";
 import { verifyAdmin } from "../../../utils/roleUtils";
@@ -52,11 +52,8 @@ const cardSkeletons = Array.from({ length: numSkeletons }, (_, index) => (
 export default function ManagePostsPage() {
 	const { auth } = useAuthContext();
 
-	const {
-		handlePostRedirect,
-		handleEditPostRedirect,
-		handleCreatePostRedirect,
-	} = usePostRedirect();
+	const { goToPostPage, goToEditPostPage, goToCreatePostPage } =
+		usePostNavigation();
 
 	// Check if the user is an admin; if not they're an editor
 	const isAdmin = verifyAdmin(auth.user.role);
@@ -100,7 +97,7 @@ export default function ManagePostsPage() {
 				<Typography variant="h5" className="tw-mb-2">
 					Manage Posts
 				</Typography>
-				<Button variant="outlined" onClick={handleCreatePostRedirect}>
+				<Button variant="outlined" onClick={goToCreatePostPage}>
 					Create Post
 				</Button>
 			</Box>
@@ -136,7 +133,7 @@ export default function ManagePostsPage() {
 						let cardActions = [
 							{
 								label: "Edit",
-								onClick: () => handleEditPostRedirect(post._id),
+								onClick: () => goToEditPostPage(post._id),
 							},
 
 							{
@@ -161,7 +158,7 @@ export default function ManagePostsPage() {
 							<BlogPostCard
 								key={index}
 								post={post}
-								onCardClick={() => handlePostRedirect(post.slug)}
+								onCardClick={() => goToPostPage(post.slug)}
 								cardActions={cardActions}
 							/>
 						);

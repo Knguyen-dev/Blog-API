@@ -18,6 +18,7 @@ export default function ResponsiveDrawer({
 	drawerArr,
 	activeTabID,
 	handleTabClick,
+	className,
 }) {
 	/*
   1. mobileOpen: Tracks when the Drawer is showing on the mobile 
@@ -77,7 +78,7 @@ export default function ResponsiveDrawer({
 	);
 
 	return (
-		<Box component="nav">
+		<Box component="nav" className={className}>
 			{/* Position fixed button for toggling the mobile sidebar */}
 			<Fab
 				aria-label="open drawer"
@@ -138,4 +139,5 @@ ResponsiveDrawer.propTypes = {
 	drawerArr: PropTypes.array,
 	activeTabID: PropTypes.number,
 	handleTabClick: PropTypes.func,
+	className: PropTypes.string,
 };

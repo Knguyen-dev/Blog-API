@@ -19,9 +19,8 @@
 - render: Render the component we want to use.
 
 - NOTE: We'll specifically use this when we need our input fields to work 
-  with react-hook-form. If you you're manually controlling your input fields
-  with state, then you don't use this component. Just use textfield instead or 
-  something.
+  with react-hook-form. If you're not going to use react-hook-form for a particular form
+  ,then use TextField or some other component instead of this.
 */
 
 import { Controller } from "react-hook-form";

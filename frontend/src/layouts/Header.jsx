@@ -9,11 +9,17 @@ import {
 	Link,
 } from "@mui/material";
 import ContrastIcon from "@mui/icons-material/Contrast";
-import AccountMenu from "./menus/AccountMenu";
+import AccountMenu from "../components/menus/AccountMenu";
 import useAuthContext from "../hooks/useAuthContext";
 import useColorContext from "../hooks/useColorContext";
 import { styled, useTheme } from "@mui/material/styles";
+
+import useHomeNavigation from "../pages/Home/useHomeNavigation";
+import useAboutNavigation from "../pages/About/useAboutNavigation";
+import useBlogNavigation from "../pages/Browse/hooks/useBlogNavigation";
+import useContactNavigation from "../pages/Contact/useContactNavigation";
 import { useNavigate } from "react-router-dom"; // Import Link from react-router-dom
+import { companyInfo } from "../constants/companyInfo";
 
 const CustomHeader = styled("header")(({ theme }) => ({
 	backgroundColor: theme.palette.headerBg,
@@ -25,8 +31,13 @@ export default function Header() {
 	const navigate = useNavigate();
 	const theme = useTheme();
 
+	const goToHomePage = useHomeNavigation();
+	const goToAboutPage = useAboutNavigation();
+	const goToBlogPage = useBlogNavigation();
+	const goToContactPage = useContactNavigation();
+
 	return (
-		<CustomHeader className="tw-pt-2 tw-px-5">
+		<CustomHeader className="tw-pt-2 tw-px-5 tw-sticky tw-top-0 tw-z-10">
 			<Grid container className="tw-items-center">
 				<Grid item xs={12} md={3} className="xs:max-md:tw-mb-4">
 					<Box className="xs:max-md:tw-text-center">
@@ -35,21 +46,21 @@ export default function Header() {
 								component="button"
 								style={{ color: theme.palette.brandColor }}
 								underline="none"
-								onClick={() => navigate("/browse")}>
-								Blog Sphere
+								onClick={goToHomePage}>
+								{companyInfo.name}
 							</Link>
 						</Typography>
 					</Box>
 				</Grid>
 
 				<Grid item xs={10} md={5} className="tw-mx-auto xs:max-md:tw-mb-2">
-					<Box className="tw-list-none tw-flex xs:max-sm:tw-flex-col tw-items-center tw-justify-evenly tw-gap-2">
+					<Box className="tw-list-none tw-flex tw-flex-wrap tw-items-center tw-justify-evenly tw-gap-2">
 						<li>
 							<Link
 								component="button"
 								style={{ color: theme.palette.brandColor }}
 								underline="none"
-								onClick={() => navigate("/home")}>
+								onClick={goToHomePage}>
 								Home
 							</Link>
 						</li>
@@ -58,7 +69,7 @@ export default function Header() {
 								component="button"
 								style={{ color: theme.palette.brandColor }}
 								underline="none"
-								onClick={() => navigate("/about")}>
+								onClick={goToAboutPage}>
 								About
 							</Link>
 						</li>
@@ -67,16 +78,7 @@ export default function Header() {
 								component="button"
 								style={{ color: theme.palette.brandColor }}
 								underline="none"
-								onClick={() => navigate("/projects")}>
-								Projects
-							</Link>
-						</li>
-						<li>
-							<Link
-								component="button"
-								style={{ color: theme.palette.brandColor }}
-								underline="none"
-								onClick={() => navigate("/browse")}>
+								onClick={goToBlogPage}>
 								Blog
 							</Link>
 						</li>
@@ -85,7 +87,7 @@ export default function Header() {
 								component="button"
 								style={{ color: theme.palette.brandColor }}
 								underline="none"
-								onClick={() => navigate("/contact")}>
+								onClick={goToContactPage}>
 								Contact
 							</Link>
 						</li>

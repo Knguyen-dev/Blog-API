@@ -8,7 +8,7 @@ import FilteredAutoSelect from "../../components/autocomplete/FilteredAutoSelect
 import useGetTags from "../EditorSuite/hooks/useGetTags";
 import useGetCategories from "../EditorSuite/hooks/useGetCategories";
 
-export default function BrowsePage() {
+export default function BlogPage() {
 	// Fetch all posts
 	const {
 		data: posts,

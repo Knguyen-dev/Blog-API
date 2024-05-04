@@ -12,8 +12,8 @@
 import { Box, Typography, Divider } from "@mui/material";
 import { formatBlogDate } from "../../api/intl";
 import { TagContainer } from "../../components/styles/TagContainer.styled";
-import useTagRedirect from "./hooks/useTagRedirect";
-import useCategoryRedirect from "./hooks/useCategoryRedirect";
+import useTagRedirect from "./hooks/useTagNavigation";
+import useCategoryNavigation from "./hooks/useCategoryNavigation";
 
 import PropTypes from "prop-types";
 
@@ -28,7 +28,7 @@ export default function NewPostPreview({
 	tags,
 }) {
 	const handleTagRedirect = useTagRedirect();
-	const handleCategoryRedirect = useCategoryRedirect();
+	const goToCategoryPage = useCategoryNavigation();
 
 	const dateObj = new Date(dateStr);
 	return (
@@ -40,7 +40,7 @@ export default function NewPostPreview({
 					{category ? (
 						<TagContainer
 							className="hover:tw-cursor-pointer"
-							onClick={() => handleCategoryRedirect(category._id)}>
+							onClick={() => goToCategoryPage(category._id)}>
 							{category.title}
 						</TagContainer>
 					) : (

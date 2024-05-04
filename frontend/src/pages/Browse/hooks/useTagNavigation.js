@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 
-export default function useTagRedirect() {
+export default function useTagNavigation() {
 	const navigate = useNavigate();
 
-	const handleTagRedirect = (tagID) => {
+	const goToTagPage = (tagID) => {
 		navigate(`/browse/tags/${tagID}`);
+		window.scrollTo(0, 0);
 	};
 
-	return handleTagRedirect;
+	return goToTagPage;
 }
