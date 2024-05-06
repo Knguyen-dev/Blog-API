@@ -1,14 +1,13 @@
 const router = require("express").Router();
-
+const {verifyJWT} = require("../middleware/tokenUtils");
 const roleVerification = require("../middleware/roleVerification");
 const userController = require("../controllers/userController");
 const postController = require("../controllers/PostController");
 const userPerms = require("../middleware/permissions/userPerms");
 const userLimiter = require("../middleware/limiters/userLimiter");
 
-
-
-
+// Routes only accessible for authenticated users
+router.use(verifyJWT);
 
 // Get all users; for admins only
 router.get("/", roleVerification.verifyAdmin, userController.getUsers);
@@ -17,10 +16,14 @@ router.get("/", roleVerification.verifyAdmin, userController.getUsers);
 router.get("/:id", userController.getUserById)
 
 
-// Get the posts created by a user
-router.get("/:id/posts", postController.getPostsByUser);
+/*
+- Get all the posts created by a user; Let this only be for administrators because we don't want unauthorized
+users such as role="user" or "editor" to be able to see all of a user's post, even the unpublished ones.
 
-
+- NOTE: In the future, you may add a way to get all published posts by a specific user using 
+  a route "/:id/posts/published"
+*/
+router.get("/:id/posts", roleVerification.verifyAdmin, postController.getPostsByUser);
 
 // Limit amount of requests for editing a user account
 router.use(userLimiter.editUserLimiter)

@@ -7,7 +7,10 @@ import {
 	Box,
 	Divider,
 	IconButton,
+	useTheme,
 } from "@mui/material";
+
+import ResponsiveImg from "../../components/img/ResponsiveImg.jsx";
 import TestimonyCard from "./TestimonyCard.jsx";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { companyInfo } from "../../constants/companyInfo";
@@ -74,9 +77,10 @@ const sampleTestimonies = [
 export default function HomePage() {
 	const goToAboutPage = useAboutNavigation();
 	const goToBlogPage = useBlogNavigation();
+	const theme = useTheme();
 
 	return (
-		<div className="tw-flex tw-flex-col tw-gap-y-16">
+		<div className="tw-flex tw-flex-col tw-gap-y-20">
 			{/* Intro secution  */}
 			<Grid id="intro" container alignItems="center" justifyContent="center">
 				<Grid item xs={12} sm={6} className="xs:max-sm:tw-text-center">
@@ -106,47 +110,47 @@ export default function HomePage() {
 			</Grid>
 
 			{/* Services section */}
-			<Container maxWidth="xl" id="services">
-				{/* Header  */}
-				<Box className="tw-text-center tw-mb-6" component="header">
-					<Typography variant="h3" gutterBottom>
-						Our Services
-					</Typography>
-					<Typography className="tw-w-1/2 tw-mx-auto tw-font-light">
-						Our range of services caters to diverse needs, whether you&apos;re
-						representing a large corporation, a prominent content creator, or
-						simply an inquisitive individual. Get in touch with us to explore
-						potential collaborations!
-					</Typography>
-				</Box>
+			<Box sx={{ background: theme.palette.sectionBg }} className="tw-py-4">
+				<Container maxWidth="xl" id="services">
+					{/* Header  */}
+					<Box className="tw-text-center tw-mb-6" component="header">
+						<Typography variant="h3" gutterBottom>
+							Our Services
+						</Typography>
+						<Typography className="tw-w-1/2 tw-mx-auto tw-font-light">
+							Our range of services caters to diverse needs, whether you&apos;re
+							representing a large corporation, a prominent content creator, or
+							simply an inquisitive individual. Get in touch with us to explore
+							potential collaborations!
+						</Typography>
+					</Box>
+					<Box>
+						{siteServices.map((service, index) => (
+							<Box key={index} className="tw-mb-2">
+								{/* Content */}
+								<Box className="tw-flex tw-items-center tw-justify-between">
+									<Box>
+										<Typography variant="h4" component="h1" gutterBottom>
+											{service.title}
+										</Typography>
+										<Typography variant="body1" paragraph className="tw-w-5/6">
+											{service.description}
+										</Typography>
+									</Box>
 
-				{/* Content */}
-				<Box>
-					{siteServices.map((service, index) => (
-						<Box key={index} className="tw-mb-2">
-							{/* Content */}
-							<Box className="tw-flex tw-items-center tw-justify-between">
-								<Box>
-									<Typography variant="h4" component="h1" gutterBottom>
-										{service.title}
-									</Typography>
-									<Typography variant="body1" paragraph className="tw-w-5/6">
-										{service.description}
-									</Typography>
+									<Link href={service.href} aria-label={service.ariaLabel}>
+										<IconButton>
+											<ArrowOutwardIcon />
+										</IconButton>
+									</Link>
 								</Box>
 
-								<Link href={service.href} aria-label={service.ariaLabel}>
-									<IconButton>
-										<ArrowOutwardIcon />
-									</IconButton>
-								</Link>
+								<Divider />
 							</Box>
-
-							<Divider />
-						</Box>
-					))}
-				</Box>
-			</Container>
+						))}
+					</Box>
+				</Container>
+			</Box>
 
 			{/* About section: About the website */}
 			<Container
@@ -155,14 +159,10 @@ export default function HomePage() {
 				className="tw-flex tw-items-center tw-flex-col md:tw-flex-row tw-gap-8">
 				{/* Image */}
 				<Box sx={{ flex: 1 }}>
-					<img
+					<ResponsiveImg
 						src="https://img.b2bpic.net/free-photo/gamer-chair-with-multicolored-neon-lights_52683-99741.jpg"
-						alt=""
-						style={{
-							maxWidth: "100%",
-							objectFit: "cover",
-						}}
-						className="tw-rounded-lg"
+						alt="Person playing video games at their computer."
+						rounded="lg"
 					/>
 				</Box>
 

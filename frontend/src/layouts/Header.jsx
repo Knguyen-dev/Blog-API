@@ -37,7 +37,9 @@ export default function Header() {
 	const goToContactPage = useContactNavigation();
 
 	return (
-		<CustomHeader className="tw-pt-2 tw-px-5 tw-sticky tw-top-0 tw-z-10">
+		<CustomHeader
+			className="tw-pt-2 tw-px-5 tw-sticky tw-top-0 tw-z-10"
+			style={{ background: theme.palette.headerBg }}>
 			<Grid container className="tw-items-center">
 				<Grid item xs={12} md={3} className="xs:max-md:tw-mb-4">
 					<Box className="xs:max-md:tw-text-center">

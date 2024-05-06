@@ -2,7 +2,7 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
-import { Stack, Box, Typography, Link } from "@mui/material";
+import { Stack, Box, Typography, Link, useTheme } from "@mui/material";
 import PropTypes from "prop-types";
 import EmailSubscriptionForm from "../pages/Home/EmailSubscriptionForm";
 import useHomeNavigation from "../pages/Home/useHomeNavigation";
@@ -32,13 +32,17 @@ Footer.propTypes = {
 };
 
 export default function Footer({ className }) {
+	const theme = useTheme();
 	const goToHomePage = useHomeNavigation();
 	const goToAboutPage = useAboutNavigation();
 	const goToBlogPage = useBlogNavigation();
 	const goToContactPage = useContactNavigation();
 
 	return (
-		<Box component="footer" className={className}>
+		<Box
+			component="footer"
+			sx={{ background: theme.palette.footerBg }}
+			className={className}>
 			{/* Main footer content */}
 			<Box className="tw-flex tw-justify-between tw-flex-wrap tw-gap-8">
 				<Box sx={{ width: "fit-content", maxWidth: 250 }}>

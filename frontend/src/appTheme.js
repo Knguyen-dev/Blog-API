@@ -8,17 +8,32 @@ import { createTheme, responsiveFontSizes } from "@mui/material";
 // Define your custom colors
 const colors = {
 	lightMode: {
-		headerBg: "#FFFFFF", // background color for header
+		headerBg: "#f1f5f9", // background color for header
+		footerBg: "#f1f5f9",
 		brandColor: "#121212", // Color for the app header's brand link.
-		bodyBg: "#ddd", // Background color for the main content pages
-		inputBg: "#F3F4F6", // background color for search bar
 
+		/*
+    - Background color for a featured or special secution. We'll use make certain sections or ui elements
+    in the 'main' landmark stand out a little more
+
+     */
+		sectionBg: "#f1f5f9",
+
+		// Background color for our cards
+		cardBg: "#f9fafb",
+
+		inputBg: "#F3F4F6", // background color for search bar
 		accordionBg: "#f4f4f5",
 	},
 	darkMode: {
-		headerBg: "#121212",
+		headerBg: "#0f172a",
+		footerBg: "#0f172a",
 		brandColor: "#FFFFFF",
-		bodyBg: "#10172A",
+
+		sectionBg: "#1f1A24", // Background color
+
+		cardBg: "#18181b",
+
 		inputBg: "#374151",
 
 		accordionBg: "#121212", // background color for the accordion header

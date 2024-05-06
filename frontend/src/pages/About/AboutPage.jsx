@@ -2,8 +2,18 @@ import Diversity3Icon from "@mui/icons-material/Diversity3";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
 import SelfImprovementIcon from "@mui/icons-material/SelfImprovement";
-import { Button, Box, Typography, Stack, Container, Grid } from "@mui/material";
+import {
+	Button,
+	Box,
+	Typography,
+	Stack,
+	Container,
+	Grid,
+	useTheme,
+} from "@mui/material";
 import SocialMediaStack from "../../components/SocialMediaStack";
+
+import ResponsiveImg from "../../components/img/ResponsiveImg";
 
 import { companyInfo } from "../../constants/companyInfo";
 
@@ -35,6 +45,7 @@ const companyValues = [
 ];
 
 export default function AboutPage() {
+	const theme = useTheme();
 	return (
 		<Box className="tw-p-8 tw-flex tw-flex-col tw-gap-y-8">
 			{/* Header */}
@@ -68,37 +79,27 @@ export default function AboutPage() {
 					</Grid>
 
 					<Grid item xs={12} sm={6}>
-						<img
+						<ResponsiveImg
 							src="/happy-team-at-computer.jpg"
 							alt="Happy team at computer"
-							style={{
-								width: "100%",
-								height: "100%",
-								objectFit: "cover",
-							}}
-							className="tw-overflow-hidden tw-rounded-md"
+							rounded="md"
 						/>
 					</Grid>
 				</Grid>
 			</Container>
 
 			{/* Mission and Vision */}
-			<Container component="section" className="tw-text-center">
-				<Typography variant="h4" className="tw-mb-8">
+			<Container component="section">
+				<Typography variant="h4" className="tw-mb-8 tw-text-center">
 					Mission and Vision
 				</Typography>
 
 				<Grid container spacing={4} className="tw-justify-center">
 					<Grid item xs={12} sm={7}>
-						<img
+						<ResponsiveImg
 							src="/team-reacting-to-success.jpg"
 							alt="Happy team at computer"
-							style={{
-								width: "100%",
-								height: "100%",
-								objectFit: "cover",
-							}}
-							className="tw-overflow-hidden tw-rounded-md"
+							rounded="md"
 						/>
 					</Grid>
 					<Grid item xs={12} sm={5}>
@@ -117,7 +118,10 @@ export default function AboutPage() {
 			</Container>
 
 			{/* History and Background */}
-			<Container component="section" className="tw-mt-8">
+			<Container
+				component="section"
+				className="tw-py-4 tw-rounded-md tw-shadow-lg"
+				sx={{ background: theme.palette.sectionBg }}>
 				<Typography variant="h4" className="tw-text-center" gutterBottom>
 					A Brief History of {companyInfo.name}
 				</Typography>
@@ -152,7 +156,10 @@ export default function AboutPage() {
 			</Container>
 
 			{/* Company Values section */}
-			<Container component="section" className="tw-mt-8">
+			<Container
+				component="section"
+				className="tw-py-4 tw-rounded-md tw-shadow-lg"
+				sx={{ background: theme.palette.sectionBg }}>
 				<Box component="header" className="tw-text-center tw-mb-4">
 					<Typography variant="h4" gutterBottom>
 						Our Values
@@ -183,8 +190,8 @@ export default function AboutPage() {
 			</Container>
 
 			{/* Join Our Team */}
-			<Container component="section" className="tw-mt-8 tw-text-center">
-				<Typography variant="h4" gutterBottom>
+			<Container component="section">
+				<Typography variant="h4" gutterBottom className="tw-text-center">
 					Join Our Team
 				</Typography>
 
@@ -213,26 +220,30 @@ export default function AboutPage() {
 					</Grid>
 
 					<Grid item xs={12} sm={6} justifyContent="center">
-						<img
+						<ResponsiveImg
 							src="/team-celebration.jpg"
 							alt="Team of people celebrating"
-							className="tw-max-w-full tw-h-full tw-object-cover tw-rounded-md tw-overflow-hidden"
+							rounded="md"
 						/>
 					</Grid>
 				</Grid>
 			</Container>
 
 			{/* Connect with Us */}
-			<Container component="section" className="tw-text-center tw-mt-8">
-				<Typography variant="h4" gutterBottom>
-					Connect with Us
-				</Typography>
-
-				<SocialMediaStack
-					className="tw-justify-center"
-					spacing={1}
-					direction="row"
-				/>
+			<Container
+				component="section"
+				className="tw-py-4 tw-rounded-md tw-shadow-lg"
+				sx={{ background: theme.palette.sectionBg }}>
+				<Box component="header" className="tw-text-center">
+					<Typography variant="h4" gutterBottom>
+						Connect with Us
+					</Typography>
+					<SocialMediaStack
+						className="tw-justify-center"
+						spacing={1}
+						direction="row"
+					/>
+				</Box>
 
 				<Typography>
 					Stay connected with {companyInfo.name} beyond our website. Follow us

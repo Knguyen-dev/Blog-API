@@ -1,12 +1,14 @@
-import { Typography, Box, Grid, Stack } from "@mui/material";
+import { Typography, Box, Grid, Stack, useTheme } from "@mui/material";
 
 import { companyInfo } from "../../constants/companyInfo";
 import ContactForm from "./ContactForm";
 
 export default function ContactPage() {
+	const theme = useTheme();
+
 	return (
 		<Box className="tw-p-8">
-			<Box className="tw-text-center tw-mb-12">
+			<Box className="tw-text-center tw-mb-12" component="header">
 				<Typography variant="h2" gutterBottom>
 					Contact Us
 				</Typography>
@@ -16,8 +18,12 @@ export default function ContactPage() {
 				</Typography>
 			</Box>
 			<Grid container className="tw-justify-evenly xs:max-sm:tw-gap-y-8">
-				<Grid item sm={3}>
-					<Stack direction="column" spacing={2}>
+				<Grid item sm={4}>
+					<Stack
+						direction="column"
+						spacing={2}
+						className="tw-p-4 tw-rounded-md tw-shadow-lg"
+						sx={{ background: theme.palette.sectionBg }}>
 						<Box>
 							<Typography variant="h6" gutterBottom>
 								How can we help?
@@ -34,7 +40,9 @@ export default function ContactPage() {
 							<Typography variant="h6" gutterBottom>
 								Points of contact:
 							</Typography>
-							<Typography>Email: {companyInfo.email}</Typography>
+							<Typography className="tw-break-words">
+								Email: {companyInfo.email}
+							</Typography>
 							<Typography>Address: {companyInfo.address}</Typography>
 							<Typography>Phone: {companyInfo.phoneNumber}</Typography>
 						</Box>

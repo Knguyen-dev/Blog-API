@@ -13,7 +13,7 @@ export default function AppLayout() {
 				<Outlet />
 			</main>
 
-			<Divider className="tw-mt-16 tw-mb-2" />
+			<Divider className="tw-mt-16" />
 			<Footer className="tw-py-4 tw-px-8" />
 		</div>
 	);
