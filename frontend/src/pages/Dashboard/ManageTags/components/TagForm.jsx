@@ -29,7 +29,7 @@ export default function TagForm({ selectedTag, setTags, onSuccess }) {
 		},
 	});
 
-	const { error, isLoading, submitDisabled, saveExistingTag, createNewTag } =
+	const { error, setError, isLoading, saveExistingTag, createNewTag } =
 		useSaveTag();
 
 	const onSubmit = async (formData) => {
@@ -40,6 +40,13 @@ export default function TagForm({ selectedTag, setTags, onSuccess }) {
     */
 		let newTag = null;
 		if (selectedTag) {
+			if (formData.title === selectedTag.title) {
+				setError({
+					message: "Error: New title must be different from old title",
+				});
+				return;
+			}
+
 			formData._id = selectedTag._id;
 			newTag = await saveExistingTag(formData);
 		} else {
@@ -92,12 +99,9 @@ export default function TagForm({ selectedTag, setTags, onSuccess }) {
 				name="title"
 			/>
 
-			{error && <div className="error">{error}</div>}
+			{error && <div className="error">{error.message}</div>}
 
-			<Button
-				type="submit"
-				variant="outlined"
-				disabled={isLoading || submitDisabled}>
+			<Button type="submit" variant="outlined" disabled={isLoading}>
 				Submit
 			</Button>
 		</Box>

@@ -9,14 +9,6 @@ import { titleSchema, descriptionSchema } from "../data/categorySchemas";
 
 import useSaveCategory from "../hooks/useSaveCategory";
 
-CategoryForm.propTypes = {
-	category: PropTypes.shape({
-		_id: PropTypes.string,
-		title: PropTypes.string,
-		description: PropTypes.string,
-	}),
-};
-
 /* 
 + CategoryForm: Form for creating or editing an existing category. It accepts 
 'category' which will be the category object. If a category object is passed that 
@@ -54,13 +46,8 @@ export default function CategoryForm({
 		},
 	});
 
-	const {
-		error,
-		isLoading,
-		submitDisabled,
-		saveExistingCategory,
-		createNewCategory,
-	} = useSaveCategory();
+	const { error, isLoading, saveExistingCategory, createNewCategory } =
+		useSaveCategory();
 
 	const onSubmit = async (formData) => {
 		let newCategory = null;
@@ -85,7 +72,6 @@ export default function CategoryForm({
 		/*
     - At this point request was successful and 'newCategory' is the newly created/updated
       category. Now update the category state:
-
 
     - If we were editing/updating an existing category, replace the category we're 
       updating with the new version
@@ -133,12 +119,9 @@ export default function CategoryForm({
 				rows={4}
 			/>
 
-			{error && <div className="error">{error}</div>}
+			{error && <div className="error">{error.message}</div>}
 
-			<Button
-				type="submit"
-				variant="outlined"
-				disabled={isLoading || submitDisabled}>
+			<Button type="submit" variant="outlined" disabled={isLoading}>
 				Submit
 			</Button>
 		</Box>

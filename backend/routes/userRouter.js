@@ -5,6 +5,8 @@ const userController = require("../controllers/userController");
 const postController = require("../controllers/PostController");
 const userPerms = require("../middleware/permissions/userPerms");
 const userLimiter = require("../middleware/limiters/userLimiter");
+const {canGetUserPosts} = require("../middleware/permissions/postPerms");
+
 
 // Routes only accessible for authenticated users
 router.use(verifyJWT);
@@ -23,7 +25,7 @@ users such as role="user" or "editor" to be able to see all of a user's post, ev
 - NOTE: In the future, you may add a way to get all published posts by a specific user using 
   a route "/:id/posts/published"
 */
-router.get("/:id/posts", roleVerification.verifyAdmin, postController.getPostsByUser);
+router.get("/:id/posts", canGetUserPosts, postController.getPostsByUser);
 
 // Limit amount of requests for editing a user account
 router.use(userLimiter.editUserLimiter)

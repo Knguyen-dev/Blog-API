@@ -1,9 +1,7 @@
 import { useState } from "react";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import DOMPurify from "dompurify";
-import useSubmitDisabled from "../../../hooks/useSubmitDisabled";
-import getErrorData from "../../../utils/getErrorData";
-
+import handleRequestError from "../../../utils/handleRequestError";
 /*
 - Note that DOMPurify allows svgs whilst TinyMce does not. So I don't think
   that should pose a problem as 
@@ -13,7 +11,6 @@ export default function useSavePost() {
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const axiosPrivate = useAxiosPrivate();
-	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
 
 	const saveExistingPost = (postData) => {
 		return axiosPrivate.patch(`/posts/${postData.id}`, postData);
@@ -44,16 +41,7 @@ export default function useSavePost() {
 			// Mark operation as successful!
 			success = true;
 		} catch (err) {
-			if (err.response) {
-				if (err.response.status === 429 && !submitDisabled) {
-					setSubmitDisabled(true);
-				}
-				setError(getErrorData(err, false));
-			} else if (err.request) {
-				setError("Network Error!");
-			} else {
-				setError("Something unexpected happened!");
-			}
+			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);
 		}
@@ -66,7 +54,6 @@ export default function useSavePost() {
 		error,
 		setError,
 		isLoading,
-		submitDisabled,
 		savePost,
 	};
 }

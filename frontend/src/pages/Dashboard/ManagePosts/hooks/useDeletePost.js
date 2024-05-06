@@ -1,8 +1,7 @@
 import { useState } from "react";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import getErrorData from "../../../../utils/getErrorData";
+import handleRequestError from "../../../../utils/handleRequestError";
 
-// Maybe pass in a state setter
 export default function useDeletePost() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
@@ -19,13 +18,7 @@ export default function useDeletePost() {
 
 			success = true;
 		} catch (err) {
-			if (err.response) {
-				setError(getErrorData(err));
-			} else if (err.request) {
-				setError("Network error!");
-			} else {
-				setError("Something unexpected happened!");
-			}
+			handleRequestError(err, setError);
 		}
 		setIsLoading(false);
 

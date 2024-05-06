@@ -12,8 +12,7 @@ export default function RemoveEmployeeDialog({
 	handleClose,
 	targetUser,
 }) {
-	const { error, isLoading, submitDisabled, removeEmployee } =
-		useRemoveEmployee();
+	const { error, isLoading, removeEmployee } = useRemoveEmployee();
 
 	// The onSubmit function basically
 	const onConfirm = async () => {
@@ -35,17 +34,14 @@ export default function RemoveEmployeeDialog({
 					sx={{ marginRight: 2 }}>
 					Close
 				</Button>
-				<Button
-					variant="outlined"
-					disabled={isLoading || submitDisabled}
-					onClick={onConfirm}>
+				<Button variant="outlined" disabled={isLoading} onClick={onConfirm}>
 					Confirm
 				</Button>
 			</Box>
 
 			{error && (
 				<Box sx={{ marginTop: 2 }} className="error">
-					{error}
+					{error.message}
 				</Box>
 			)}
 		</DialogActions>

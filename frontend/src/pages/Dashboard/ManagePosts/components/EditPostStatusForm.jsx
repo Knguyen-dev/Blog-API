@@ -47,7 +47,7 @@ export default function EditPostStatusForm({ postID, onSuccess }) {
 					placeholder="Select post status"
 				/>
 
-				{error && <div className="error">{error}</div>}
+				{error && <div className="error">{error.message}</div>}
 
 				<Button
 					type="submit"

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import getErrorData from "../../../../utils/getErrorData";
+import handleRequestError from "../../../../utils/handleRequestError";
 
 export default function useSavePostStatus() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -21,13 +21,7 @@ export default function useSavePostStatus() {
 			// on success, return the newly updated post
 			return response.data;
 		} catch (err) {
-			if (err.response) {
-				setError(getErrorData(err));
-			} else if (err.request) {
-				setError("Network error!");
-			} else {
-				setError("Something unexpected happened!");
-			}
+			handleRequestError(err, setError);
 		}
 
 		setIsLoading(false);

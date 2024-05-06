@@ -24,7 +24,7 @@ export default function LoginForm() {
 	const location = useLocation();
 	const navigate = useNavigate();
 
-	const { error, isLoading, login, submitDisabled } = useLogin();
+	const { error, isLoading, login } = useLogin();
 
 	const onSubmit = async (formData) => {
 		// Attempt to login, on success our route handling will automatically redirect us.
@@ -62,16 +62,13 @@ export default function LoginForm() {
 					autoComplete="current-password"
 				/>
 
-				<Button
-					variant="contained"
-					disabled={isLoading || submitDisabled}
-					type="Submit">
+				<Button variant="contained" disabled={isLoading} type="Submit">
 					Login
 				</Button>
 			</div>
 
 			{/* Rendering a potential server error */}
-			{error && <div className="error">{error}</div>}
+			{error && <div className="error">{error.message}</div>}
 
 			<Divider className="tw-my-4" />
 

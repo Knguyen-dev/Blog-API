@@ -14,7 +14,7 @@ export default function TagPage() {
 	);
 
 	useEffect(() => {
-		if (error?.statusCode === 404) {
+		if (error?.status === 404) {
 			navigate("/not-found");
 		}
 	}, [error, navigate]);

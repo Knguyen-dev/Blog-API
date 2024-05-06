@@ -19,8 +19,7 @@ export default function DeleteCategoryDialog({
 	handleClose,
 	setCategories,
 }) {
-	const { error, isLoading, submitDisabled, deleteCategory } =
-		useDeleteCategory();
+	const { error, isLoading, deleteCategory } = useDeleteCategory();
 
 	const onSubmit = async () => {
 		const success = await deleteCategory(category._id);
@@ -30,7 +29,6 @@ export default function DeleteCategoryDialog({
 			setCategories((categories) =>
 				categories.filter((c) => c._id !== category._id)
 			);
-
 			handleClose();
 		}
 	};
@@ -42,7 +40,7 @@ export default function DeleteCategoryDialog({
 				onClick={onSubmit}
 				color="warning"
 				sx={{ marginLeft: 1 }}
-				disabled={isLoading || submitDisabled}>
+				disabled={isLoading}>
 				Delete
 			</Button>
 		</Box>
@@ -58,7 +56,7 @@ export default function DeleteCategoryDialog({
 				<Typography
 					component="span"
 					sx={{ fontWeight: "700", display: "block", color: "red" }}>
-					Error: {error}
+					Error: {error.message}
 				</Typography>
 			)}
 		</Box>

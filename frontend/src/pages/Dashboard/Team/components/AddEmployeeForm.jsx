@@ -26,8 +26,7 @@ const defaultValues = {
 export default function AddEmployeeForm() {
 	const [username, setUsername] = useState(defaultValues.username);
 	const [role, setRole] = useState(defaultValues.role);
-	const { error, setError, isLoading, submitDisabled, addEmployee } =
-		useAddEmployee();
+	const { error, setError, isLoading, addEmployee } = useAddEmployee();
 
 	// But we also need the submit
 	const onSubmit = async (e) => {
@@ -35,7 +34,7 @@ export default function AddEmployeeForm() {
 
 		// Ensure both fields are defined before making api call
 		if (!username || !role) {
-			setError("All fields must be filled!");
+			setError({ message: "All fields must be filled!" });
 			return;
 		}
 
@@ -67,11 +66,11 @@ export default function AddEmployeeForm() {
 					placeholder="Select Role"
 				/>
 
-				{error && <div className="error">{error}</div>}
+				{error && <div className="error">{error.message}</div>}
 
 				<Button
 					type="submit"
-					disabled={isLoading || submitDisabled}
+					disabled={isLoading}
 					sx={{ alignSelf: "end" }}
 					variant="contained">
 					Submit

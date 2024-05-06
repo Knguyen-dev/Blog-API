@@ -1,38 +1,3 @@
-/*
-+ ManagePostsPage: Will be a page where users can see hte posts that they've published, 
-  or if they're admins, see all posts in the database. Still working on the kinks though
-  since maybe we also want to include a place to manage tags. As well as this we still
-  need to figure out, if we're going to limit post deletion privileges to just admins, but 
-  editors as well. And how we need to modify the data-grid for that, how to create endpoints 
-  with authorization rules for that, etc.
-
-+ Rules:
-- Admin:
-1. Should see all posts.
-2. Should be able to edit (in entirety) only their own posts. However 
-  they should be able to edit the status of another user's posts.
-3. Should be able to delete any post, either their own or someone else's 
-
-- Editor:
-1. Should see only the posts that they've created.
-2. Should only be able to edit their own posts.
-3. Should only be able to delete their own posts.
-
-+ Explanation and plan:
-Since editors can only see their and manage (edit and delete) own posts, then
-the edit and delete buttons are simple. Edit button should redirect them to the 
-editor suite, while the delete button will delete their own post.
-
-However admins are a little more complicated. When the user is an admin, we will
-show all posts. So they see posts that they've created and others have created. 
-So the delete button stays the same, it should delete a post since admins can delete their 
-own or someone else's post. However, there are two modes for the edit button:
-1. If it's the admin's own post, then the edit button should redirect them to the 
-  editor-suite to allow them to edit their entire post.
-2. If it's someone else's post, then the 'edit' button should render a dialog
-  that allows the admin to edit the status of the user's post.
-*/
-
 import { Typography, Box, Button } from "@mui/material";
 import { useState } from "react";
 import BlogPostCard from "./components/BlogPostCard";
@@ -122,7 +87,7 @@ export default function ManagePostsPage() {
 				{isLoading ? (
 					cardSkeletons
 				) : loadError ? (
-					<Typography>Error loading in posts</Typography>
+					<Typography>{loadError.message}</Typography>
 				) : posts.length === 0 ? (
 					<Typography>
 						No posts have been created. Please make a post!

@@ -19,7 +19,7 @@ export default function DeleteTagDialog({
 	open,
 	handleClose,
 }) {
-	const { error, isLoading, submitDisabled, deleteTag } = useDeleteTag();
+	const { error, isLoading, deleteTag } = useDeleteTag();
 
 	const onSubmit = async () => {
 		const success = await deleteTag(selectedTag._id);
@@ -41,7 +41,7 @@ export default function DeleteTagDialog({
 				onClick={onSubmit}
 				color="warning"
 				sx={{ marginLeft: 1 }}
-				disabled={isLoading || submitDisabled}>
+				disabled={isLoading}>
 				Delete
 			</Button>
 		</Box>
@@ -57,7 +57,7 @@ export default function DeleteTagDialog({
 				<Typography
 					component="span"
 					sx={{ fontWeight: "700", display: "block", color: "red" }}>
-					Error: {error}
+					Error: {error.message}
 				</Typography>
 			)}
 		</Box>

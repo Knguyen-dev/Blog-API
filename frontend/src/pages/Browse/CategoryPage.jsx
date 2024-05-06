@@ -14,7 +14,7 @@ export default function CategoryPage() {
 
 	// Will redirect the user to the not found page, if 404 (category not found)
 	useEffect(() => {
-		if (error?.statusCode === 404) {
+		if (error?.status === 404) {
 			navigate("/not-found");
 		}
 	}, [error, navigate]);
@@ -65,7 +65,9 @@ export default function CategoryPage() {
 							Loading in posts...
 						</Typography>
 					) : error ? (
-						<Typography className="tw-text-center">{error.message}</Typography>
+						<Typography variant="h3" className="tw-text-center">
+							{error.message}
+						</Typography>
 					) : data?.posts?.length === 0 ? (
 						<Typography className="tw-text-center">
 							No posts found! Maybe try another title?

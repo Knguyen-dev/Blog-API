@@ -55,45 +55,49 @@ probably better if I personalize my website a bit.
 
 
 
+## Business Rules:
+
+### Authentication
+- JWT authentication, with access and refresh tokens. Refresh tokens should be handled securely, using an https secure cookie. As well as this, we won't allow a way to refresh a refresh token. As a result after the refresh token expires, the user needs to enter their credentials again.
+- If the user logged in, they should be able to refresh their page, and still be logged in. If the user closes the site, and launches it again, if they still have a valid refresh token cookie, they should be logged in again. 
+
+### Posts
+- Posts should be visible to users that aren't even logged in. Allowing for unauthenticated users to read posts on the website. Users should only be able to see the posts where isPublished is true. This should stay true for people with role "user" and "editor", meaning others can only see published posts. Administrators should be able to get all posts regardless of whether they are published or not, however this should be done in a different area, such as a dashboard rather than the BlogPage.
+- When creating a brand new post, the post's data should be saved even if the user refreshes their page. 
+
+### Roles
+- There are three roles: admin, editor, and user. 
+- User: Isn't allowed to create or modify posts.
+- Editor: Allowed to create posts and modify any existing posts that they've created. 
+- Admin: Allowed to create posts and modify their own posts. They should be able to delete anyone's post. However, admins are limited when it comes to editing another user's post, as they're only allowed to edit the status of another user's post.
+
+
+
+
+
+
 ## BOOK MARK:
-1. This would also be a good time to actually research line 
-  clamping, and how to cut off lines in css, so you actually know what line-clamp is doing.
-5. Work on home page, project page, work on about page, work on contact page. I think for these, you may keep them as static. Work on the footer, so that 
-it contains a little more information stuff like contact info, address, name and logo, etc.
 
-- Make sure to add 'id' attributes to each section on the home page, and then integrating that with react router navigation functionality. 
-
-- Learn about aria and accessibility. Freecodecamp has a course on it, and also I think the Odin Project did have a lesson on aria and accessibility.
-
-- Work on colors. For dark theme, I think we should probably put a little more effort into it. Code Design has a yellow and black design that it cooked up.
-I'll call that 'CodeDesignTheme' for the name. There's also the theme created
-by sitesgpt, it's like a blue thing, you may want to tweak this.
-
-- Let's engineer the styling. Let's make it so we use a sticky header and times where we don't. May have to do some research on sticky and some tutorials on how to make it happen. Probably going to use a state, and pass down a state with outlet context called 'isStickyHeader',  which will in turn mess with css classes. Of course, there's no guarantee that our old example will work and allow us to easily 'plug in stuff', but it's worth a try. 
+- Work on removing useSubmitDisabled from the codebase. Integrate handleRequestError into the codebase
+  to uniformalize all of our error handling. I think the smart option is letting 'error' be an object rather than just a string, could give more flexibility in the future.
 
 
 
-6. Navlinks, at least underline what navlink that the user is currently on
 
-6. Uniformalize your business rules for the permissions. Will editors be able to 
-  see the posts of other editors, or is it only admins, then check out our 
-  backend to make sure we're doing that stuff. 
+
 7. Rate limiting on searches would be nice. Maybe it's time for a global rate limiter? 
-8. I don't think we've handled user deletion functionality yet. At least not how
+8. I don't think we've tested user deletion functionality yet. At least not how
   it relates to posts, so double check if that's still a thing.
 9. Practice optimizations. Stuff like lazy loading, reading the react profiler, etc. I think lazy loading can definitely help since there are a lot of pages that aren't available to the average user. As well as this let's do some query optimizations. Ensure that server-side queries that we're making are good
 
 10. Apparently there's also the idea of image optimization. I don't think we've optimize or handle images the proper way at all.
 11. Images themselves for our posts. May be deleted due to the internet. So instead. Maybe for images, we could have two options, upload an image or just enter a url. If image does not exist for some reason, we will have a default image. Let's handle this on the front end, since on the backend it's a little more involved to check if an image works (making a request), let's just keep that on the front.
 
+13. Check our accessibility using LightHouse
+
 12. Api Pagination? Of course we don't want to fetch everything from the database. And then update the front-end accordingly?
 
 13. Have a redis cache? Well in order for this to happen, it needs to work, even if the redis cache doesn't exist. So in case we don't use the website for awhile and the redis cache has been disabled, then our website still needs to work as normal.
-
-
-
-
-16. Our colors suck, and that's probably because of our theming. Maybe we should change to tailwind for dark and light them stuff.
 
 ### Additional stuff you'd put in another branch
 14. Start a conversion over to typescript since we want to practice typescript.
@@ -104,6 +108,8 @@ by sitesgpt, it's like a blue thing, you may want to tweak this.
 
 
 ## Commit 
+
+
 
 # Hosting 
 - Definitely not hosting on Netlify considering that you can get 
@@ -119,3 +125,5 @@ by sitesgpt, it's like a blue thing, you may want to tweak this.
 5. React forms and jwt: https://www.youtube.com/watch?v=brcHK3P6ChQ&list=PL0Zuz27SZ-6PRCpm9clX0WiBEMB70FWwd
 6. https://deadsimplechat.com/blog/how-to-safely-use-dangerouslysetinnerhtml-in-react/
 7. https://wix.com/blog/beautiful-contact-pages
+
+8. https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually

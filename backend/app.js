@@ -17,6 +17,7 @@ const corsOption = require("./config/corsOption");
 const verifyCredentials = require("./middleware/verifyCredentials");
 const allowedOrigins = require("./config/allowedOrigins");
 const { jsonifyError } = require("./middleware/errorUtils");
+const postLimiter = require("./middleware/limiters/postLimiter");
 
 const app = express();
 
@@ -31,6 +32,9 @@ app.use(cookieParser()); // let's us access cookies from request object
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/employees", employeeRouter);
+
+
+app.use(postLimiter); // limiter for posts, categories, and tags
 app.use("/categories", categoryRouter);
 app.use('/tags', tagRouter);
 app.use("/posts", postRouter);

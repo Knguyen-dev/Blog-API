@@ -5,7 +5,7 @@ Custom hook for fetching data from our backend, that doesn't require the user to
 
 */
 import axios from "../api/axios";
-import getErrorData from "../utils/getErrorData";
+import handleRequestError from "../utils/handleRequestError";
 import { useState, useEffect } from "react";
 
 export default function usePublicFetchData(url) {
@@ -32,20 +32,14 @@ export default function usePublicFetchData(url) {
 	const fetchData = async (url, config = {}) => {
 		try {
 			const response = await axios(url, config);
+			setError(null);
 			setData(response.data);
 		} catch (err) {
 			// If it's a canceled error, just stop execution early
 			if (err.code === "ERR_CANCELED") {
 				return;
 			}
-
-			if (err.response) {
-				setError(getErrorData(err, true));
-			} else if (err.request) {
-				setError("Network error!");
-			} else {
-				setError("Something unexpected happened!");
-			}
+			handleRequestError(err, setError);
 			console.error(err);
 		}
 		setIsLoading(false);

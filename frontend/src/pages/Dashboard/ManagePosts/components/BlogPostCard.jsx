@@ -5,10 +5,11 @@ import {
 	CardHeader,
 	CardActionArea,
 	Typography,
-	Box,
 	Avatar,
 	Skeleton,
 	IconButton,
+	useTheme,
+	Stack,
 } from "@mui/material";
 import { formatBlogPostDate } from "../../../../api/intl";
 import PropTypes from "prop-types";
@@ -45,20 +46,6 @@ BlogPostCard.propTypes = {
 	isLoading: PropTypes.bool,
 };
 
-/*
-
-+ About skeletons: 
-It's honestly probably better to create the skeleton version of the component 
-in the same component. However, if isLoading is true, then your data is probably
-going to be null, so not even the skeleton will be rendered. However I think the 
-idea is when isLoading, you'll rendering say maybe 10 skeletons for the sake of it.
-
-
-+ BOOK MARK:
-1. Looking good on the cards. They look better, but maybe you can optimize 
-the states? Have ManagePostsPage use one state?
-*/
-
 const minCardWidth = 300;
 const truncateWidth = minCardWidth - 125;
 export default function BlogPostCard({
@@ -67,10 +54,8 @@ export default function BlogPostCard({
 	cardActions,
 	isLoading = false,
 }) {
+	const theme = useTheme();
 	const [anchorEl, setAnchorEl] = useState(null);
-
-	// Turn open into a boolean
-	const open = !!anchorEl;
 
 	// If loading is true, return the loading skeleton representation of the card
 	if (isLoading) {
@@ -94,6 +79,9 @@ export default function BlogPostCard({
 		);
 	}
 
+	// Turn open into a boolean
+	const open = !!anchorEl;
+
 	const handleCloseMenu = () => setAnchorEl(null);
 	const handleOpenMenu = (e) => {
 		setAnchorEl(e.currentTarget);
@@ -101,7 +89,9 @@ export default function BlogPostCard({
 
 	// Here, isLoading is false, so we should have a 'post' with info to render
 	return (
-		<Card className="tw-overflow-hidden tw-shadow-2xl  tw-rounded-lg tw-max-w-96">
+		<Card
+			className="tw-overflow-hidden tw-shadow-2xl tw-rounded-lg tw-max-w-96"
+			sx={{ background: theme.palette.cardBg }}>
 			<CardHeader
 				avatar={
 					<Avatar
@@ -143,13 +133,18 @@ export default function BlogPostCard({
               */}
 						Category: {post.category?.title || "No category"}
 					</Typography>
+
 					{post.tags.length > 0 && (
-						<Box>
-							<Typography className="tw-inline-block tw-text-sm tw-font-medium tw-text-gray-500">
-								Tags: {post.tags.map((tag) => tag.title).join(", ")}
-							</Typography>
-						</Box>
+						<Stack
+							direction="row"
+							className="tw-flex-wrap tw-justify-start tw-items-center tw-gap-2">
+							<Typography>Tags: </Typography>
+							{post.tags.map((tag, index) => (
+								<Typography key={index}>{tag.title}</Typography>
+							))}
+						</Stack>
 					)}
+
 					<Typography>Status: {post.status}</Typography>
 				</CardContent>
 			</CardActionArea>

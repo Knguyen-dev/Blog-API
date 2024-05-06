@@ -2,8 +2,7 @@ import { useState } from "react";
 import useAuthContext from "../../../../hooks/useAuthContext";
 import authActions from "../../../../constants/authActions";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import useSubmitDisabled from "../../../../hooks/useSubmitDisabled";
-import getErrorData from "../../../../utils/getErrorData";
+import handleRequestError from "../../../../utils/handleRequestError";
 
 export default function useChangeUsername() {
 	const [error, setError] = useState(null);
@@ -11,7 +10,6 @@ export default function useChangeUsername() {
 	const { auth, dispatch } = useAuthContext();
 	const axiosPrivate = useAxiosPrivate();
 
-	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
 	const endpoint = `/users/${auth.user._id}/username`;
 
 	const changeUsername = async (formData) => {
@@ -28,19 +26,7 @@ export default function useChangeUsername() {
 			// On success, API should send back the updated user object
 			dispatch({ type: authActions.updateUser, payload: response.data });
 		} catch (err) {
-			if (err.response) {
-				// If failed due to rate limiting, then set submitDisabled to disable button on client side
-				if (err.response.status === 429 && !submitDisabled) {
-					setSubmitDisabled(true);
-				}
-
-				// Get the error message sent by the server
-				setError(getErrorData(err));
-			} else if (err.request) {
-				setError("Network error!");
-			} else {
-				setError("Something unexpected happened!");
-			}
+			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);
 		}
@@ -48,5 +34,5 @@ export default function useChangeUsername() {
 		return success;
 	};
 
-	return { error, isLoading, changeUsername, submitDisabled };
+	return { error, isLoading, changeUsername };
 }

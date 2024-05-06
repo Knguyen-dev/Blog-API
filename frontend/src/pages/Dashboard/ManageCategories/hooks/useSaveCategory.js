@@ -1,14 +1,11 @@
 import { useState } from "react";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import getErrorData from "../../../../utils/getErrorData";
-import useSubmitDisabled from "../../../../hooks/useSubmitDisabled";
+import handleRequestError from "../../../../utils/handleRequestError";
 
 export default function useSaveCategory() {
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const axiosPrivate = useAxiosPrivate();
-	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
-
 	// Helper function for making PATCH request for existing category
 	const saveExistingCategory = async (category) => {
 		setIsLoading(true);
@@ -21,7 +18,7 @@ export default function useSaveCategory() {
 			);
 			return response.data; // Return the updated category data
 		} catch (err) {
-			handleRequestError(err);
+			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);
 		}
@@ -36,29 +33,15 @@ export default function useSaveCategory() {
 			const response = await axiosPrivate.post("/categories", category);
 			return response.data; // Return the newly created category data
 		} catch (err) {
-			handleRequestError(err);
+			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);
-		}
-	};
-
-	const handleRequestError = (err) => {
-		if (err.response) {
-			if (err.response.status === 429 && !submitDisabled) {
-				setSubmitDisabled(true);
-			}
-			setError(getErrorData(err));
-		} else if (err.request) {
-			setError("Network Error!");
-		} else {
-			setError("Something unexpected happened!");
 		}
 	};
 
 	return {
 		error,
 		isLoading,
-		submitDisabled,
 		saveExistingCategory,
 		createNewCategory,
 	};

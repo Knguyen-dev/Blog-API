@@ -19,8 +19,7 @@ export default function EditUsernameForm({ username, onSuccess }) {
 		},
 	});
 
-	const { error, isLoading, changeUsername, submitDisabled } =
-		useChangeUsername();
+	const { error, isLoading, changeUsername } = useChangeUsername();
 
 	const onSubmit = async (formData) => {
 		/*
@@ -36,6 +35,7 @@ export default function EditUsernameForm({ username, onSuccess }) {
 			});
 			return;
 		}
+
 		const success = await changeUsername(formData);
 
 		// If success and onSuccess is defined, call our optional onSuccess function
@@ -63,7 +63,7 @@ export default function EditUsernameForm({ username, onSuccess }) {
 				{/* Conditionally render error */}
 				{error && (
 					<Box className="error">
-						<Typography>{error}</Typography>
+						<Typography>{error.message}</Typography>
 					</Box>
 				)}
 
@@ -73,10 +73,7 @@ export default function EditUsernameForm({ username, onSuccess }) {
 						display: "flex",
 						justifyContent: "end",
 					}}>
-					<Button
-						variant="contained"
-						type="submit"
-						disabled={isLoading || submitDisabled}>
+					<Button variant="contained" type="submit" disabled={isLoading}>
 						Update
 					</Button>
 				</Box>

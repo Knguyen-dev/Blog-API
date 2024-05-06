@@ -18,8 +18,7 @@ export default function EditFullNameForm({ fullName, onSuccess }) {
 		},
 	});
 
-	const { error, isLoading, changeFullName, submitDisabled } =
-		useChangeFullName();
+	const { error, isLoading, changeFullName } = useChangeFullName();
 	const onSubmit = async (formData) => {
 		/*
     - If submitted name isn't different from current account's name
@@ -62,7 +61,7 @@ export default function EditFullNameForm({ fullName, onSuccess }) {
 				{/* Conditionally render error */}
 				{error && (
 					<Box className="error">
-						<Typography>{error}</Typography>
+						<Typography>{error.message}</Typography>
 					</Box>
 				)}
 
@@ -71,10 +70,7 @@ export default function EditFullNameForm({ fullName, onSuccess }) {
 						display: "flex",
 						justifyContent: "end",
 					}}>
-					<Button
-						variant="contained"
-						type="submit"
-						disabled={isLoading || submitDisabled}>
+					<Button variant="contained" type="submit" disabled={isLoading}>
 						Update
 					</Button>
 				</Box>

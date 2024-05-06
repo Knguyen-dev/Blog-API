@@ -1,10 +1,10 @@
 import { useState } from "react";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import useSubmitDisabled from "../../../../hooks/useSubmitDisabled";
 import useEmployeeContext from "./useEmployeeContext";
 import employeeActions from "../data/employeeActions";
 import useToast from "../../../../hooks/useToast";
-import getErrorData from "../../../../utils/getErrorData";
+import handleRequestError from "../../../../utils/handleRequestError";
+
 /*
 - Custom hook for removing employees. 
 - NOTE: When we're talking about removing employees, we mean modifying 
@@ -18,7 +18,6 @@ export default function useRemoveEmployee() {
 	const [isLoading, setIsLoading] = useState(false);
 	const axiosPrivate = useAxiosPrivate();
 	const { dispatch } = useEmployeeContext();
-	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled(30000);
 	const { showToast } = useToast();
 
 	const removeEmployee = async (id) => {
@@ -49,16 +48,7 @@ export default function useRemoveEmployee() {
 			});
 		} catch (err) {
 			// Record the error state to show on the dialog.
-			if (err.response) {
-				if (err.response.status === 429 && !submitDisabled) {
-					setSubmitDisabled(true);
-				}
-				setError(getErrorData(err));
-			} else if (err.request) {
-				setError("Network error!");
-			} else {
-				setError("Something unexpected happened!");
-			}
+			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);
 		}
@@ -66,5 +56,5 @@ export default function useRemoveEmployee() {
 		return success;
 	};
 
-	return { error, isLoading, submitDisabled, removeEmployee };
+	return { error, isLoading, removeEmployee };
 }

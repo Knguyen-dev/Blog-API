@@ -7,7 +7,14 @@
  *  a map with keys being the fields that were invalid, and the values being the message
  *  indicating why that field is invalid.
  */
-export default function getErrorData(err, isDetailed = false) {
-	const serverError = err.response.data.error;
-	return isDetailed ? serverError : serverError.message;
+export default function getErrorData(err) {
+	let error = {};
+
+	// Now in this case it wasn't an 429 on the server side, so we should get an error
+	// customized by the server
+	error.status = err.response.status;
+	error.message =
+		err.response.data?.error?.message || "Had trouble getting error message!";
+
+	return error;
 }

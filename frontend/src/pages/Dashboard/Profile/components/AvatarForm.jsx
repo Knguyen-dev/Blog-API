@@ -24,7 +24,7 @@ export default function AvatarForm({ user }) {
 	// States for the main avatar form
 	const [file, setFile] = useState();
 	const [imagePreview, setImagePreview] = useState();
-	const { error, isLoading, changeAvatar, submitDisabled } = useChangeAvatar();
+	const { error, isLoading, changeAvatar } = useChangeAvatar();
 	const avatarInputRef = useRef(null);
 
 	// States for avatar dialog
@@ -81,7 +81,7 @@ export default function AvatarForm({ user }) {
 				onClick={handleDeleteAvatar}
 				color="warning"
 				type="submit"
-				disabled={isLoading || submitDisabled}>
+				disabled={isLoading}>
 				Delete
 			</Button>
 		</Box>
@@ -140,7 +140,7 @@ export default function AvatarForm({ user }) {
 					<Button
 						variant="contained"
 						type={"submit"}
-						disabled={isLoading || submitDisabled}
+						disabled={isLoading}
 						startIcon={<CloudUploadIcon />}>
 						Submit
 					</Button>
@@ -149,7 +149,7 @@ export default function AvatarForm({ user }) {
 
 			{error && (
 				<Box className="error" sx={{ marginTop: 2 }}>
-					{error}
+					{error.message}
 				</Box>
 			)}
 		</form>

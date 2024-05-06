@@ -96,7 +96,7 @@ export default function EmployeeGrid() {
 		(err) => {
 			let errMessage = "";
 			if (err.response) {
-				errMessage = getErrorData(err, false);
+				errMessage = getErrorData(err).message;
 			} else if (err.request) {
 				errMessage = "Network error occurred!";
 			} else {

@@ -2,19 +2,15 @@ import useAuthContext from "../../../../hooks/useAuthContext";
 import authActions from "../../../../constants/authActions";
 import { useState } from "react";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import useSubmitDisabled from "../../../../hooks/useSubmitDisabled";
-import getErrorData from "../../../../utils/getErrorData";
+import handleRequestError from "../../../../utils/handleRequestError";
 
 export default function useChangeAvatar() {
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const { auth, dispatch } = useAuthContext();
 
-	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
-
 	// Use axiosPrivate hook since we need to send over our access token for this request
 	const axiosPrivate = useAxiosPrivate();
-
 	const endpoint = `/users/${auth.user._id}/avatar`;
 
 	/*
@@ -58,19 +54,9 @@ export default function useChangeAvatar() {
 
 			// API should return a new user, with updated avatar
 			const user = response.data;
-
 			dispatch({ type: authActions.updateUser, payload: user });
 		} catch (err) {
-			if (err.response) {
-				if (err.response.status === 429 && !submitDisabled) {
-					setSubmitDisabled(true);
-				}
-				setError(getErrorData(err));
-			} else if (err.request) {
-				setError("Network Error!");
-			} else {
-				setError("Something unexpected happened!");
-			}
+			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);
 		}
@@ -80,6 +66,5 @@ export default function useChangeAvatar() {
 		error,
 		isLoading,
 		changeAvatar,
-		submitDisabled,
 	};
 }

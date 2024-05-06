@@ -1,4 +1,4 @@
-import { Typography, Avatar, Stack } from "@mui/material";
+import { Typography, Avatar, Stack, useTheme } from "@mui/material";
 import { formatBlogPostDate } from "../../api/intl";
 import useTagNavigation from "./hooks/useTagNavigation";
 import usePostNavigation from "./hooks/usePostNavigation";
@@ -6,6 +6,7 @@ import { TagContainer } from "../../components/styles/TagContainer.styled";
 import PropTypes from "prop-types";
 
 export default function PostCard({ postObj }) {
+	const theme = useTheme();
 	const goToTagPage = useTagNavigation();
 	const { goToPostPage } = usePostNavigation();
 
@@ -20,6 +21,9 @@ export default function PostCard({ postObj }) {
 
 	return (
 		<div
+			style={{
+				background: theme.palette.cardBg,
+			}}
 			className="tw-flex tw-flex-col tw-pb-6 tw-max-w-96 tw-overflow-hidden tw-shadow-2xl tw-gap-2 tw-rounded-lg hover:tw-cursor-pointer"
 			onClick={handleClick}>
 			<img
@@ -30,7 +34,9 @@ export default function PostCard({ postObj }) {
 			/>
 
 			{postObj.tags.length > 0 && (
-				<div className="tw-flex tw-flex-wrap tw-justify-start tw-items-center tw-px-4 tw-mb-2 tw-gap-2">
+				<Stack
+					direction="row"
+					className="tw-flex-wrap tw-justify-start tw-items-center tw-px-4 tw-mb-2 tw-gap-2">
 					{postObj.tags.map((tag, index) => (
 						<TagContainer
 							onClick={(e) => handleTagClick(e, tag._id)}
@@ -39,10 +45,10 @@ export default function PostCard({ postObj }) {
 							{tag.title}
 						</TagContainer>
 					))}
-				</div>
+				</Stack>
 			)}
 
-			<div className="tw-line-clamp-2 tw-px-4 tw-text-xl tw-font-medium lg:tw-text-xl tw-text-slate-500">
+			<div className="tw-line-clamp-2 tw-px-4 tw-text-xl tw-font-medium lg:tw-text-xl ">
 				{postObj.title}
 			</div>
 			<div className="tw-px-4 tw-font-medium tw-flex tw-items-center">
@@ -53,9 +59,7 @@ export default function PostCard({ postObj }) {
 					<Typography className="tw-font-bold">
 						{postObj.user.username}
 					</Typography>
-					<Typography className="tw-text-slate-500">
-						{formatBlogPostDate(postObj.createdAt)}
-					</Typography>
+					<Typography>{formatBlogPostDate(postObj.createdAt)}</Typography>
 				</Stack>
 			</div>
 		</div>

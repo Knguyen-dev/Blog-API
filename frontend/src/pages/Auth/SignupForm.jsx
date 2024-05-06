@@ -49,7 +49,7 @@ export default function SignupForm() {
 	// function for opening the snackbar, which we'll display on successful registration
 	const navigate = useNavigate();
 
-	const { error, isLoading, signup, submitDisabled } = useSignup();
+	const { error, isLoading, signup } = useSignup();
 
 	const onSubmit = async (formData) => {
 		const success = await signup(formData);
@@ -114,14 +114,14 @@ export default function SignupForm() {
 
 				<Button
 					variant="contained"
-					disabled={isLoading || submitDisabled}
+					disabled={isLoading}
 					type="submit">
 					Sign Up
 				</Button>
 			</div>
 
 			{/* Rendering a potential server error */}
-			{error && <div className="error">{error}</div>}
+			{error && <div className="error">{error.message}</div>}
 
 			<Divider className="tw-my-4" />
 

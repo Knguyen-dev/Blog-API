@@ -20,7 +20,7 @@ export default function EditNameForm({ email, onSuccess }) {
 		},
 	});
 
-	const { error, isLoading, changeEmail, submitDisabled } = useChangeEmail();
+	const { error, isLoading, changeEmail } = useChangeEmail();
 
 	const onSubmit = async (formData) => {
 		/*
@@ -64,7 +64,7 @@ export default function EditNameForm({ email, onSuccess }) {
 				{/* Conditionally render error */}
 				{error && (
 					<Box className="error">
-						<Typography>{error}</Typography>
+						<Typography>{error.message}</Typography>
 					</Box>
 				)}
 
@@ -73,10 +73,7 @@ export default function EditNameForm({ email, onSuccess }) {
 						display: "flex",
 						justifyContent: "end",
 					}}>
-					<Button
-						variant="contained"
-						type="submit"
-						disabled={isLoading || submitDisabled}>
+					<Button variant="contained" type="submit" disabled={isLoading}>
 						Update
 					</Button>
 				</Box>

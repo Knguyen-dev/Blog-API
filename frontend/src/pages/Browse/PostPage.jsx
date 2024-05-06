@@ -14,7 +14,7 @@ export default function PostPage() {
 
 	// If we got a 404, then redirect the user to the not found page
 	useEffect(() => {
-		if (error?.statusCode === 404) {
+		if (error?.status === 404) {
 			navigate("/not-found");
 		}
 	}, [navigate, error]);
@@ -36,7 +36,9 @@ export default function PostPage() {
 						tags={post.tags}
 					/>
 				) : error ? (
-					<Typography>{error.message}</Typography>
+					<Typography className="tw-text-center tw-py-4" variant="h3">
+						Error: {error.message}
+					</Typography>
 				) : (
 					<Typography>Loading in the post!</Typography>
 				)}

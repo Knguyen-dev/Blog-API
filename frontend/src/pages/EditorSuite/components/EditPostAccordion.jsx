@@ -30,9 +30,11 @@ EditPostAccordion.propTypes = {
 	status: PropTypes.string,
 	dispatch: PropTypes.func,
 	handleSubmitPost: PropTypes.func,
-	error: PropTypes.string,
+	error: PropTypes.shape({
+		message: PropTypes.string,
+		status: PropTypes.number,
+	}),
 	isLoading: PropTypes.bool,
-	submitDisabled: PropTypes.bool,
 	categories: PropTypes.arrayOf(
 		PropTypes.shape({
 			_id: PropTypes.string,
@@ -59,7 +61,6 @@ export default function EditPostAccordion({
 	handleSubmitPost, // Depending on whether it's the edit or create page, the function could be different
 	error,
 	isLoading,
-	submitDisabled,
 	categories,
 	tags,
 }) {
@@ -178,15 +179,12 @@ export default function EditPostAccordion({
 							dispatch({ type: postActions.SET_STATUS, payload: status })
 						}
 					/>
-					{error && <div className="error">{error}</div>}
+					{error && <div className="error">{error.message}</div>}
 					{/* Action Buttons for the form */}
 					<Box
 						className="tw-flex tw-justify-end tw-gap-x-4"
 						onClick={handleSubmitPost}>
-						<Button
-							variant="contained"
-							color="primary"
-							disabled={isLoading || submitDisabled}>
+						<Button variant="contained" color="primary" disabled={isLoading}>
 							Submit
 						</Button>
 					</Box>

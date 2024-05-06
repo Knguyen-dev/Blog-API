@@ -1,13 +1,11 @@
 import { useState } from "react";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import getErrorData from "../../../../utils/getErrorData";
-import useSubmitDisabled from "../../../../hooks/useSubmitDisabled";
+import handleRequestError from "../../../../utils/handleRequestError";
 
 export default function useSaveTag() {
 	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const axiosPrivate = useAxiosPrivate();
-	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled();
 
 	// Helper function for making PATCH request for existing category
 	const saveExistingTag = async (tag) => {
@@ -18,7 +16,7 @@ export default function useSaveTag() {
 			const response = await axiosPrivate.patch(`/tags/${tag._id}`, tag);
 			return response.data; // Return the updated category data
 		} catch (err) {
-			handleRequestError(err);
+			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);
 		}
@@ -39,23 +37,10 @@ export default function useSaveTag() {
 		}
 	};
 
-	const handleRequestError = (err) => {
-		if (err.response) {
-			if (err.response.status === 429 && !submitDisabled) {
-				setSubmitDisabled(true);
-			}
-			setError(getErrorData(err));
-		} else if (err.request) {
-			setError("Network Error!");
-		} else {
-			setError("Something unexpected happened!");
-		}
-	};
-
 	return {
 		error,
+		setError,
 		isLoading,
-		submitDisabled,
 		saveExistingTag,
 		createNewTag,
 	};

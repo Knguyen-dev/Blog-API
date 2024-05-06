@@ -87,8 +87,7 @@ const initialState = {
 */
 const EditorProvider = ({ children }) => {
 	const [state, dispatch] = useReducer(postReducer, initialState);
-	const { error, setError, isLoading, submitDisabled, savePost } =
-		useSavePost();
+	const { error, setError, isLoading, savePost } = useSavePost();
 
 	const { categories, isLoading: categoriesLoading } = useGetCategories();
 	const { tags, isLoading: tagsLoading } = useGetTags();
@@ -106,29 +105,33 @@ const EditorProvider = ({ children }) => {
     */
 
 		if (state.title.length < 1 || state.title.length > 100) {
-			setError("Post title needs to be between 1 and 100 characters!");
+			setError({
+				message: "Post title needs to be between 1 and 100 characters!",
+			});
 			return;
 		}
 
 		if (!state.category) {
-			setError("Please pick a category for the post!");
+			setError({ message: "Please pick a category for the post!" });
 			return;
 		}
 
 		if (!state.imgSrc) {
-			setError("Please have an image for the post!");
+			setError({ message: "Please have an image for the post!" });
 			return;
 		}
 
 		// If true, that means a status simply wasn't selected.
 		if (!state.status) {
-			setError("Please pick a status for the post!");
+			setError({ message: "Please pick a status for the post!" });
 			return;
 		}
 
 		// Front end validation on the wordCount of the post
 		if (state.wordCount < minWordCount) {
-			setError(`Posts need to have at least ${minWordCount} words!`);
+			setError({
+				message: `Posts need to have at least ${minWordCount} words!`,
+			});
 			return;
 		}
 
@@ -158,7 +161,6 @@ const EditorProvider = ({ children }) => {
 				initialState,
 				error,
 				isLoading,
-				submitDisabled,
 				onSubmitPost,
 			}}>
 			{children}

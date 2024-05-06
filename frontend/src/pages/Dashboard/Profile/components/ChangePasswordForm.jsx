@@ -33,8 +33,7 @@ export default function ChangePasswordForm() {
 
 	const { showToast } = useToast();
 
-	const { error, isLoading, changePassword, submitDisabled } =
-		useChangePassword();
+	const { error, isLoading, changePassword } = useChangePassword();
 
 	const onSubmit = async (formData) => {
 		const success = await changePassword(formData);
@@ -69,7 +68,7 @@ export default function ChangePasswordForm() {
 				/>
 
 				{/* Render general errors*/}
-				{error && <Box className="error">{error}</Box>}
+				{error && <Box className="error">{error.message}</Box>}
 
 				<Box
 					sx={{
@@ -77,10 +76,7 @@ export default function ChangePasswordForm() {
 						justifyContent: "end",
 						marginTop: 1,
 					}}>
-					<Button
-						variant="contained"
-						type="submit"
-						disabled={isLoading || submitDisabled}>
+					<Button variant="contained" type="submit" disabled={isLoading}>
 						Submit
 					</Button>
 				</Box>

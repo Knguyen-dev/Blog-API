@@ -1,19 +1,15 @@
 import useAxiosPrivate from "./useAxiosPrivate";
 import { useState, useEffect } from "react";
-import getErrorData from "../utils/getErrorData";
+import handleRequestError from "../utils/handleRequestError";
 
+/*
+- usePrivateFetchData: Fetches data for routes where user authentication is needed.
+*/
 export default function usePrivateFetchData(url) {
 	const [isLoading, setIsLoading] = useState(true);
 	const [data, setData] = useState(null);
 	const [error, setError] = useState(null);
 	const axiosPrivate = useAxiosPrivate();
-
-	/*
-  - NOTE: Now this should probably be called usePrivateFetchData because
-    it only fetches the data when the user is logged in. So just note that. 
-  
-  - Though, now I think we could use this effect a couple of times!
-  */
 
 	// Effect loads in the posts in the database
 	useEffect(() => {
@@ -29,13 +25,7 @@ export default function usePrivateFetchData(url) {
 				if (err.code === "ERR_CANCELED") {
 					return;
 				}
-				if (err.response) {
-					setError(getErrorData(err));
-				} else if (err.request) {
-					setError("Network error!");
-				} else {
-					setError("Something unexpected happened!");
-				}
+				handleRequestError(err, setError);
 				console.error(err);
 			}
 			setIsLoading(false);

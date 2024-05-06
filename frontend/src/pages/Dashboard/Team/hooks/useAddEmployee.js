@@ -1,12 +1,9 @@
 import { useState } from "react";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import useSubmitDisabled from "../../../../hooks/useSubmitDisabled";
 import useEmployeeContext from "./useEmployeeContext";
 import employeeActions from "../data/employeeActions";
 import useToast from "../../../../hooks/useToast";
-import getErrorData from "../../../../utils/getErrorData";
-
-// router.patch("/add", employeeController.addEmployee);
+import handleRequestError from "../../../../utils/handleRequestError";
 
 const endpoint = "/employees/add";
 
@@ -16,8 +13,6 @@ export default function useAddEmployee() {
 	const axiosPrivate = useAxiosPrivate();
 	const { dispatch } = useEmployeeContext();
 	const { showToast } = useToast();
-
-	const { submitDisabled, setSubmitDisabled } = useSubmitDisabled(30000);
 
 	const addEmployee = async (formData) => {
 		setIsLoading(true);
@@ -43,16 +38,7 @@ export default function useAddEmployee() {
 				severity: "success",
 			});
 		} catch (err) {
-			if (err.response) {
-				if (err.response.status === 429 && !submitDisabled) {
-					setSubmitDisabled(true);
-				}
-				setError(getErrorData(err));
-			} else if (err.request) {
-				setError("Network error!");
-			} else {
-				setError("Something unexpected happened");
-			}
+			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);
 		}
@@ -60,5 +46,5 @@ export default function useAddEmployee() {
 		return success;
 	};
 
-	return { error, setError, isLoading, submitDisabled, addEmployee };
+	return { error, setError, isLoading, addEmployee };
 }

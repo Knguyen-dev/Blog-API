@@ -36,7 +36,6 @@ export default function CreatePostPage() {
 		initialState,
 		error,
 		isLoading,
-		submitDisabled,
 		onSubmitPost,
 		categories,
 		tags,
@@ -119,7 +118,6 @@ export default function CreatePostPage() {
 						handleSubmitPost={handleSubmitPost}
 						error={error}
 						isLoading={isLoading}
-						submitDisabled={submitDisabled}
 						// Tags and categories needed for options and selections
 						categories={categories}
 						tags={tags}

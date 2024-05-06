@@ -15,16 +15,8 @@ export default function EditPostPage() {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const { showToast } = useToast();
-	const {
-		state,
-		dispatch,
-		error,
-		isLoading,
-		submitDisabled,
-		onSubmitPost,
-		categories,
-		tags,
-	} = useEditorContext();
+	const { state, dispatch, error, isLoading, onSubmitPost, categories, tags } =
+		useEditorContext();
 	const axiosPrivate = useAxiosPrivate();
 
 	const [postError, setPostError] = useState(null);
@@ -113,7 +105,6 @@ export default function EditPostPage() {
 						handleSubmitPost={handleSubmitPost}
 						error={error}
 						isLoading={isLoading}
-						submitDisabled={submitDisabled}
 						// categories and tags needed
 						categories={categories}
 						tags={tags}

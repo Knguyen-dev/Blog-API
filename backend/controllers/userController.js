@@ -193,6 +193,8 @@ const updateUsername = [
   userValidators.username,
   handleValidationErrors,
   asyncHandler(async(req, res, next) => {
+
+    
     
     // Username syntax is valid, try to find user with target ID
     const user = await findDocByID(User, req.params.id);
