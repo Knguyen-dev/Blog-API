@@ -48,19 +48,23 @@ export default function AboutPage() {
 	const theme = useTheme();
 	return (
 		<Box className="tw-p-8 tw-flex tw-flex-col tw-gap-y-8">
-			{/* Header */}
-			<Container className="tw-text-center">
-				<Typography variant="h2">About {companyInfo.name}</Typography>
-				<Typography variant="h5" fontWeight={300}>
+			<Container component="header" className="tw-text-center">
+				<Typography variant="h2" component="h1">
+					About {companyInfo.name}
+				</Typography>
+				<Typography variant="h4" component="h2" fontWeight={300}>
 					{companyInfo.slogan}
 				</Typography>
 			</Container>
 
 			{/* What does the site do, what is it? */}
 			<Container component="section" className="tw-text-center">
-				<Typography variant="h4" className="tw-mb-8">
-					What is {companyInfo.name}?
-				</Typography>
+				<Box component="header">
+					<Typography variant="h4" component="h2" gutterBottom>
+						What is {companyInfo.name}?
+					</Typography>
+				</Box>
+
 				<Grid container spacing={4}>
 					<Grid item xs={12} sm={6}>
 						<Typography className="tw-text-start" paragraph>
@@ -81,7 +85,7 @@ export default function AboutPage() {
 					<Grid item xs={12} sm={6}>
 						<ResponsiveImg
 							src="/happy-team-at-computer.jpg"
-							alt="Happy team at computer"
+							alt=""
 							rounded="md"
 						/>
 					</Grid>
@@ -90,7 +94,10 @@ export default function AboutPage() {
 
 			{/* Mission and Vision */}
 			<Container component="section">
-				<Typography variant="h4" className="tw-mb-8 tw-text-center">
+				<Typography
+					variant="h4"
+					component="h2"
+					className="tw-mb-8 tw-text-center">
 					Mission and Vision
 				</Typography>
 
@@ -98,7 +105,7 @@ export default function AboutPage() {
 					<Grid item xs={12} sm={7}>
 						<ResponsiveImg
 							src="/team-reacting-to-success.jpg"
-							alt="Happy team at computer"
+							alt=""
 							rounded="md"
 						/>
 					</Grid>
@@ -122,9 +129,16 @@ export default function AboutPage() {
 				component="section"
 				className="tw-py-4 tw-rounded-md tw-shadow-lg"
 				sx={{ background: theme.palette.sectionBg }}>
-				<Typography variant="h4" className="tw-text-center" gutterBottom>
-					A Brief History of {companyInfo.name}
-				</Typography>
+				<Box component="header">
+					<Typography
+						variant="h4"
+						component="h2"
+						className="tw-text-center"
+						gutterBottom>
+						A Brief History of {companyInfo.name}
+					</Typography>
+				</Box>
+
 				<Box>
 					<Typography paragraph>
 						{companyInfo.name} was founded in 2015 by a group of passionate
@@ -161,7 +175,7 @@ export default function AboutPage() {
 				className="tw-py-4 tw-rounded-md tw-shadow-lg"
 				sx={{ background: theme.palette.sectionBg }}>
 				<Box component="header" className="tw-text-center tw-mb-4">
-					<Typography variant="h4" gutterBottom>
+					<Typography variant="h4" component="h2" gutterBottom>
 						Our Values
 					</Typography>
 					<Typography className="tw-w-2/3 tw-mx-auto">
@@ -179,7 +193,7 @@ export default function AboutPage() {
 								{value.icon}
 							</Box>
 							<Box>
-								<Typography variant="h6" fontWeight={500}>
+								<Typography variant="h6" component="h3" fontWeight={500}>
 									{value.title}
 								</Typography>
 								<Typography fontWeight={300}>{value.description}</Typography>
@@ -191,9 +205,15 @@ export default function AboutPage() {
 
 			{/* Join Our Team */}
 			<Container component="section">
-				<Typography variant="h4" gutterBottom className="tw-text-center">
-					Join Our Team
-				</Typography>
+				<Box>
+					<Typography
+						variant="h4"
+						component="h2"
+						gutterBottom
+						className="tw-text-center">
+						Join Our Team
+					</Typography>
+				</Box>
 
 				<Grid container spacing={4}>
 					<Grid item xs={12} sm={6}>
@@ -220,11 +240,7 @@ export default function AboutPage() {
 					</Grid>
 
 					<Grid item xs={12} sm={6} justifyContent="center">
-						<ResponsiveImg
-							src="/team-celebration.jpg"
-							alt="Team of people celebrating"
-							rounded="md"
-						/>
+						<ResponsiveImg src="/team-celebration.jpg" alt="" rounded="md" />
 					</Grid>
 				</Grid>
 			</Container>
@@ -235,7 +251,7 @@ export default function AboutPage() {
 				className="tw-py-4 tw-rounded-md tw-shadow-lg"
 				sx={{ background: theme.palette.sectionBg }}>
 				<Box component="header" className="tw-text-center">
-					<Typography variant="h4" gutterBottom>
+					<Typography variant="h4" component="h2" gutterBottom>
 						Connect with Us
 					</Typography>
 					<SocialMediaStack

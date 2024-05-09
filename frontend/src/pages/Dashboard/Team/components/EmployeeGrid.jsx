@@ -158,7 +158,7 @@ const columns = [
 		headerName: "Avatar",
 		width: 100,
 		renderCell: ({ row }) => (
-			<Avatar alt="Avatar" src={row.avatarSrc}>
+			<Avatar alt="Avatar" sx={{ color: "black" }} src={row.avatarSrc}>
 				{row.avatarInitials}
 			</Avatar>
 		),

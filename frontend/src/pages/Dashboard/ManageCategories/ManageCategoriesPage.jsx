@@ -65,7 +65,7 @@ export default function ManageCategoriesPage() {
 				<Typography variant="h5" className="tw-mb-2">
 					Manage Categories
 				</Typography>
-				<Button variant="outlined" onClick={handleCreateCategory}>
+				<Button variant="contained" onClick={handleCreateCategory}>
 					Create Category
 				</Button>
 			</Box>

@@ -4,6 +4,12 @@ const roles_map = require("../config/roles_map");
 const postValidators = require("../middleware/validators/postValidators");
 const {createError, handleValidationErrors } = require("../middleware/errorUtils");
 const {findDocByID, isValidObjectId} = require("../middleware/dbUtils");
+
+
+
+
+
+
 /**
  * Middleware for creating new post
  * 
@@ -23,7 +29,7 @@ const createPost = [
   postValidators.status,
   postValidators.wordCount,
   handleValidationErrors, 
-  asyncHandler(async(req, res, next) => {   
+  asyncHandler(async(req, res) => {   
     
     // Attempt to create a new post
     const post = await Post.createPost(
@@ -116,7 +122,7 @@ const updatePostStatus = [
   asyncHandler(async(req, res, next) => {
     
     // Try to find the post that the admin is trying to update
-    const post = await findDocByID(Post, req.params.id, ["user category"]);
+    const post = await findDocByID(Post, req.params.id, ["user category tags"]);
     if (!post) {
       const err = createError(404, "Post being updated was not found!");
       return next(err);
@@ -199,8 +205,6 @@ const getPublishedPosts = asyncHandler(async(req, res) => {
 
   /*
   - In the future, we may want to allow for many categories!
-    
-  
   */
   if (category) {
     // If it's invalid, return with an error
@@ -230,11 +234,6 @@ const getPublishedPosts = asyncHandler(async(req, res) => {
     }
   }
  
-
-
-
-
-
   const posts = await Post.find(baseQuery).populate("user category tags");
 
   res.status(200).json(posts);
@@ -290,26 +289,30 @@ const getPostByID = asyncHandler(async(req, res, next) => {
   res.status(200).json(post);
 })
 
-
+/**
+ * Gets a published post via it's ID
+ * 
+ */
 const getPublishedPostByID = asyncHandler(async(req, res, next) => {
-
   // If bad id, indicate it wasn't found
   if (!isValidObjectId(id)) {
     const err = createError(404, "Post not found!");
     return next(err);
   } 
-
   // Attempt to find post with the matching object id and it must be published
   const post = await Post.findOne({_id: req.params.id, isPublished: true}).populate("user category, tags");
   if (!post) {
     const err = createError(404, "Post not found!");
     return next(err);
   }
-
   // Return post as json
   res.status(200).json(post);
 })
 
+/**
+ * Get a published post via its slug
+ * 
+ */
 const getPublishedPostBySlug = asyncHandler(async(req, res, next) => {
   // Attempt to find post with matching slug and is published
   const post = await Post.findOne({slug: req.params.slug, isPublished: true}).populate("user category tags");

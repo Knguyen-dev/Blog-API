@@ -1,12 +1,6 @@
 /*
 + NewPostPreview: Component used to display a post. So if user clicks on a post/article, we'll
   use this component to display that article in detail!
-
-
-+ Implementing Take redirect at the bottom.
-1. Pass in tag objects
-
-
 */
 
 import { Box, Typography, Divider } from "@mui/material";
@@ -32,10 +26,9 @@ export default function NewPostPreview({
 
 	const dateObj = new Date(dateStr);
 	return (
-		<Box component="main" className="tw-p-4">
+		<Box className="tw-p-4">
 			{/* Header of the post:  has title, date published, category, author*/}
-			<Box>
-				{/* Post header: Category (may not be selected yet), title of post, author, post thumbnail/display image and credits */}
+			<Box component="header">
 				<Box className="tw-flex tw-justify-center">
 					{category ? (
 						<TagContainer
@@ -51,15 +44,13 @@ export default function NewPostPreview({
 					{title}
 				</Typography>
 				<Box className="tw-flex tw-justify-center">
-					<Typography>Published on {formatBlogDate(dateObj)}</Typography>
-					<Typography variant="span" sx={{ marginX: "0.5em" }}>
-						|
+					<Typography>
+						Published on {formatBlogDate(dateObj)} | by {authorName}
 					</Typography>
-					<Typography>by {authorName}</Typography>
 				</Box>
 
 				<Box className="tw-mt-2">
-					<img src={imgSrc} className="tw-w-full tw-object-cover" />
+					<img src={imgSrc} alt="" className="tw-w-full tw-object-cover" />
 					<Typography
 						variant="span"
 						className="tw-text-xs tw-text-gray-400 tw-italic">
@@ -68,8 +59,9 @@ export default function NewPostPreview({
 				</Box>
 			</Box>
 
-			{/* Body of the post: Has the main content */}
+			{/* Body of the post: Has the main content; make it focusable to make it easier to read */}
 			<main
+				tabIndex={0}
 				className="post-preview"
 				dangerouslySetInnerHTML={{
 					__html: body,
@@ -77,12 +69,12 @@ export default function NewPostPreview({
 
 			<Divider className="tw-my-5" />
 
-			{/* Footer if the post */}
+			{/* Footer of the post */}
 			<Box component="footer" className="tw-text-center">
 				{/* Post tags section: contains all tags associated with post */}
 				{tags?.length > 0 && (
 					<Box>
-						<Typography variant="h5" className="tw-mb-3">
+						<Typography variant="h4" component="h2" className="tw-mb-3">
 							Tags
 						</Typography>
 
@@ -98,13 +90,6 @@ export default function NewPostPreview({
 						</Box>
 					</Box>
 				)}
-
-				{/* Fake copyright section */}
-				<Box className="tw-mt-5">
-					<Typography variant="body2" className="tw-text-gray-500">
-						&copy; {dateObj.getFullYear()} BlogSphere. All rights reserved.
-					</Typography>
-				</Box>
 			</Box>
 		</Box>
 	);

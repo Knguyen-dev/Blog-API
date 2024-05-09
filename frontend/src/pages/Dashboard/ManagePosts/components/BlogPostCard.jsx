@@ -44,6 +44,7 @@ BlogPostCard.propTypes = {
 	cardActions: PropTypes.array,
 	onCardClick: PropTypes.func,
 	isLoading: PropTypes.bool,
+	ariaLabel: PropTypes.string,
 };
 
 const minCardWidth = 300;
@@ -53,6 +54,7 @@ export default function BlogPostCard({
 	onCardClick,
 	cardActions,
 	isLoading = false,
+	ariaLabel,
 }) {
 	const theme = useTheme();
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -97,7 +99,7 @@ export default function BlogPostCard({
 					<Avatar
 						alt={post.user.username}
 						src={post.user.avatarSrc}
-						className="tw-mr-2">
+						className="tw-mr-2 tw-text-black">
 						{post.user.avatarInitials}
 					</Avatar>
 				}
@@ -113,10 +115,9 @@ export default function BlogPostCard({
 				}
 				subheader={formatBlogPostDate(post.createdAt)}
 			/>
-			<CardActionArea onClick={onCardClick}>
+			<CardActionArea onClick={onCardClick} aria-label={ariaLabel}>
 				<CardMedia
 					sx={{
-						width: 400,
 						height: 200,
 					}}
 					className="tw-max-w-full tw-object-cover"
@@ -134,7 +135,7 @@ export default function BlogPostCard({
 						Category: {post.category?.title || "No category"}
 					</Typography>
 
-					{post.tags.length > 0 && (
+					{post.tags.length > 0 ? (
 						<Stack
 							direction="row"
 							className="tw-flex-wrap tw-justify-start tw-items-center tw-gap-2">
@@ -143,6 +144,8 @@ export default function BlogPostCard({
 								<Typography key={index}>{tag.title}</Typography>
 							))}
 						</Stack>
+					) : (
+						<Typography>Tags: No tags yet</Typography>
 					)}
 
 					<Typography>Status: {post.status}</Typography>

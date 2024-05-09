@@ -62,7 +62,10 @@ export default function ManagePostsPage() {
 				<Typography variant="h5" className="tw-mb-2">
 					Manage Posts
 				</Typography>
-				<Button variant="outlined" onClick={goToCreatePostPage}>
+				<Button
+					variant="outlined"
+					aria-label="Go to create post page"
+					onClick={goToCreatePostPage}>
 					Create Post
 				</Button>
 			</Box>
@@ -99,11 +102,13 @@ export default function ManagePostsPage() {
 							{
 								label: "Edit",
 								onClick: () => goToEditPostPage(post._id),
+								ariaLabel: "Go to edit post page",
 							},
 
 							{
 								label: "Delete",
 								onClick: () => handleOpenDialog(index, "deletePost"),
+								ariaLabel: "Delete post",
 							},
 						];
 
@@ -123,7 +128,18 @@ export default function ManagePostsPage() {
 							<BlogPostCard
 								key={index}
 								post={post}
-								onCardClick={() => goToPostPage(post.slug)}
+								onCardClick={() => {
+									// If post is published, then allow us to be redirected to the post page
+									if (post.isPublished) {
+										goToPostPage(post.slug);
+									}
+								}}
+								// Change the label depending on if the post is published
+								ariaLabel={
+									post.isPublished
+										? `View post titled ${post.title}`
+										: "Post is unpublished and cannot be viewed"
+								}
 								cardActions={cardActions}
 							/>
 						);

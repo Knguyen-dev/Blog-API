@@ -180,9 +180,9 @@ export default function DashboardLayout() {
 				activeTabID={activeTabID}
 				handleTabClick={handleTabClick}
 			/>
-			<main className="tw-p-4 tw-flex-1 tw-overflow-auto">
+			<Box className="tw-p-4 tw-flex-1">
 				<Outlet />
-			</main>
+			</Box>
 		</Box>
 	);
 }

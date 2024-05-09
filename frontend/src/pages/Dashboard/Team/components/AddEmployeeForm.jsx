@@ -1,5 +1,5 @@
 import { TextField, Button, Box } from "@mui/material";
-import BasicSelect from "../../../../components/select/BasicSelect";
+import NewBasicSelect from "../../../../components/select/NewBasicSelect";
 import { getRoleNumber } from "../utils/roleUtilities";
 import { useState } from "react";
 import useAddEmployee from "../hooks/useAddEmployee";
@@ -57,13 +57,17 @@ export default function AddEmployeeForm() {
 					label="Username"
 					value={username}
 					onChange={(e) => setUsername(e.target.value)}
+					required
 				/>
-				<BasicSelect
+
+				<NewBasicSelect
 					value={role}
 					setValue={setRole}
 					label="Role"
+					placeholder="Select user's role"
 					options={options}
-					placeholder="Select Role"
+					getOptionLabel={(option) => option.label}
+					getOptionValue={(option) => option.value}
 				/>
 
 				{error && <div className="error">{error.message}</div>}

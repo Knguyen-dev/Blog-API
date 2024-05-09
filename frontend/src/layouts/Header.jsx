@@ -40,7 +40,7 @@ export default function Header() {
 		<CustomHeader
 			className="tw-pt-2 tw-px-5 tw-sticky tw-top-0 tw-z-10"
 			style={{ background: theme.palette.headerBg }}>
-			<Grid container className="tw-items-center">
+			<Grid component="nav" container className="tw-items-center">
 				<Grid item xs={12} md={3} className="xs:max-md:tw-mb-4">
 					<Box className="xs:max-md:tw-text-center">
 						<Typography variant="h4">
@@ -56,7 +56,7 @@ export default function Header() {
 				</Grid>
 
 				<Grid item xs={10} md={5} className="tw-mx-auto xs:max-md:tw-mb-2">
-					<Box className="tw-list-none tw-flex tw-flex-wrap tw-items-center tw-justify-evenly tw-gap-2">
+					<ul className="tw-list-none tw-flex tw-flex-wrap tw-items-center tw-justify-evenly tw-gap-2 tw-p-0 tw-m-0">
 						<li>
 							<Link
 								component="button"
@@ -93,7 +93,7 @@ export default function Header() {
 								Contact
 							</Link>
 						</li>
-					</Box>
+					</ul>
 				</Grid>
 
 				<Grid item xs={12} md={4}>

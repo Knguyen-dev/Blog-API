@@ -97,6 +97,7 @@ export default function TagForm({ selectedTag, setTags, onSuccess }) {
 				variant="outlined"
 				control={control}
 				name="title"
+				required
 			/>
 
 			{error && <div className="error">{error.message}</div>}

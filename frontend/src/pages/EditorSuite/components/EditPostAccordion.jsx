@@ -8,7 +8,6 @@ import { useState } from "react";
 
 import NewBasicSelect from "../../../components/select/NewBasicSelect";
 import FilteredAutoSelect from "../../../components/autocomplete/FilteredAutoSelect";
-import BasicSelect from "../../../components/select/BasicSelect";
 import BasicAccordion from "../../../components/accordion/BasicAccordion";
 import { Box, TextField, Button } from "@mui/material";
 import { postActions, postStatuses } from "../data/postConstants";
@@ -99,6 +98,7 @@ export default function EditPostAccordion({
 						onChange={(e) =>
 							dispatch({ type: postActions.SET_TITLE, payload: e.target.value })
 						}
+						required
 					/>
 
 					<NewBasicSelect
@@ -109,6 +109,9 @@ export default function EditPostAccordion({
 						options={categories}
 						getOptionLabel={(option) => option.title}
 						getOptionValue={(option) => option._id}
+						label="Category"
+						placeholder="Select a category for the post"
+						required
 					/>
 
 					<PostEditor
@@ -150,6 +153,7 @@ export default function EditPostAccordion({
 						onChange={(e) =>
 							dispatch({ type: postActions.SET_IMAGE, payload: e.target.value })
 						}
+						required
 					/>
 
 					<TextField
@@ -170,15 +174,19 @@ export default function EditPostAccordion({
 			title: "Submission",
 			content: (
 				<Box className="tw-flex tw-flex-col tw-gap-y-2">
-					<BasicSelect
-						label="Status"
-						placeholder="Enter the submission type"
-						options={postStatuses}
+					<NewBasicSelect
 						value={status || ""}
 						setValue={(status) =>
 							dispatch({ type: postActions.SET_STATUS, payload: status })
 						}
+						label="Status"
+						options={postStatuses}
+						getOptionLabel={(option) => option.label}
+						getOptionValue={(option) => option.value}
+						placeholder="Select a status for the post"
+						required
 					/>
+
 					{error && <div className="error">{error.message}</div>}
 					{/* Action Buttons for the form */}
 					<Box

@@ -108,6 +108,7 @@ export default function CategoryForm({
 				variant="outlined"
 				control={control}
 				name="title"
+				required
 			/>
 
 			<FormInputField
@@ -117,6 +118,7 @@ export default function CategoryForm({
 				name="description"
 				multiline={true}
 				rows={4}
+				required
 			/>
 
 			{error && <div className="error">{error.message}</div>}

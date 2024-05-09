@@ -40,6 +40,7 @@ export default function FormInputField({
 	defaultValue,
 	multiline = false,
 	rows,
+	required,
 }) {
 	return (
 		<Controller
@@ -66,6 +67,7 @@ export default function FormInputField({
 					inputProps={{
 						autoComplete: autoComplete,
 					}}
+					required={required}
 				/>
 			)}
 		/>
@@ -84,4 +86,5 @@ FormInputField.propTypes = {
 	defaultValue: PropTypes.string,
 	multiline: PropTypes.bool,
 	rows: PropTypes.number,
+	required: PropTypes.bool,
 };

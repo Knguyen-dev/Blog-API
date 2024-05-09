@@ -1,3 +1,4 @@
+import getErrorData from "./getErrorData";
 /*
 - Could be a server-side validation error, some other server-side error, 
   or a network error we'll. For the first two, we can set the error message
@@ -18,12 +19,8 @@
  */
 export default function handleRequestError(err, setError) {
 	if (err.response) {
-		let customError = {
-			status: err.response.status,
-			message:
-				err.response.data.error.message || "Had trouble getting error message!",
-		};
-		setError(customError);
+    // Pass the error into getErrorData, which will return our custom error
+    setError(getErrorData(err));
 	} else if (err.request) {
 		setError({ message: "Network Error!" });
 	} else {

@@ -4,8 +4,7 @@ import PropTypes from "prop-types";
 
 import useSavePostStatus from "../hooks/useSavePostStatus";
 import { postStatuses } from "../../../EditorSuite/data/postConstants";
-
-import BasicSelect from "../../../../components/select/BasicSelect";
+import NewBasicSelect from "../../../../components/select/NewBasicSelect";
 
 EditPostStatusForm.propTypes = {
 	postID: PropTypes.string,
@@ -39,12 +38,15 @@ export default function EditPostStatusForm({ postID, onSuccess }) {
 	return (
 		<form onSubmit={onSubmit}>
 			<Box sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}>
-				<BasicSelect
+				<NewBasicSelect
 					value={status}
 					setValue={setStatus}
 					label="Status"
+					placeholder="Select the post's status"
 					options={postStatuses}
-					placeholder="Select post status"
+					getOptionLabel={(option) => option.label}
+					getOptionValue={(option) => option.value}
+					required
 				/>
 
 				{error && <div className="error">{error.message}</div>}

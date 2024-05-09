@@ -10,7 +10,6 @@ import useAboutNavigation from "../pages/About/useAboutNavigation";
 import useBlogNavigation from "../pages/Browse/hooks/useBlogNavigation";
 import useContactNavigation from "../pages/Contact/useContactNavigation";
 import SocialMediaStack from "../components/SocialMediaStack";
-
 import { companyInfo, currentYear } from "../constants/companyInfo";
 
 // Bottom footer links; real links to project github and linkedIn
@@ -18,14 +17,16 @@ const footerLinks = [
 	{
 		icon: <LinkedInIcon />,
 		href: "https://www.linkedin.com/in/kevin-nguyen-13313b298/",
-		ariaLabel: "LinkedIn Profile of Kevin Nguyen",
+		ariaLabel: "Open LinkedIn Profile of Kevin Nguyen in a new tab",
 	},
 	{
 		icon: <GitHubIcon />,
 		href: "https://github.com/Knguyen-dev",
-		ariaLabel: "Github Profile of Kevin Nguyen",
+		ariaLabel: "Open Github Profile of Kevin Nguyen in a new tab",
 	},
 ];
+
+const sectionTitleFontSize = 22;
 
 Footer.propTypes = {
 	className: PropTypes.string,
@@ -46,7 +47,7 @@ export default function Footer({ className }) {
 			{/* Main footer content */}
 			<Box className="tw-flex tw-justify-between tw-flex-wrap tw-gap-8">
 				<Box sx={{ width: "fit-content", maxWidth: 250 }}>
-					<Typography variant="h6" gutterBottom>
+					<Typography fontSize={sectionTitleFontSize} gutterBottom>
 						{companyInfo.name}
 					</Typography>
 					<Typography color="text.secondary" className="tw-mb-2">
@@ -57,7 +58,7 @@ export default function Footer({ className }) {
 					<EmailSubscriptionForm />
 				</Box>
 				<Box sx={{ width: "fit-content", maxWidth: 100 }}>
-					<Typography variant="h6" gutterBottom>
+					<Typography fontSize={sectionTitleFontSize} gutterBottom>
 						Help
 					</Typography>
 					<Stack spacing={1}>
@@ -67,11 +68,13 @@ export default function Footer({ className }) {
 							href="#">
 							Faq
 						</Link>
+
 						<Link
 							color="text.secondary"
 							component="button"
 							className="tw-text-start tw-no-underline hover:tw-underline"
-							onClick={goToContactPage}>
+							onClick={goToContactPage}
+							aria-label="Go to contact page">
 							Contact us
 						</Link>
 						<Link
@@ -89,7 +92,7 @@ export default function Footer({ className }) {
 					</Stack>
 				</Box>
 				<Box sx={{ width: "fit-content", maxWidth: 100 }}>
-					<Typography variant="h6" gutterBottom>
+					<Typography fontSize={sectionTitleFontSize} gutterBottom>
 						Company
 					</Typography>
 					<Stack spacing={1}>
@@ -97,6 +100,7 @@ export default function Footer({ className }) {
 							color="text.secondary"
 							className="tw-text-start tw-no-underline hover:tw-underline"
 							component="button"
+							aria-label="Go to home page"
 							onClick={goToHomePage}>
 							Home
 						</Link>
@@ -104,6 +108,7 @@ export default function Footer({ className }) {
 							color="text.secondary"
 							className="tw-text-start tw-no-underline hover:tw-underline"
 							component="button"
+							aria-label="Go to about page"
 							onClick={goToAboutPage}>
 							About Us
 						</Link>
@@ -111,6 +116,7 @@ export default function Footer({ className }) {
 							color="text.secondary"
 							className="tw-text-start tw-no-underline hover:tw-underline"
 							component="button"
+							aria-label="Go to blog page"
 							onClick={goToBlogPage}>
 							Blog
 						</Link>
@@ -124,7 +130,7 @@ export default function Footer({ className }) {
 					<SocialMediaStack className="tw-mt-2" spacing={1} direction="row" />
 				</Box>
 				<Box>
-					<Typography variant="h6" gutterBottom>
+					<Typography fontSize={sectionTitleFontSize} gutterBottom>
 						Contact Us
 					</Typography>
 					<Stack color="text.secondary" spacing={1}>
@@ -142,7 +148,7 @@ export default function Footer({ className }) {
 			</Box>
 			{/* Copyright and additional links*/}
 			<Box className="tw-flex tw-flex-col sm:tw-flex-row tw-items-center tw-justify-between tw-mt-8">
-				<Typography className="tw-text-sm tw-text-slate-500">
+				<Typography className="tw-text-sm">
 					&copy; Copyright {currentYear} {companyInfo.name} — Knguyen-Dev. All
 					rights reserved.
 				</Typography>

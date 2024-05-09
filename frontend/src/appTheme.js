@@ -60,6 +60,13 @@ const disableEffects = {
 				transition: "none !important",
 				animation: "none !important",
 			},
+
+			// Disabling ripple removes the 'focus-visible' style for buttons, so we'd have to add in our own
+			// style when that happens.
+			".Mui-focusVisible": {
+				outline: "2px solid #007bff" /* Adjust the color to your preference */,
+				"outline-offset": "2px",
+			},
 		},
 	},
 };

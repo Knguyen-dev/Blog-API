@@ -7,23 +7,23 @@ import { Stack, Link } from "@mui/material";
 const socialLinks = [
 	{
 		icon: <FacebookIcon />,
-		href: "https://www.facebook.com/BlogSphere",
-		ariaLabel: "Facebook Profile of BlogSphere",
+		href: "https://www.facebook.com",
+		ariaLabel: "Open Facebook in a new tab",
 	},
 	{
 		icon: <InstagramIcon />,
-		href: "https://www.instagram.com/BlogSphere",
-		ariaLabel: "Instagram Profile of BlogSphere",
+		href: "https://www.instagram.com",
+		ariaLabel: "Open Instagram in a new tab",
 	},
 	{
 		icon: <XIcon />,
-		href: "https://www.twitter.com/BlogSphere",
-		ariaLabel: "Twitter or X Profile of BlogSphere",
+		href: "https://www.twitter.com",
+		ariaLabel: "Open Twitter or X in a new tab",
 	},
 	{
 		icon: <YouTubeIcon />,
-		href: "https://www.youtube.com/BlogSphere",
-		ariaLabel: "YouTube Channel of BlogSphere",
+		href: "https://www.youtube.com",
+		ariaLabel: "Open YouTube in a new tab",
 	},
 ];
 

@@ -37,7 +37,10 @@ export default function BasicMenu({ open, anchorEl, items, handleClose }) {
 				},
 			}}>
 			{items.map((item, index) => (
-				<MenuItem key={index} onClick={item.onClick}>
+				<MenuItem
+					key={index}
+					onClick={item.onClick}
+					aria-label={item.ariaLabel}>
 					{item.label}
 				</MenuItem>
 			))}

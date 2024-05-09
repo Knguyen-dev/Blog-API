@@ -25,7 +25,7 @@ export default function ContactPage() {
 						className="tw-p-4 tw-rounded-md tw-shadow-lg"
 						sx={{ background: theme.palette.sectionBg }}>
 						<Box>
-							<Typography variant="h6" gutterBottom>
+							<Typography variant="h6" component="h2" gutterBottom>
 								How can we help?
 							</Typography>
 							<Typography>
@@ -37,7 +37,7 @@ export default function ContactPage() {
 							</Typography>
 						</Box>
 						<Box>
-							<Typography variant="h6" gutterBottom>
+							<Typography variant="h6" component="h2" gutterBottom>
 								Points of contact:
 							</Typography>
 							<Typography className="tw-break-words">
@@ -50,7 +50,7 @@ export default function ContactPage() {
 				</Grid>
 
 				<Grid item sm={5}>
-					<Typography variant="h6" gutterBottom>
+					<Typography variant="h6" component="h2" gutterBottom>
 						Send Us a Message
 					</Typography>
 					<Typography className="tw-mb-3">

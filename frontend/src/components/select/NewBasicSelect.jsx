@@ -6,6 +6,8 @@ import Select from "@mui/material/Select";
 import PropTypes from "prop-types";
 
 /*
++ NewBasicSelect: A select drop down component that's supposed to be controlled by a state
+
 We can think of NewBasicSelect as a glorified map or dictionary. Where the 
 keys we enter are the 'value' parameter, and the value of the dictionary. 
 By setting the 'id', value, then we will display the appropriate output (username).
@@ -46,6 +48,9 @@ export default function NewBasicSelect({
 	options,
 	getOptionLabel,
 	getOptionValue,
+	placeholder = "None",
+	required, // gives us that asterisks for required form controls
+	allowNone = false, // determines whether or not the user can select 'none' as an option
 }) {
 	const handleChange = (event) => {
 		setValue(event.target.value);
@@ -53,7 +58,7 @@ export default function NewBasicSelect({
 
 	return (
 		<Box sx={{ minWidth: 120 }}>
-			<FormControl fullWidth>
+			<FormControl fullWidth required={required}>
 				<InputLabel id="demo-simple-select-label">{label}</InputLabel>
 				<Select
 					labelId="demo-simple-select-label"
@@ -61,8 +66,12 @@ export default function NewBasicSelect({
 					value={value}
 					label={label}
 					onChange={handleChange}>
-					<MenuItem value={null}>
-						<em>None</em>
+					{/* If allowNone is true, then this won't be disabled */}
+					<MenuItem
+						value={null}
+						disabled={!allowNone}
+						aria-disabled={!allowNone}>
+						<em>{placeholder}</em>
 					</MenuItem>
 
 					{options.map((option, index) => (
@@ -89,4 +98,6 @@ NewBasicSelect.propTypes = {
 	placeholder: PropTypes.string,
 	getOptionLabel: PropTypes.func,
 	getOptionValue: PropTypes.func,
+	required: PropTypes.bool,
+	allowNone: PropTypes.bool,
 };

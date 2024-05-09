@@ -29,16 +29,3 @@
 .error {
 	@apply tw-p-3 tw-text-center tw-text-red-700 tw-bg-slate-100 tw-rounded-md;
 }
-
-/* 
-+ Styling for the post preview in the editor suite:
-- We remove margin on the figure so that images are formatted properly 
-  when they have captions. Then we just style the captions too.
-*/
-.post-preview figure {
-	margin: 0;
-}
-
-.post-preview figcaption {
-	@apply tw-text-xs tw-text-gray-400 tw-italic;
-}

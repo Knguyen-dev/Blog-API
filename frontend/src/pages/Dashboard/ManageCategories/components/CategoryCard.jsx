@@ -44,13 +44,13 @@ export default function CategoryCard({
 			</CardContent>
 			<CardActions>
 				<Button
-					variant="outlined"
+					variant="contained"
 					color="warning"
 					size="small"
 					onClick={handleDelete}>
 					Delete
 				</Button>
-				<Button variant="outlined" size="small" onClick={handleEdit}>
+				<Button variant="contained" size="small" onClick={handleEdit}>
 					Edit
 				</Button>
 			</CardActions>

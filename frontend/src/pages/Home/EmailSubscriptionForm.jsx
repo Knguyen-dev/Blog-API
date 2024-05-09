@@ -1,16 +1,16 @@
 import { Box, TextField, Button } from "@mui/material";
 
 const borderRadius = 4;
-
+// May get rid of this
 export default function EmailSubscriptionForm() {
 	return (
 		<Box component="form" sx={{ display: "flex" }}>
 			<TextField
 				size="small"
-				id="email"
+				id="emailSubscription"
 				name="email"
 				type="email"
-				label="Email"
+				aria-label="Email"
 				placeholder="Enter your email"
 				InputProps={{
 					sx: {

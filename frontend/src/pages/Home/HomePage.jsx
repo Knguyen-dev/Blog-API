@@ -83,7 +83,11 @@ export default function HomePage() {
 		<div className="tw-flex tw-flex-col tw-gap-y-20">
 			{/* Intro secution  */}
 			<Grid id="intro" container alignItems="center" justifyContent="center">
-				<Grid item xs={12} sm={6} className="xs:max-sm:tw-text-center">
+				<Grid
+					item
+					xs={12}
+					sm={6}
+					className="xs:max-sm:tw-text-center xs:max-sm:tw-mt-8">
 					<Typography variant="h2" component="h1" gutterBottom>
 						Welcome to {companyInfo.name}
 					</Typography>
@@ -101,10 +105,10 @@ export default function HomePage() {
 					</Button>
 				</Grid>
 				<Grid item xs={12} sm={4} className="xs:max-sm:tw-hidden">
-					<img
+					<ResponsiveImg
 						src="/people-working-graphic.png"
-						alt="Landing page image/graphic for BlogSphere"
-						className="tw-max-w-full tw-h-full tw-object-cover tw-rounded-md tw-overflow-hidden"
+						alt=""
+						rounded="lg"
 					/>
 				</Grid>
 			</Grid>
@@ -114,7 +118,7 @@ export default function HomePage() {
 				<Container maxWidth="xl" id="services">
 					{/* Header  */}
 					<Box className="tw-text-center tw-mb-6" component="header">
-						<Typography variant="h3" gutterBottom>
+						<Typography variant="h2" gutterBottom>
 							Our Services
 						</Typography>
 						<Typography className="tw-w-1/2 tw-mx-auto tw-font-light">
@@ -139,7 +143,7 @@ export default function HomePage() {
 									</Box>
 
 									<Link href={service.href} aria-label={service.ariaLabel}>
-										<IconButton>
+										<IconButton aria-label={service.ariaLabel} tabIndex={-1}>
 											<ArrowOutwardIcon />
 										</IconButton>
 									</Link>
@@ -161,7 +165,7 @@ export default function HomePage() {
 				<Box sx={{ flex: 1 }}>
 					<ResponsiveImg
 						src="https://img.b2bpic.net/free-photo/gamer-chair-with-multicolored-neon-lights_52683-99741.jpg"
-						alt="Person playing video games at their computer."
+						alt=""
 						rounded="lg"
 					/>
 				</Box>
@@ -185,7 +189,11 @@ export default function HomePage() {
 						scientific discoveries, or a refreshing take on current
 						entertainment trends, we&apos;ve got you covered.
 					</Typography>
-					<Button variant="contained" onClick={goToAboutPage}>
+					<Button
+						variant="contained"
+						component={Link}
+						aria-label="Go to about page"
+						onClick={goToAboutPage}>
 						Learn More
 					</Button>
 				</Box>

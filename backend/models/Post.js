@@ -128,7 +128,6 @@ postSchema.statics.checkTitleAndSlug = async function(title, slug, id = null) {
   }
 
   const existingPost = await this.findOne(basePostQuery);
-
   if (existingPost) {
     let errMessage = "";
     if (existingPost.title.toLowerCase() === title.toLowerCase()) {
@@ -299,20 +298,11 @@ postSchema.methods.updatePost = async function(title, body, categoryID, tagIDs, 
   this.tags = tagIDs;
   this.imgSrc = imgSrc,
   this.imgCredits = imgCredits;
-
-  // By updating the status, we could change whether or not the post is published or not
-  this.status = status;
-  if (status === post_status_map.published) {
-    this.isPublished = true;
-  } else {
-    this.isPublished = false;
-  }
-
   this.wordCount = wordCount;
-  this.lastUpdatedBy = userID;
-
-  // Save changes
-  await this.save();
+  
+  // By updating the status, we could change whether or not the post is published or not
+  // This will also save the changes to the object 
+  this.updateStatus(status, userID);
 }
 
 /**
@@ -322,6 +312,11 @@ postSchema.methods.updatePost = async function(title, body, categoryID, tagIDs, 
  */
 postSchema.methods.updateStatus = async function(status, userID) {
   this.status = status;
+  if (status === post_status_map.published) {
+    this.isPublished = true;
+  } else {
+    this.isPublished = false;
+  }
   this.lastUpdatedBy = userID;
   await this.save();
 }

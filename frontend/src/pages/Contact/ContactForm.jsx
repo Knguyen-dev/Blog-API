@@ -25,6 +25,7 @@ export default function ContactForm() {
 					name="email"
 					label="Email"
 					placeholder="Enter your email"
+					type="email"
 					required
 					className="tw-flex-1"
 				/>

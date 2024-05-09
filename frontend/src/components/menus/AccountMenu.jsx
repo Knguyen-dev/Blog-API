@@ -1,19 +1,21 @@
-import Avatar from "@mui/material/Avatar";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
 import Logout from "@mui/icons-material/Logout";
-
 import UploadIcon from "@mui/icons-material/Upload";
-
 import PersonIcon from "@mui/icons-material/Person";
-import { Box, Typography } from "@mui/material";
+import {
+	Box,
+	Typography,
+	Avatar,
+	Menu,
+	MenuItem,
+	ListItemIcon,
+	Divider,
+	IconButton,
+	Tooltip,
+} from "@mui/material";
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import useProfileNavigation from "../../pages/Dashboard/Profile/hooks/useProfileNavigation";
+import useManagePostsNavigation from "../../pages/Dashboard/ManagePosts/hooks/useManagePostsNavigation";
 import useLogout from "../../hooks/useLogout";
 
 import PropTypes from "prop-types";
@@ -29,7 +31,8 @@ const truncateWidth = menuWidth - 75;
 
 export default function AccountMenu({ user }) {
 	const logout = useLogout();
-	const navigate = useNavigate();
+	const goToProfilePage = useProfileNavigation();
+	const goToManagePostsPage = useManagePostsNavigation();
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
@@ -59,26 +62,28 @@ export default function AccountMenu({ user }) {
 				icon: <PersonIcon fontSize="small" />,
 				text: "My Account",
 				id: 1,
-				onClick: () => navigate("/dashboard"),
+				onClick: goToProfilePage,
+				ariaLabel: "Go to user account page",
 			},
 
 			/*
       - If they aren't a user, they're an admin or editor, so they can have the option
 			for creating post. Later though, you'll probably want to create functions to authorize
 			users.
-      
       - NOTE: In .env files, our values will always be strings so if we're comparing 
         numbers, we need to convert them into int, or do non-strict comparisons.
         So when their role is user, this expression evaluates to false so we'll have a 
         tab object = false. This is why later when creating 'menuItems' we only look for 
         tabObj with truthy values.
       */
-
 			user.role !== parseInt(import.meta.env.VITE_ROLE_USER) && {
 				icon: <UploadIcon fontSize="small" />,
 				text: "Create Post",
 				id: 2,
-				onClick: () => navigate("/dashboard/manage-posts"),
+
+				// goToManagePostsPage
+				onClick: goToManagePostsPage,
+				ariaLabel: "Go to manage posts page",
 			},
 			{
 				icon: <Logout fontSize="small" />,
@@ -97,6 +102,7 @@ export default function AccountMenu({ user }) {
 				return (
 					<MenuItem
 						key={tabObj.id}
+						aria-label={tabObj.ariaLabel}
 						onClick={() => handleTabClick(tabObj.onClick)}>
 						<ListItemIcon>{tabObj.icon}</ListItemIcon>
 						{tabObj.text}
@@ -128,7 +134,9 @@ export default function AccountMenu({ user }) {
               we have problems loading hte image, then we'll use the initials.
             
             */}
-						<Avatar src={user.avatarSrc}>{user.avatarInitials}</Avatar>
+						<Avatar src={user.avatarSrc} alt="">
+							{user.avatarInitials}
+						</Avatar>
 					</IconButton>
 				</Tooltip>
 			</Box>
@@ -173,8 +181,12 @@ export default function AccountMenu({ user }) {
 				<MenuItem
 					sx={{
 						pointerEvents: "none",
-					}}>
-					<Avatar src={user.avatarSrc}>{user.avatarInitials}</Avatar>
+					}}
+					tabIndex={-1}
+					aria-label="Account Menu header">
+					<Avatar src={user.avatarSrc} alt="">
+						{user.avatarInitials}
+					</Avatar>
 					<Box sx={{ display: "flex", flexDirection: "column" }}>
 						{/* 
             - if you want typographies to wrap around, do whiteSpace: normal on sx

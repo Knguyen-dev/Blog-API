@@ -34,7 +34,7 @@ export default function ManageTagsPage() {
 				<Typography variant="h5" className="tw-mb-2">
 					Manage Tags
 				</Typography>
-				<Button variant="outlined" onClick={handleCreateTag}>
+				<Button variant="contained" onClick={handleCreateTag}>
 					Create Tag
 				</Button>
 			</Box>
