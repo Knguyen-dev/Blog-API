@@ -34,5 +34,5 @@ export default function useLogin() {
 		return success;
 	};
 
-	return { error, isLoading, login };
+	return { error, setError, isLoading, login };
 }

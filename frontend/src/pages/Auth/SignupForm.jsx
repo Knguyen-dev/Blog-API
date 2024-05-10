@@ -112,10 +112,7 @@ export default function SignupForm() {
 					label="Confirm Password"
 				/>
 
-				<Button
-					variant="contained"
-					disabled={isLoading}
-					type="submit">
+				<Button variant="contained" disabled={isLoading} type="submit">
 					Sign Up
 				</Button>
 			</div>
@@ -129,7 +126,7 @@ export default function SignupForm() {
 			<div>
 				<Typography className="tw-text-center">
 					Already a user?{" "}
-					<Link to="/auth/login" className="tw-no-underline hover:tw-underline">
+					<Link to="/auth/login" aria-label="Go to login page">
 						Login
 					</Link>
 				</Typography>

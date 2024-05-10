@@ -6,12 +6,12 @@
 */
 
 import { createContext, useReducer } from "react";
-
 import { minWordCount, postActions } from "../data/postConstants";
 import useSavePost from "../hooks/useSavePost";
 import useGetCategories from "../hooks/useGetCategories";
 import useGetTags from "../hooks/useGetTags";
 import PropTypes from "prop-types";
+import { Box, Typography } from "@mui/material";
 const EditorContext = createContext();
 
 /*
@@ -89,8 +89,8 @@ const EditorProvider = ({ children }) => {
 	const [state, dispatch] = useReducer(postReducer, initialState);
 	const { error, setError, isLoading, savePost } = useSavePost();
 
-	const { categories, isLoading: categoriesLoading } = useGetCategories();
-	const { tags, isLoading: tagsLoading } = useGetTags();
+	const { categories, error: categoriesError } = useGetCategories();
+	const { tags, error: tagsError } = useGetTags();
 
 	const onSubmitPost = async () => {
 		/*
@@ -145,10 +145,49 @@ const EditorProvider = ({ children }) => {
 		return success;
 	};
 
-	// Wait until our categories and tags are initialized before provider and children.
-	// Prevents any errors in edit post accordion where we're trying to access a null value.
-	if (categoriesLoading || tagsLoading) {
+	/*
+  - If categories isn't defined (data not obtained yet) AND categoriesError isn't defined, then that 
+    means we are still ongoing in our request, that is neither failed or successfully. It has two options:
+
+    1. Success: categories is defined, at minimum an empty array. Then categoriesError is falsy.
+    2. Fail: categories is falsy (null), and then this means categoriesError is defined.
+  
+    - The same logic goes for the tags.
+
+  - NOTE: The reason we do this is to ensure that if we're going to load the CreatePostPage and 
+  EditPostPage, that our categories and tags are arrays, and that we don't throw an error when they're 
+  undefined.
+  */
+
+	if ((!categories && !categoriesError) || (!tags && !tagsError)) {
 		return;
+	}
+
+	/*
+  - Categories request finished, either a success (categories truthy) or categoriesError is truthy.
+    Check for errors, if there's a categories error, we stop our rendering here
+  */
+	if (categoriesError) {
+		return (
+			<Box>
+				{categoriesError && (
+					<Typography>
+						Error getting categories: {categoriesError.message}
+					</Typography>
+				)}
+			</Box>
+		);
+	}
+
+	// Do same error catching process for tags Error
+	if (tagsError) {
+		return (
+			<Box>
+				{tagsError && (
+					<Typography>Error getting tags: {tagsError.message}</Typography>
+				)}
+			</Box>
+		);
 	}
 
 	return (

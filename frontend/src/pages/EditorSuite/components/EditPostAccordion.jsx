@@ -106,7 +106,7 @@ export default function EditPostAccordion({
 						setValue={(newCategory) =>
 							dispatch({ type: postActions.SET_CATEGORY, payload: newCategory })
 						}
-						options={categories}
+						options={categories || []}
 						getOptionLabel={(option) => option.title}
 						getOptionValue={(option) => option._id}
 						label="Category"

@@ -5,6 +5,7 @@ import {
 	RouterProvider,
 	Navigate,
 } from "react-router-dom";
+import { lazy } from "react";
 
 // Layouts
 import RootLayout from "./layouts/RootLayout";
@@ -30,17 +31,23 @@ import TagPage from "./pages/Browse/TagPage";
 import CategoryPage from "./pages/Browse/CategoryPage";
 
 // Dashboard
-import DashboardLayout from "./pages/Dashboard/DashboardLayout";
-import ProfilePage from "./pages/Dashboard/Profile/ProfilePage";
-import ManagePostsPage from "./pages/Dashboard/ManagePosts/ManagePostsPage";
-import TeamPage from "./pages/Dashboard/Team/TeamPage";
-import ManageCategoriesPage from "./pages/Dashboard/ManageCategories/ManageCategoriesPage";
-import ManageTagsPage from "./pages/Dashboard/ManageTags/ManageTagsPage";
+const DashboardLayout = lazy(() => import("./pages/Dashboard/DashboardLayout"));
+const ProfilePage = lazy(() => import("./pages/Dashboard/Profile/ProfilePage"));
+const ManageTagsPage = lazy(
+	() => import("./pages/Dashboard/ManageTags/ManageTagsPage")
+);
+const ManagePostsPage = lazy(
+	() => import("./pages/Dashboard/ManagePosts/ManagePostsPage")
+);
+const TeamPage = lazy(() => import("./pages/Dashboard/Team/TeamPage"));
+const ManageCategoriesPage = lazy(
+	() => import("./pages/Dashboard/ManageCategories/ManageCategoriesPage")
+);
 
 // Editor Suite
-import EditorLayout from "./pages/EditorSuite/EditorLayout";
-import CreatePostPage from "./pages/EditorSuite/CreatePostPage";
-import EditPostPage from "./pages/EditorSuite/EditPostPage";
+const EditorLayout = lazy(() => import("./pages/EditorSuite/EditorLayout"));
+const CreatePostPage = lazy(() => import("./pages/EditorSuite/CreatePostPage"));
+const EditPostPage = lazy(() => import("./pages/EditorSuite/EditPostPage"));
 
 // Login and Signup
 import AuthLayout from "./pages/Auth/AuthLayout";

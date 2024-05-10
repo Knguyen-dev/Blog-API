@@ -81,6 +81,8 @@ export default function BlogPostCard({
 		);
 	}
 
+	console.log("Tags: ", post.tags);
+
 	// Turn open into a boolean
 	const open = !!anchorEl;
 

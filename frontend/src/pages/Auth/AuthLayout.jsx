@@ -29,7 +29,9 @@ export default function AuthLayout() {
 				<Grid item xs={8} md={4} className="tw-text-center">
 					<div>
 						<Typography variant="h2">Blog Sphere</Typography>
-						<Typography variant="h5">It&apos;s quick and easy</Typography>
+						<Typography variant="h5" component="h3">
+							It&apos;s quick and easy
+						</Typography>
 					</div>
 				</Grid>
 				<Grid item xs={8} md={4}>

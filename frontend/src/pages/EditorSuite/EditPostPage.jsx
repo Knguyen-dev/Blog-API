@@ -78,7 +78,7 @@ export default function EditPostPage() {
 		}
 	};
 
-	const currentCategory = categories.find((c) => c._id === state.category);
+	let currentCategory = categories.find((c) => c._id === state.category);
 
 	return (
 		<Box className="tw-flex tw-flex-col tw-flex-1 tw-p-5">
