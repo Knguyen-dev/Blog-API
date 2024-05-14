@@ -49,7 +49,7 @@ export default function EditPostStatusForm({ postID, onSuccess }) {
 					required
 				/>
 
-				{error && <div className="error">{error.message}</div>}
+				{error && <div className="error">{error}</div>}
 
 				<Button
 					type="submit"

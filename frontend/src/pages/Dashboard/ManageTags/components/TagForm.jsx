@@ -41,9 +41,7 @@ export default function TagForm({ selectedTag, setTags, onSuccess }) {
 		let newTag = null;
 		if (selectedTag) {
 			if (formData.title === selectedTag.title) {
-				setError({
-					message: "Error: New title must be different from old title",
-				});
+				setError("New title must be different from old title");
 				return;
 			}
 
@@ -100,7 +98,7 @@ export default function TagForm({ selectedTag, setTags, onSuccess }) {
 				required
 			/>
 
-			{error && <div className="error">{error.message}</div>}
+			{error && <div className="error">{error}</div>}
 
 			<Button type="submit" variant="outlined" disabled={isLoading}>
 				Submit

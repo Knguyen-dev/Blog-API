@@ -68,7 +68,7 @@ export default function ChangePasswordForm() {
 				/>
 
 				{/* Render general errors*/}
-				{error && <Box className="error">{error.message}</Box>}
+				{error && <Box className="error">{error}</Box>}
 
 				<Box
 					sx={{

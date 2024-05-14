@@ -107,7 +107,7 @@ export default function BlogPage() {
 				{isLoading ? (
 					<Typography variant="h4">Loading in posts...</Typography>
 				) : error ? (
-					<Typography>{error.message}</Typography>
+					<Typography>{error}</Typography>
 				) : posts.length === 0 ? (
 					<Typography>No posts found! Maybe try another title?</Typography>
 				) : (

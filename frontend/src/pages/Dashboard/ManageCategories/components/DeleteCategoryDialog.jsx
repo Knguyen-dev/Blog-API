@@ -56,7 +56,7 @@ export default function DeleteCategoryDialog({
 				<Typography
 					component="span"
 					sx={{ fontWeight: "700", display: "block", color: "red" }}>
-					Error: {error.message}
+					Error: {error}
 				</Typography>
 			)}
 		</Box>

@@ -29,9 +29,7 @@ export default function LoginForm() {
 		const username = formData.get("username").trim();
 		const password = formData.get("username").trim();
 		if (!username || !password) {
-			setError({
-				message: "Username and password fields must be filled out!",
-			});
+			setError("Username and password fields must be filled out!");
 			return;
 		}
 
@@ -78,7 +76,7 @@ export default function LoginForm() {
 			</div>
 
 			{/* Rendering a potential server error */}
-			{error && <div className="error">{error.message}</div>}
+			{error && <div className="error">{error}</div>}
 
 			<Divider className="tw-my-4" />
 

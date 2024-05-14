@@ -40,7 +40,6 @@ export default function usePublicFetchData(url) {
 				return;
 			}
 			handleRequestError(err, setError);
-			console.error(err);
 		}
 		setIsLoading(false);
 	};

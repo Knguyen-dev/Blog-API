@@ -46,8 +46,13 @@ export default function CategoryForm({
 		},
 	});
 
-	const { error, isLoading, saveExistingCategory, createNewCategory } =
-		useSaveCategory();
+	const {
+		error,
+		setError,
+		isLoading,
+		saveExistingCategory,
+		createNewCategory,
+	} = useSaveCategory();
 
 	const onSubmit = async (formData) => {
 		let newCategory = null;
@@ -58,6 +63,16 @@ export default function CategoryForm({
       so that our saveCategory hook knows what category we are supposed to be updating.
     */
 		if (selectedCategory) {
+			if (
+				formData.title == selectedCategory.title &&
+				selectedCategory.description == formData.description
+			) {
+				setError(
+					"Title and description was unchanged! Please change them before submitting an update!"
+				);
+				return;
+			}
+
 			formData._id = selectedCategory._id;
 			newCategory = await saveExistingCategory(formData);
 		} else {
@@ -121,7 +136,7 @@ export default function CategoryForm({
 				required
 			/>
 
-			{error && <div className="error">{error.message}</div>}
+			{error && <div className="error">{error}</div>}
 
 			<Button type="submit" variant="outlined" disabled={isLoading}>
 				Submit

@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Typography, Box } from "@mui/material";
 import PostCard from "./PostCard";
 import SearchBar from "../../components/Input/SearchBar";
@@ -8,16 +7,10 @@ import usePublicFetchData from "../../hooks/usePublicFetchData";
 
 export default function TagPage() {
 	const { id } = useParams();
-	const navigate = useNavigate();
+
 	const { data, isLoading, error, fetchData } = usePublicFetchData(
 		`/tags/${id}/posts/published`
 	);
-
-	useEffect(() => {
-		if (error?.status === 404) {
-			navigate("/not-found");
-		}
-	}, [error, navigate]);
 
 	const handleSearchPosts = async (e) => {
 		e.preventDefault();
@@ -56,7 +49,9 @@ export default function TagPage() {
 							Loading in posts...
 						</Typography>
 					) : error ? (
-						<Typography className="tw-text-center">{error.message}</Typography>
+						<Typography className="tw-text-center" fontSize={36}>
+							{error}
+						</Typography>
 					) : data?.posts?.length === 0 ? (
 						<Typography className="tw-text-center">
 							No posts found! Maybe try another title?

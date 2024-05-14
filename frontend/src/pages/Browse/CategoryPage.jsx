@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Typography, Box, Container } from "@mui/material";
 import SearchBar from "../../components/Input/SearchBar";
 import usePublicFetchData from "../../hooks/usePublicFetchData";
@@ -7,17 +6,9 @@ import PostCard from "./PostCard";
 
 export default function CategoryPage() {
 	const { id } = useParams();
-	const navigate = useNavigate();
 	const { data, isLoading, error, fetchData } = usePublicFetchData(
 		`/categories/${id}/posts/published`
 	);
-
-	// Will redirect the user to the not found page, if 404 (category not found)
-	useEffect(() => {
-		if (error?.status === 404) {
-			navigate("/not-found");
-		}
-	}, [error, navigate]);
 
 	const handleSearchPosts = async (e) => {
 		e.preventDefault();
@@ -66,7 +57,7 @@ export default function CategoryPage() {
 						</Typography>
 					) : error ? (
 						<Typography variant="h3" className="tw-text-center">
-							{error.message}
+							{error}
 						</Typography>
 					) : data?.posts?.length === 0 ? (
 						<Typography className="tw-text-center">

@@ -63,7 +63,7 @@ export default function DeleteAccountForm() {
 				{/* Conditionally render other errors (server, unexpected, etc.)*/}
 				{error && (
 					<Box className="error">
-						<Typography>{error.message}</Typography>
+						<Typography>{error}</Typography>
 					</Box>
 				)}
 

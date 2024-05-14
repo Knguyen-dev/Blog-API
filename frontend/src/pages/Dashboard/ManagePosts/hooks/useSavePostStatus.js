@@ -11,6 +11,7 @@ export default function useSavePostStatus() {
 	const savePostStatus = async (id, formData) => {
 		setIsLoading(true);
 		setError(null);
+		let responseData;
 
 		try {
 			const response = await axiosPrivate.patch(
@@ -18,13 +19,14 @@ export default function useSavePostStatus() {
 				formData
 			);
 
-			// on success, return the newly updated post
-			return response.data;
+			responseData = response.data;
 		} catch (err) {
 			handleRequestError(err, setError);
+		} finally {
+			setIsLoading(false);
 		}
 
-		setIsLoading(false);
+		return responseData;
 	};
 
 	return { isLoading, error, savePostStatus };

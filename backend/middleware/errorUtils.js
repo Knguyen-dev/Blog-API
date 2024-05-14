@@ -70,7 +70,7 @@ function createError(statusCode, message, data = []) {
   err.statusCode = statusCode; // assign statusCode property
 
   // If data has error object, then create a details
-  if (data.length === 0) {
+  if (data.length > 0) {
     err.details = data;
   }
   return err;
@@ -84,15 +84,13 @@ function createError(statusCode, message, data = []) {
  */
 function jsonifyError(err) {
   const json = {
-    error: {
-      message: err.message,
-    },
+    message: err.message,
   };
   if (err.statusCode) {
-    json.error.statusCode = err.statusCode;
+    json.statusCode = err.statusCode;
   }
   if (err.details) {
-    json.error.details = err.details;
+    json.details = err.details;
   }
   return json;
 }

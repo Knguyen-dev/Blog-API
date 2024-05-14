@@ -64,7 +64,7 @@ export default function EditNameForm({ email, onSuccess }) {
 				{/* Conditionally render error */}
 				{error && (
 					<Box className="error">
-						<Typography>{error.message}</Typography>
+						<Typography>{error}</Typography>
 					</Box>
 				)}
 

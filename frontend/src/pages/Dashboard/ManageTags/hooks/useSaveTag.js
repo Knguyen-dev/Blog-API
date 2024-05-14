@@ -31,7 +31,7 @@ export default function useSaveTag() {
 			const response = await axiosPrivate.post("/tags", tag);
 			return response.data; // Return the newly created category data
 		} catch (err) {
-			handleRequestError(err);
+			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);
 		}

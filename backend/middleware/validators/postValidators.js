@@ -140,7 +140,7 @@ const postValidators = {
    * 
    * @params {string} imgCredits - String containing the credits for the post's thumbnail.
    */
-  imgCredits: body("imgCredits").optional().isString().trim().isLength({min: 1}).withMessage("Image credits need to be a string."),
+  imgCredits: body("imgCredits").optional().isString().trim().isLength({min: 1}).withMessage("You need to include credits for your image."),
 }
 module.exports = {
   ...postValidators, // export validators

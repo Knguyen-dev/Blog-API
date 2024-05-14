@@ -118,7 +118,7 @@ export default function SignupForm() {
 			</div>
 
 			{/* Rendering a potential server error */}
-			{error && <div className="error">{error.message}</div>}
+			{error && <div className="error">{error}</div>}
 
 			<Divider className="tw-my-4" />
 

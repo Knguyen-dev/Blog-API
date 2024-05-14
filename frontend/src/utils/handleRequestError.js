@@ -1,6 +1,5 @@
 import getErrorData from "./getErrorData";
-/*
-- Could be a server-side validation error, some other server-side error, 
+/*- Could be a server-side validation error, some other server-side error, 
   or a network error we'll. For the first two, we can set the error message
   with the json data, but for the third we can default a hard-coded error message.
 
@@ -19,11 +18,10 @@ import getErrorData from "./getErrorData";
  */
 export default function handleRequestError(err, setError) {
 	if (err.response) {
-    // Pass the error into getErrorData, which will return our custom error
-    setError(getErrorData(err));
+		setError(getErrorData(err));
 	} else if (err.request) {
-		setError({ message: "Network Error!" });
+		setError("Network Error!");
 	} else {
-		setError({ message: "Something unexpected happened!" });
+		setError("Something unexpected happened!");
 	}
 }

@@ -34,7 +34,7 @@ export default function AddEmployeeForm() {
 
 		// Ensure both fields are defined before making api call
 		if (!username || !role) {
-			setError({ message: "All fields must be filled!" });
+			setError("All fields must be filled!");
 			return;
 		}
 
@@ -70,7 +70,7 @@ export default function AddEmployeeForm() {
 					getOptionValue={(option) => option.value}
 				/>
 
-				{error && <div className="error">{error.message}</div>}
+				{error && <div className="error">{error}</div>}
 
 				<Button
 					type="submit"

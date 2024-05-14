@@ -56,7 +56,7 @@ const deleteUser = [
     // check if password matches
     const isMatch = await bcrypt.compare(req.body.password, user.password);
     if (!isMatch) { 
-      const err = createError(400, "Passowrd is incorrect!");
+      const err = createError(400, "Password is incorrect!");
       return next(err);
     }
 

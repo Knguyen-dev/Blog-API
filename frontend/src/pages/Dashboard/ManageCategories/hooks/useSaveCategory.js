@@ -41,6 +41,7 @@ export default function useSaveCategory() {
 
 	return {
 		error,
+		setError,
 		isLoading,
 		saveExistingCategory,
 		createNewCategory,

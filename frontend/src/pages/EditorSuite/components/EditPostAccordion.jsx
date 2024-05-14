@@ -29,10 +29,7 @@ EditPostAccordion.propTypes = {
 	status: PropTypes.string,
 	dispatch: PropTypes.func,
 	handleSubmitPost: PropTypes.func,
-	error: PropTypes.shape({
-		message: PropTypes.string,
-		status: PropTypes.number,
-	}),
+	error: PropTypes.string,
 	isLoading: PropTypes.bool,
 	categories: PropTypes.arrayOf(
 		PropTypes.shape({
@@ -158,6 +155,7 @@ export default function EditPostAccordion({
 
 					<TextField
 						label="Image Credits"
+						name="imgCredits"
 						helperText="Credits to the photographer of the image and platform it came from"
 						value={imgCredits}
 						onChange={(e) =>
@@ -187,7 +185,7 @@ export default function EditPostAccordion({
 						required
 					/>
 
-					{error && <div className="error">{error.message}</div>}
+					{error && <div className="error">{error}</div>}
 					{/* Action Buttons for the form */}
 					<Box
 						className="tw-flex tw-justify-end tw-gap-x-4"

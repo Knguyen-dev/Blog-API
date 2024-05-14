@@ -149,7 +149,7 @@ export default function AvatarForm({ user }) {
 
 			{error && (
 				<Box className="error" sx={{ marginTop: 2 }}>
-					{error.message}
+					{error}
 				</Box>
 			)}
 		</form>
