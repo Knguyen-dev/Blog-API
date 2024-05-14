@@ -71,15 +71,10 @@ const deleteUser = [
     }
 
     
-    /*
-    - If user being deleted is an admin or editor, delete their posts and tags
-    */
-    if (user.role === roles_map.admin || roles_map.editor) {
-      await Promise.all([
-        Post.deleteMany({author: user._id}),
-        Tag.deleteMany({createdBy: user._id})
-      ])
-    }
+    // Delete any post the user has; user can have posts regardless of their role.
+    // Since their roles could have been changed
+    await Post.deleteMany({user: user._id})
+    
 
     // Finally delete the user
     await User.findByIdAndDelete(req.params.id);

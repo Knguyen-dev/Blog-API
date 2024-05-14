@@ -19,7 +19,7 @@ router.get("/", roleVerification.verifyAdmin, postController.getPosts);
 router.post("/", roleVerification.verifyEditorOrAdmin, postController.createPost);
 
 // Getting a specific post's details; allows admins to view anyone's posts
-router.get("/:id", roleVerification.verifyAdmin, postController.getPostByID);
+router.get("/:id", roleVerification.verifyEditorOrAdmin, postController.getPostByID);
 
 // Deleting a post (editors can delete their own whilst admins can delete anyone's)
 router.delete("/:id", roleVerification.verifyEditorOrAdmin, postController.deletePost);

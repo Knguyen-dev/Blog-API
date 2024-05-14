@@ -274,7 +274,7 @@ const getPostsByUser = asyncHandler(async(req, res, next) => {
 })
 
 /**
- * Gets the details of a post
+ * Gets the details of a post. Good for getting details to edit a post
  * 
  * @param (express.Request) req - The request object
  * @param (express.Response) res - The response object
@@ -286,6 +286,21 @@ const getPostByID = asyncHandler(async(req, res, next) => {
     const err = createError(404, "Post wasn't found!");    
     return next(err);
   }
+
+
+  /*
+  - If the user is looking at their own post, or they're an admin, then we'll allow the post 
+    data to be sent back. As a result this allows users to only be able to to view their own 
+    posts if they're editors, or if they're admins they can view anyone's post 
+  
+  - Conditional: If it's not their own post, and they aren't an admin, then they aren't allowed
+  */
+  if (req.user.id !== post.user._id.toString() && req.user.role !== roles_map.admin) {
+    const err = createError(401, "Not authorized to view this post!");
+    return next(err);
+  }
+
+
   res.status(200).json(post);
 })
 
