@@ -72,32 +72,66 @@ probably better if I personalize my website a bit.
 - Admin: Allowed to create posts and modify their own posts. They should be able to delete anyone's post. However, admins are limited when it comes to editing another user's post, as they're only allowed to edit the status of another user's post.
 
 
+### Setting up TypeScript for the backend:
+Install packages. We install typescript, a thing for running typescript, and then types for express
+```
 
+npm i -D typescript ts-node @types/express 
+```
+Then create a tsconfig.json file
+```
+npx tsc --init
+```
+I'll explain some of the configurations and rules:
+1. target: The target JavaScript version that hte compiler will output.
+2. module: The module manager being used. Usually stick to CommonJS
+3. strict: Toggles strict type checking rules.
+4. esModuleInterop: Enables compilation of ES6 modules to CommonJS modules, so this let's you use ES6 syntax.
+5. skipLibCheck: Skips TypeScript for libraries nad third party packages I believe.
+6. outDir: Determines the destination directory for your compiled output. You'll need to uncomment this rule and change it to ./dist'.
+
+Now we need to update our script commands. So we expect our script commands to be running TypeScript files:
+```
+{
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon index.ts"
+  }
+}
+```
+
+You would do `npm run build` to convert/compile your TypeScript code into valid JavaScript, and this valid JavaScript is what's used in production. Remember for improvement use strict type checking, setting up configurations to your needs, improve performance with code splitting if needed, shrink file sizes with tools like server, and streamline the workflow from development to production with CI/CD pipelines!
+
+### Running typescript project 
+1. Check tsconfig.json. Ensure it has outDir, rootDir, module, target, strict, and esModuleInterop. You may exclude files from the build as well
+2. 
+
+
+
+
+# Commit
 
 
 
 ## BOOK MARK:
+- Feel like the structure of the updateAvatar function can be improved. Also we updated it to use createError(), so I wnat to test if that works as expected. I'll use postman to test when there isn't a file to be sent. Maybe the fileFilter function is where we need to check if they really sent a file or not?
+- Replaced luxon with built-in logic for username changes and login tracking. Definitely need to see if that works.
+- For category controller and tag controller, when passing in 
+  information like the title of the category or tag, we changed
+  from req.query.title to req.body.title, so pass in the stuff through title now I guess?
+- We added slugs to tags, and removed the condition for titles to be unique. Honestly the slugs themselves are the other  only thing that needs uniqueness.
 
-- Work on removing useSubmitDisabled from the codebase. Integrate handleRequestError into the codebase
-  to uniformalize all of our error handling. I think the smart option is letting 'error' be an object rather than just a string, could give more flexibility in the future.
 
 
 
 
 
-7. Rate limiting on searches would be nice. Maybe it's time for a global rate limiter? 
-8. I don't think we've tested user deletion functionality yet. At least not how
-  it relates to posts, so double check if that's still a thing.
-9. Practice optimizations. Stuff like lazy loading, reading the react profiler, etc. I think lazy loading can definitely help since there are a lot of pages that aren't available to the average user. As well as this let's do some query optimizations. Ensure that server-side queries that we're making are good
-
-10. Apparently there's also the idea of image optimization. I don't think we've optimize or handle images the proper way at all.
 11. Images themselves for our posts. May be deleted due to the internet. So instead. Maybe for images, we could have two options, upload an image or just enter a url. If image does not exist for some reason, we will have a default image. Let's handle this on the front end, since on the backend it's a little more involved to check if an image works (making a request), let's just keep that on the front.
-
-13. Check our accessibility using LightHouse
 
 12. Api Pagination? Of course we don't want to fetch everything from the database. And then update the front-end accordingly?
 
-13. Have a redis cache? Well in order for this to happen, it needs to work, even if the redis cache doesn't exist. So in case we don't use the website for awhile and the redis cache has been disabled, then our website still needs to work as normal.
+13. Have a redis cache? Well in order for this to happen, it needs to work, even if the redis cache doesn't exist. So in case we don't use the website for awhile and the redis cache has been disabled, then our website still needs to work as normal
 
 ### Additional stuff you'd put in another branch
 14. Start a conversion over to typescript since we want to practice typescript.
@@ -127,3 +161,4 @@ probably better if I personalize my website a bit.
 7. https://wix.com/blog/beautiful-contact-pages
 
 8. https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually
+9. [Jest With TypeScript](https://jestjs.io/docs/getting-started#using-babel)
