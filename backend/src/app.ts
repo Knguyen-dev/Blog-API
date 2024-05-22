@@ -26,7 +26,17 @@ import CustomError from "./config/CustomError";
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "public"))); // serve static assets such as our stored images on disk
+/*
++ Serving static files:
+- __dirname: The directory/location or our app.ts file
+- '..': We want to go up one directory, so we go out of the 'src' directory
+- 'public': Now that we're up one directory we want to go into the 'public' directory.
+As a result, we serve static files from our public directory. For example to access one of the 
+avatars from an http request: 'http://localhost:3000/avatars/some_avatar_name.jpg'
+*/
+app.use(express.static(path.join(__dirname, "..", "public")));
+
+
 app.use(verifyCredentials(allowedOrigins)); // credentials/cookies configuration
 app.use(cors(corsOption)); // cors configuration
 app.use(logger("dev")); // logs out requests in the console

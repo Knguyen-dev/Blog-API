@@ -6,10 +6,9 @@
 	"scripts": {
 		"test": "jest ./tests",
 		"test:file": "jest --",
-		"dev": "nodemon server.ts",
+		"dev": "nodemon ./src/server.ts",
 		"build": "tsc",
-		"start": "nodemon dist/server.js",
-    "updateTags": "ts-node ./config/updateTags.ts"
+		"start": "nodemon dist/server.js"
 	},
 	"keywords": [],
 	"author": "",

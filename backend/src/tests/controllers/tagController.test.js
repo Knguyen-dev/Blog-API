@@ -13,7 +13,6 @@ const request = require("supertest");
 const tokenUtils = require("../../middleware/tokenUtils");
 const {Tag, tagEvents} = require("../../models/Tag")
 const roles_map = require("../../config/roles_map");
-const dbUtils = require("../../middleware/dbUtils");
 const Post = require("../../models/Post")
 
 
