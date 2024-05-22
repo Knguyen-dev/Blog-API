@@ -15,8 +15,8 @@ import Post from "../models/Post"
 import { createError } from "../middleware/errorUtils"
 import { isValidObjectId } from "mongoose"
 import { generatePasswordHash, verifyPassword } from "../middleware/passwordUtils"
-import { deleteFromDisk } from "../middleware/fileUpload";
-import { imageDirectory } from "../middleware/fileUpload"
+import { deleteFromDisk, imageDirectory } from "../middleware/fileUpload";
+
 
 // Finds user by ID. Either throws an error or returns a user
 const findUserByID = async (id: string, populateOptions: string = "") => {

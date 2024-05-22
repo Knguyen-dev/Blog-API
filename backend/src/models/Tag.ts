@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import EventEmitter from "events";
 import { createError } from "../middleware/errorUtils";
 import {ITag, ITagModel} from "../types/Tag";
 

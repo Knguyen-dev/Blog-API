@@ -4,9 +4,8 @@ import jwt from "jsonwebtoken";
 import userValidators from "../middleware/validators/userValidators";
 import {body} from "express-validator";
 import { createError, handleValidationErrors } from "../middleware/errorUtils";
-import {generateAccessToken, generateRefreshToken, setRefreshTokenCookie} from "../middleware/tokenUtils";
+import {generateAccessToken, setRefreshTokenCookie} from "../middleware/tokenUtils";
 import {Request, Response, NextFunction} from "express";
-
 import authServices from "../services/auth.services";
 
 
