@@ -1,3 +1,13 @@
+import { describe, test, expect, jest } from "@jest/globals";
+
+/*
+The idea is to purify it in the test function and compare what the validator brought
+back. If they're both equal, that means the custom sanitizer is doing its job correctly.
+*/
+import createDOMPurify from "dompurify";
+import {JSDOM} from "jsdom";
+
+
 // Some mock post statuses
 const mockPostStatuses = {
   status1: "First Status",
@@ -7,18 +17,15 @@ const mockPostStatuses = {
   status5: "Fifth Status",
 }
 
-jest.mock("../../../config/post_status_map", () => (mockPostStatuses));
-
-const postValidators = require("../../../middleware/validators/postValidators");
+jest.mock("../../../config/post_status_map", () => ({post_status_map: mockPostStatuses}));
 
 
-/*
-The idea is to purify it in the test function and compare what the validator brought
-back. If they're both equal, that means the custom sanitizer is doing its job correctly.
+import {postValidators, validateWordCount} from "../../../middleware/validators/postValidators";
 
-*/
-const createDOMPurify = require("dompurify");
-const {JSDOM} = require("jsdom");
+
+
+
+
 
 
 
@@ -34,7 +41,7 @@ describe("title validation", () => {
       "a", 
     ]
 
-    const req ={
+    const req: any ={
       body: {}
     }
 
@@ -56,7 +63,7 @@ describe("title validation", () => {
       "a".repeat(101) // over 100 character limit
     ]
 
-    const req ={
+    const req: any ={
       body: {}
     }
 
@@ -108,7 +115,7 @@ describe("wordCount validation", () => {
     ]
 
     for (const scenario of scenarios) {
-      const result = postValidators.validateWordCount(scenario.estimatedWordCount, scenario.reportedWordCount, scenario.deviation);
+      const result = validateWordCount(scenario.estimatedWordCount, scenario.reportedWordCount, scenario.deviation);
       expect(result).toBe(true);
     }
 
@@ -130,7 +137,7 @@ describe("wordCount validation", () => {
       },
     ];
     for (const scenario of scenarios) {
-      const result = postValidators.validateWordCount(scenario.estimatedWordCount, scenario.reportedWordCount, scenario.deviation);
+      const result = validateWordCount(scenario.estimatedWordCount, scenario.reportedWordCount, scenario.deviation);
       expect(result).toBe(false);
     }
   })
@@ -146,7 +153,7 @@ describe("body sanitization", () => {
       "<svg/onload=alert('XSS attack!')>",
       "<iframe src='javascript:alert(\"XSS attack!\")'></iframe>",
     ];
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -168,7 +175,7 @@ describe("status validation", () => {
   test("should pass for valid statuses", async () => {
     // Get an array of the valid values that we have in our mock
     const validStatuses = Object.values(mockPostStatuses);
-    const req = {
+    const req: any = {
       body: {}
     }
     for (const status of validStatuses) {
@@ -188,7 +195,7 @@ describe("status validation", () => {
       "some-invalid-status", // isn't a valid status
       ["Array"], // isn't a valid status
     ]
-    const req = {
+    const req: any = {
       body: {}
     }
     for (const status of invalidStatuses) {
@@ -209,9 +216,6 @@ describe("tags validation", () => {
     }
 
     const validationResult = await postValidators.tags.run(req);
-    if (!validationResult.isEmpty()) {
-      console.log(`Validation failed for tags: ${tags}`);
-    }
     expect(validationResult.isEmpty()).toBe(true);
   })
 
@@ -220,7 +224,7 @@ describe("tags validation", () => {
       [], // empty array
       ['id_1', 'id_2', 'id_3'], // array of strings
     ]
-    const req = {
+    const req: any = {
       body: {}
     }
     for (const tags of validTags) {
@@ -245,7 +249,7 @@ describe("tags validation", () => {
       ["id_1", "id_2", "id_3", null],     // strings and null
       ["id_1", "id_2", "id_3", undefined] // strings and undefined
     ]
-    const req = {
+    const req: any = {
       body: {}
     }
     for (const tags of invalidTags) {
@@ -290,7 +294,7 @@ describe("category validation", () => {
       ["hi"],
       "   ",
     ]
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -317,9 +321,6 @@ describe("imgSrc validation", () => {
     }
 
     const validationResult = await postValidators.imgSrc.run(req);
-    if (!validationResult.isEmpty()) {
-      console.log(`Validation failed for category: ${req.body.category}`);
-    }
 
     // Expecting it to pass without errors
     expect(validationResult.isEmpty()).toBe(true);
@@ -332,9 +333,6 @@ describe("imgSrc validation", () => {
       }
     }
     const validationResult = await postValidators.imgSrc.run(req);
-    if (!validationResult.isEmpty()) {
-      console.log(`Validation failed for category: ${req.body.category}`);
-    }
 
     // Expecting it to pass without errors
     expect(validationResult.isEmpty()).toBe(true);
@@ -348,7 +346,7 @@ describe("imgSrc validation", () => {
       ["some_array"],
     ]
 
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -406,7 +404,7 @@ describe("imgCredits validation", () => {
       ["some_array"],
     ]
 
-    const req = {
+    const req: any = {
       body: {}
     }
 

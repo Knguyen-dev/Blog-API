@@ -1,4 +1,5 @@
-const categoryValidators = require("../../../middleware/validators/categoryValidators");
+import { describe, test, expect } from "@jest/globals";
+import categoryValidators from "../../../middleware/validators/categoryValidators";
 
 describe("validating title", () => {
   test("should pass for valid titles", async () => {
@@ -9,7 +10,7 @@ describe("validating title", () => {
       "a".repeat(50), // length is at upper limit
       "a",  // length is at lower limit 
     ];
-    const req = {
+    const req: any = {
       body:{}
     }
 
@@ -36,7 +37,7 @@ describe("validating title", () => {
       "This is retro-sports", // also has special characters
       
     ];
-    const req = {
+    const req: any = {
       body:{}
     }
 
@@ -64,7 +65,7 @@ describe("validating description", () => {
       "a".repeat(500) // maximum length
     ]
 
-    const req = {
+    const req: any = {
       body: {}
     };
 
@@ -88,7 +89,7 @@ describe("validating description", () => {
       "a".repeat(501), // length is above upper limit of 500 haracters
     ];
 
-    const req = {
+    const req: any = {
       body: {}
     };
 

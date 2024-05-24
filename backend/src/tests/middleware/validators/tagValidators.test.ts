@@ -1,4 +1,6 @@
-const tagValidators = require("../../../middleware/validators/tagValidators");
+import { describe, test, expect } from "@jest/globals";
+import tagValidators from "../../../middleware/validators/tagValidators";
+
 
 describe("title validator", () => {
 
@@ -11,7 +13,7 @@ describe("title validator", () => {
       "a", 
     ];
 
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -34,7 +36,7 @@ describe("title validator", () => {
       "Spaced title", // title with spaces
       "Funny #Moments" // title with special characters 
     ];
-    const req = {
+    const req: any = {
       body: {}
     }
     for (const title of invalidTitles) {

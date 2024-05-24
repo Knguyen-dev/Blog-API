@@ -1,3 +1,4 @@
+import { describe, test, expect, jest } from "@jest/globals";
 
 /*
 + Create some mock roles:
@@ -13,10 +14,9 @@ const mockRoles = {
   role_4: 4,
   role_5: 5,
 }
-jest.mock("../../../config/roles_map", () => (mockRoles));
+jest.mock("../../../config/roles_map", () => ({roles_map: mockRoles}));
 
-// Import our validators
-const userValidators = require("../../../middleware/validators/userValidators");
+import userValidators from "../../../middleware/validators/userValidators";
 
 describe("email validation", () => {
   test("should pass for valid email formats", async () => {
@@ -28,7 +28,7 @@ describe("email validation", () => {
       'user123@example.co.uk',
     ]
 
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -80,7 +80,7 @@ describe("email validation", () => {
 
     ]
 
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -118,7 +118,7 @@ describe("username validation", () => {
       'j_doe_123'
     ];
 
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -157,7 +157,7 @@ describe("username validation", () => {
       "_".repeat(8),    // username that is only underscores
       "1".repeat(8),    // username that is only numbers
     ];
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -191,7 +191,7 @@ describe("password validation", () => {
       '1qaz@WSX',
     ];
 
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -224,7 +224,7 @@ describe("password validation", () => {
       "My B4#nd number",    // Contains whitespace (whitespace isn't allowed)
     ];
 
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -283,7 +283,7 @@ describe("fullName validation", () => {
       'Emma Jone#s',
       'DB. Scooper',
     ]
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -308,7 +308,7 @@ describe("fullName validation", () => {
       "a".repeat(65) // string length 65 character, when max is 64.
     ]
 
-    const req = {
+    const req: any = {
       body: {}
     }
 
@@ -332,7 +332,7 @@ describe("role validation", () => {
   test("should pass for valid roles", async () => {
 
     const validRoles = Object.values(mockRoles)
-    const req = {
+    const req: any = {
       body: {}
     };
 
@@ -358,7 +358,7 @@ describe("role validation", () => {
       10,     // valid roles are from 1-5
       "some-random-string", // not a value in the roles_map
     ];
-    const req = {
+    const req: any = {
         body: {}
       };
 

@@ -1,13 +1,15 @@
-
+import { describe, test, expect, jest } from "@jest/globals";
+import { Request, Response, NextFunction } from "express";
 const mockRoles = {
   admin: "ADMIN",
   editor: "EDITOR",
   user: "USER"
 }
 
-jest.mock("../../../config/roles_map", () => (mockRoles));
+jest.mock("../../../config/roles_map", () => ({roles_map: mockRoles}));
 
-const userPerms = require("../../../middleware/permissions/userPerms");
+import { canModifyUser } from "../../../middleware/permissions/userPerms";
+
 
 describe("canModifyUser", () => {
   test("should call next when requestor is an admin AND IDs don't match", () => {
@@ -20,11 +22,11 @@ describe("canModifyUser", () => {
       params: {
         id: 'some-id-2'
       }
-    };
-    const res = {};
+    } as any;
+    const res = {} as Response;
     const next = jest.fn();
 
-    userPerms.canModifyUser(req, res, next);
+    canModifyUser(req, res, next as NextFunction);
     expect(next).toHaveBeenCalled();
   });
 
@@ -38,11 +40,11 @@ describe("canModifyUser", () => {
       params: {
         id: "some-id-1",
       }
-    };
+    } as any;
     const res = {};
     const next = jest.fn();
 
-    userPerms.canModifyUser(req, res, next);
+    canModifyUser(req, res as Response, next);
     expect(next).toHaveBeenCalled();
   })
 
@@ -56,17 +58,17 @@ describe("canModifyUser", () => {
       params: {
         id: "some-id-1",
       }
-    };
+    } as any;
     const res = {};
     const next = jest.fn();
 
-    userPerms.canModifyUser(req, res, next);
+    canModifyUser(req, res as Response, next);
     expect(next).toHaveBeenCalled();
   })
 
   test("should throw an error when user isn't an admin, and IDs don't match", () => {
 
-    const req = {
+    const req: any = {
       user: {
         role: mockRoles.editor,
         id: "some-id-1",
@@ -78,9 +80,12 @@ describe("canModifyUser", () => {
     const res = {};
     const next = jest.fn();
 
-    userPerms.canModifyUser(req, res, next)
-
-    expect(next).toHaveBeenCalledWith(expect.any(Error))
-    expect(next.mock.calls[0][0].statusCode).toBe(401);
+    canModifyUser(req, res as Response, next);
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 401,
+      })
+    );
   })
 });

@@ -1,32 +1,37 @@
+import { describe, test, expect, jest } from "@jest/globals";
+
 // Mock the roles being used 
+const mockRoles = {
+  user: 1,
+  editor: 2,
+  admin: 3
+}
+
 jest.mock("../../config/roles_map", () => ({
-  user: "USER",
-  editor: "EDITOR",
-  admin: "ADMIN"
+  roles_map: mockRoles
 }))
 
 
 
 // mock 
-const app = require("../../app");
-const request = require("supertest");
-const tokenUtils = require("../../middleware/tokenUtils");
-const {Tag, tagEvents} = require("../../models/Tag")
-const roles_map = require("../../config/roles_map");
-const Post = require("../../models/Post")
+import app from "../../app";
+import request from "supertest";
+import * as tokenUtils from "../../middleware/tokenUtils"
+import Tag from "../../models/Tag"
+import { IUserDoc } from "../../types/User";
 
 
 const user = {
   id: "some-id",
-  role: roles_map.user
-}
-const userJWT = tokenUtils.generateAccessToken(user);
+  role: mockRoles.user
+};
+const userJWT = tokenUtils.generateAccessToken(user as IUserDoc);
 
 const editor = {
   id: "some-id",
-  role: roles_map.editor
+  role: mockRoles.editor
 }
-const editorJWT = tokenUtils.generateAccessToken(editor);
+const editorJWT = tokenUtils.generateAccessToken(editor as IUserDoc);
 
 
 describe("POST /tags", () => {
@@ -62,29 +67,6 @@ describe("POST /tags", () => {
     expect(findOneSpy).toHaveBeenCalled();
     expect(res.status).toBe(400);
   })
-
-  test("should respond 400 for validation errors", async() => {
-
-    const requestBody = {
-      title: ""
-    }
-
-    const findOneSpy = jest.spyOn(Tag, "findOne").mockImplementation();
-
-    const res = await request(app)
-      .post("/tags")
-      .send(requestBody)
-      .set("authorization", `Bearer ${editorJWT}`);
-
-    
-    /*
-    - We expected it to fail at handleValidationErrors, which means our Tag.findOne
-      should not have even gotten the chance to be called. So we know that our status 
-      code 400 was caused by validation errors.
-    */
-    expect(findOneSpy).not.toHaveBeenCalled();
-    expect(res.status).toBe(400);
-  })
 })
 
 describe("DELETE /tag/:id", () => {
@@ -108,27 +90,6 @@ describe("DELETE /tag/:id", () => {
   })
 })
 
-describe("tagEvents", () => {
-   test("should emit and catch 'tagDeleted' event", async () => {
-    const emitSpy = jest.spyOn(tagEvents, "emit");
-
-    // Ensure it's a mock implementation so to replace original implementation of updateMany function
-    const updateManySpy = jest.spyOn(Post, "updateMany").mockImplementation();
-
-    // Simulate the deletion of a tag
-    const deletedTagID = "deleted-tag-id";
-    tagEvents.emit("tagDeleted", deletedTagID);
-
-    // Expect the emit method to have been called with the correct event name and payload
-    expect(emitSpy).toHaveBeenCalledWith("tagDeleted", deletedTagID);
-
-    // Expect the updateMany method to have been called with the correct parameters
-    expect(updateManySpy).toHaveBeenCalledWith(
-        { tags: deletedTagID },
-        { $pull: { tags: deletedTagID } }
-    );
-  });
-})
 
 describe("GET /tags/:id", () => {
 

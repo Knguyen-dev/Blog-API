@@ -1,6 +1,5 @@
 import {Request, Response, NextFunction} from "express";
 
-
 /**
  * Middleware that sets the 'Acess-Control-Allow-Credentials' header to 'true' for requests
  * that are from origins that are whitelisted. As a result credentials such as cookies, authorization headers,
