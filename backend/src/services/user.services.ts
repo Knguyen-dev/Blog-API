@@ -12,10 +12,13 @@ logic of your code, it logs in a user to your application. In contrast something
 import path from "path"
 import User from "../models/User"
 import Post from "../models/Post"
+import mongoose from "mongoose"
 import { createError } from "../middleware/errorUtils"
 import { isValidObjectId } from "mongoose"
 import { generatePasswordHash, verifyPassword } from "../middleware/passwordUtils"
 import { deleteFromDisk, imageDirectory } from "../middleware/fileUpload";
+import { roles_map } from "../config/roles_map"
+import { IUserDoc } from "../types/User"
 
 
 // Finds user by ID. Either throws an error or returns a user
@@ -45,47 +48,91 @@ const findUserByID = async (id: string, populateOptions: string = "") => {
 }
 
 /**
- * Delete a user
+ * Given a user document, this function handles the entire deletion process. Deleting the user document
+ * itself from the database, and also any related information stored about the user such as a possible 
+ * avatar being stored server-side, or any Posts associated with the user.
+ * 
+ * @param user - The hydrated mongoose document that represents the user we are deleting
+ * 
+ * NOTE: This is more so a helper function. It'll be used in 'deleteAccount' which is the 
+ * service for handling when a user decides to delete their own account. However it'll also be 
+ * used in the 'removeEmployee' service function, when we are deleting an account that is 
+ * an employee
+ */
+const deleteUser = async (user: IUserDoc) => {  
+  // If the user has an avatar registered, delete it from our disk
+  if (user.avatar) {
+    const avatarPath = path.join(imageDirectory, user.avatar);
+    await deleteFromDisk(avatarPath);
+  }
+
+  /*
+  - We want to make sure that for a given operation both the user and the posts
+    associated with the user are deleted. As a result, we'll use a transaction!
+    In mongoose we do this with sessions.
+  */
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    /*
+    - If the user being deleted is an editor or administrator, then remove any potential
+      posts that are associated with their accounts!
+    */
+    if (user.role === roles_map.editor || user.role === roles_map.admin) {
+      await Post.deleteMany({user: user._id})
+    }
+
+    // Delete the user themselves; 
+    const result = await User.deleteOne({_id: user._id});
+
+    // Return the results of the deletion
+    return result;
+
+  } catch (err) {
+    await session.abortTransaction() // cancel the transaction since something failed
+    throw err; // re-throw the error so it's caught by the controller
+  } finally {
+    // Regardless of success or failure, end the session
+    await session.endSession();
+  }
+}
+
+
+/**
+ * Delete a user from the database.
  * 
  * @param id - Id of the user we're deleting
  * @param password - Password of the user's account that we're deleting. The idea
  * is that users must provide the correct password of their account in order to delete 
  * it.
  */
-const deleteUser = async (id: string, password: string) => {  
-  
-  // Attempt to find user via their ID
+const deleteAccount = async (id: string, password: string) => {
+   // Attempt to find user via their ID
   const user = await findUserByID(id);
+
+  /*
+  - If user being deleted is an admin, then an admin is trying to delete their own account.
+    As a result, deny the account deletion request.
+    
+  - NOTE: As per business rules, admins shouldn't be allowed to delete their own accounts. This is because admin accounts are 
+    important, and also this prevents the idea of users accidentally deleting all admin accounts, and having to reinject new accounts 
+    programmatically. So for an admin to have their account deleted, you'd need another administrator to do the account deletion, 
+    via the 'removeEmployee' route. As a result, there should always be at least one admin account in our database
+  */
+  if (user.role === roles_map.admin) {
+    throw createError(403, "Admins cannot delete their own accounts. If necessary, notify another admin user to delete this account for you!");
+  }
 
   // check if the password matches
   const isMatch = await verifyPassword(password, user.password);
   if (!isMatch) { 
     throw createError(400, "Password is incorrect!");
-  }
+  }  
 
-  /*
-  - Everything is good, so start the deletion process.
-    If the user has an avatar, delete it, so remove it from disk
-  */
-  if (user.avatar) {
-    const avatarPath = path.join(imageDirectory, user.avatar);
-    // const avatarPath = path.join(__dirname, `../public/images/${user.avatar}`);
-    await deleteFromDisk(avatarPath);
-  }
-
-  /*
-  - Delete any post the user has; user can have posts regardless of their role.
-    User could have been an editor, and then changed to user role, but 
-    still have posts.
-  */
-  await Post.deleteMany({user: user._id})
-
-  // Delete the user themselves; the result should indicate a user 
-  const result = await User.deleteOne({_id: id});
-
-  // Delete the deleted user
+  const result = await deleteUser(user);
   return result;
 }
+
 
 /**
  * Update a user's avatar
@@ -251,6 +298,7 @@ const updatePassword = async (id: string, password: string, newPassword: string)
 const userServices = {
   findUserByID,
   deleteUser,
+  deleteAccount,
   updateAvatar,
   deleteAvatar,
   updateUsername,

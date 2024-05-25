@@ -24,6 +24,9 @@ const getUserById = asyncHandler(async (req, res) => {
 
 /**
  * Delete an existing user.
+ * 
+ * NOTE: This is for users to delete their own account as they'll have to enter in their 
+ * password to do this.
  */
 const deleteUser = [
   body("password").isLength({min: 1}).withMessage("Please enter your current password!"),
@@ -32,7 +35,7 @@ const deleteUser = [
   asyncHandler(async (req, res) => {
     
     // Attempt to delete the user via their id and using the inputted password
-    const result = await userServices.deleteUser(req.params.id, req.body.password);
+    const result = await userServices.deleteAccount(req.params.id, req.body.password);
 
     // Return the result of the deletion operation; which should be success
     res.status(200).json(result);

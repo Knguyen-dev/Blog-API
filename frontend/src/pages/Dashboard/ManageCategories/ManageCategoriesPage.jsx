@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
-import FormDialog from "../../../components/dialog/FormDialog";
-import CategoryForm from "./components/CategoryForm";
 import CategoryCard from "./components/CategoryCard";
+import SaveCategoryDialog from "./components/SaveCategoryDialog";
 import DeleteCategoryDialog from "./components/DeleteCategoryDialog";
 import useGetCategories from "../../EditorSuite/hooks/useGetCategories";
 
@@ -71,18 +70,11 @@ export default function ManageCategoriesPage() {
 			</Box>
 
 			{/* Dialog and form for creating and updating existing categories */}
-			<FormDialog
+			<SaveCategoryDialog
 				open={activeForm === "categoryForm"}
 				handleClose={handleCloseDialog}
-				modalTitle={selectedCategory ? "Edit Category!" : "Create Category"}
-				hidden={true}
-				form={
-					<CategoryForm
-						selectedCategory={selectedCategory}
-						onSuccess={handleCloseDialog}
-						setCategories={setCategories}
-					/>
-				}
+				selectedCategory={selectedCategory}
+				setCategories={setCategories}
 			/>
 
 			<DeleteCategoryDialog

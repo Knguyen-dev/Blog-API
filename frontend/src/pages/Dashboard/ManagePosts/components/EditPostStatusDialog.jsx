@@ -1,4 +1,5 @@
-import FormDialog from "../../../../components/dialog/FormDialog";
+import CustomDialog from "../../../../components/dialog/CustomDialog";
+import { Typography } from "@mui/material";
 import EditPostStatusForm from "./EditPostStatusForm";
 import PropTypes from "prop-types";
 
@@ -37,16 +38,21 @@ export default function EditPostStatusDialog({
 		});
 	};
 
+	const dialogText = (
+		<Typography>
+			{`You sure you want update the status of '${selectedPost?.title}'?`}
+		</Typography>
+	);
+
 	return (
-		<FormDialog
-			open={open}
-			form={
+		<CustomDialog
+			modalTitle="Update the status of a post"
+			dialogText={dialogText}
+			CustomForm={
 				<EditPostStatusForm postID={selectedPost?._id} onSuccess={onSuccess} />
 			}
-			modalTitle="Update the status of a post"
-			menuText={`You sure you want update the status of '${selectedPost?.title}'?`}
+			open={open}
 			handleClose={handleClose}
-			hidden={true}
 		/>
 	);
 }

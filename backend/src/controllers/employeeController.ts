@@ -64,10 +64,10 @@ const addEmployee = [
 const removeEmployee = asyncHandler(async(req: Request, res: Response, next: NextFunction) => {
 
   // Remove an employee; req.user will be defined due to verifyJWT middleware
-  const user = await employeeServices.removeEmployee(req.params.id, req.user!.id);
+  const result = await employeeServices.removeEmployee(req.params.id, req.user!.id);
 
-  // Return the user that was removed as an employee
-  res.status(200).json(user);
+  // Return the results of removing said employee
+  res.status(200).json(result);
 });
 
 export {

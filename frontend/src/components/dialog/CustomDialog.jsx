@@ -62,6 +62,5 @@ CustomDialog.propTypes = {
 	dialogText: PropTypes.element,
 	CustomForm: PropTypes.element,
 	open: PropTypes.bool,
-	handleOpen: PropTypes.func,
 	handleClose: PropTypes.func,
 };

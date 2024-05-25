@@ -34,14 +34,18 @@ export default function RemoveEmployeeDialog({
 					sx={{ marginRight: 2 }}>
 					Close
 				</Button>
-				<Button variant="outlined" disabled={isLoading} onClick={onConfirm}>
-					Confirm
+				<Button
+					variant="contained"
+					color="warning"
+					disabled={isLoading}
+					onClick={onConfirm}>
+					Confirm Deletion
 				</Button>
 			</Box>
 
 			{error && (
 				<Box sx={{ marginTop: 2 }} className="error">
-					{error.message}
+					{error}
 				</Box>
 			)}
 		</DialogActions>
@@ -50,7 +54,8 @@ export default function RemoveEmployeeDialog({
 	const dialogText = (
 		<Typography variant="span">
 			Do you want to confirm removing user &apos;{targetUser.username}&apos; AKA
-			&apos;{targetUser.fullName}&apos; as an employee?
+			&apos;{targetUser.fullName}&apos; as an employee? Removing this user as an
+			employee will delete their account and all posts associated with it.
 		</Typography>
 	);
 

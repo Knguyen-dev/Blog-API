@@ -28,8 +28,8 @@ router.get("/", getEmployees);
 // Adding a user as an employee (via username)
 router.patch("/add", addEmployee);
 
-// Removing a user as an employee (via id)
-router.patch("/remove/:id", removeEmployee);
+// Delete a user that's an employee
+router.delete("/remove/:id", removeEmployee);
 
 // Route for updating an employee, for admins.
 router.patch("/:id", updateEmployee);

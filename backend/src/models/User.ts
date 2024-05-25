@@ -48,22 +48,9 @@ const userSchema = new mongoose.Schema<IUser, IUserModel>(
       default: roles_map.user
     },
     
-    /*
-    - Whether the user is an employee or not. People with role of 
-      editor and admins must have 'isEmployee' set as true. However 
-      if the account has role = user, and they're an employee, that 
-      wouldn't give them any extra privileges. IsEmployee is just an 
-      indicator so that we can track employee accounts.
-    */
-    isEmployee: {
-      type: Boolean,
-      default: false,
-    },
-
     lastLogin: {
       type: Date
     },
-
 
     /*
     - Storing refresh tokens in the database allows hte server to revoke or 
@@ -237,7 +224,6 @@ userSchema.methods.toJSON = function() {
   delete userObj.usernameChangeCount;
   delete userObj.createdAt;
   delete userObj.updatedAt;
-  delete userObj.isEmployee; // isEmployee is only used on the backend to track and return all users that are employees
   
   return userObj;
 }

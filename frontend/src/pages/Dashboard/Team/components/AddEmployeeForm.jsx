@@ -5,10 +5,6 @@ import { useState } from "react";
 import useAddEmployee from "../hooks/useAddEmployee";
 const options = [
 	{
-		label: "User",
-		value: getRoleNumber("user"),
-	},
-	{
 		label: "Editor",
 		value: getRoleNumber("editor"),
 	},
@@ -18,9 +14,10 @@ const options = [
 	},
 ];
 
+// Defines our default state values
 const defaultValues = {
 	username: "",
-	role: getRoleNumber("user"),
+	role: getRoleNumber("editor"),
 };
 
 export default function AddEmployeeForm() {
@@ -28,7 +25,6 @@ export default function AddEmployeeForm() {
 	const [role, setRole] = useState(defaultValues.role);
 	const { error, setError, isLoading, addEmployee } = useAddEmployee();
 
-	// But we also need the submit
 	const onSubmit = async (e) => {
 		e.preventDefault();
 

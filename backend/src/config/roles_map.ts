@@ -22,4 +22,12 @@ const roles_map: RolesMap = {
   user: 2001,
 }
 
-export {roles_map};
+const reverse_role_map: {[key: number]: string} = {
+  5150: "admin",
+  1984: "editor",
+  2001: "user"
+}
+
+
+
+export {roles_map, reverse_role_map};

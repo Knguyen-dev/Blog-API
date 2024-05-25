@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import TagCard from "./components/TagCard";
-import TagForm from "./components/TagForm";
-import FormDialog from "../../../components/dialog/FormDialog";
 import DeleteTagDialog from "./components/DeleteTagDialog";
+import SaveTagDialog from "./components/SaveTagDialog";
 import useGetTags from "../../EditorSuite/hooks/useGetTags";
 
 export default function ManageTagsPage() {
@@ -39,18 +38,11 @@ export default function ManageTagsPage() {
 				</Button>
 			</Box>
 
-			<FormDialog
+			<SaveTagDialog
+				selectedTag={selectedTag}
+				setTags={setTags}
 				open={activeForm === "tagForm"}
 				handleClose={handleCloseDialog}
-				modalTitle={selectedTag ? "Edit Tag!" : "Create Tag"}
-				hidden={true}
-				form={
-					<TagForm
-						selectedTag={selectedTag}
-						setTags={setTags}
-						onSuccess={handleCloseDialog}
-					/>
-				}
 			/>
 
 			<DeleteTagDialog

@@ -31,14 +31,14 @@ export default function useRemoveEmployee() {
 
 		try {
 			// Api call to delete employee
-			const response = await axiosPrivate.patch(endpoint);
+			await axiosPrivate.delete(endpoint);
 
 			success = true;
 
 			// Successful, so remove that deleted employee from our employee state.
 			dispatch({
 				type: employeeActions.DELETE_EMPLOYEE,
-				payload: response.data._id, // Send the user id so that user can be removed from state
+				payload: id, // Send the user id so that user can be removed from state
 			});
 
 			// Show success message on global toast that we have

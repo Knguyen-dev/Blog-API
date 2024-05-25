@@ -1,8 +1,8 @@
 import { Box, Avatar } from "@mui/material";
 import { useEffect, useCallback, useState } from "react";
 import EditSelectGrid from "../../components/EditSelectGrid";
+import AddEmployeeDialog from "./AddEmployeeDialog";
 import RemoveEmployeeDialog from "./RemoveEmployeeDialog";
-
 import useEmployeeContext from "../hooks/useEmployeeContext";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import employeeActions from "../data/employeeActions";
@@ -10,9 +10,6 @@ import { getRoleNumber, getRoleString } from "../utils/roleUtilities";
 import useToast from "../../../../hooks/useToast";
 
 import getErrorData from "../../../../utils/getErrorData";
-import FormDialog from "../../../../components/dialog/FormDialog";
-
-import AddEmployeeForm from "./AddEmployeeForm";
 
 export default function EmployeeGrid() {
 	const { state, dispatch } = useEmployeeContext();
@@ -91,12 +88,12 @@ export default function EmployeeGrid() {
 		[axiosPrivate, dispatch, showToast]
 	);
 
-	// Handles showing potential errors for processRowUpdate
+	// Handles catching/showing potential errors for processRowUpdate
 	const handleRowUpdateError = useCallback(
 		(err) => {
 			let errMessage = "";
 			if (err.response) {
-				errMessage = getErrorData(err).message;
+				errMessage = getErrorData(err);
 			} else if (err.request) {
 				errMessage = "Network error occurred!";
 			} else {
@@ -123,15 +120,9 @@ export default function EmployeeGrid() {
 				initialPageSize={5}
 			/>
 
-			<FormDialog
+			<AddEmployeeDialog
 				open={activeDialog === "addEmployee"}
-				form={<AddEmployeeForm />}
-				modalTitle="Add an employee"
-				menuText="Add an existing user account as an employee!"
 				handleClose={handleCloseDialog}
-				// Make it so button doesn't show up,
-				// also don't need handleOpen because we aren't showing/having the button
-				hidden={true}
 			/>
 
 			{/* 
@@ -173,7 +164,13 @@ const columns = [
 		editable: true,
 		type: "singleSelect", // by the way this is how we do a select drop down. as a field.
 
-		valueOptions: ["Admin", "Editor", "User"],
+		/*
+    - The 'Team' grid will only show users that have role 'editor' or 'admin'. As well 
+    as this, once you are an editor or admin, you cannot go back to having role 'user'. 
+    Of course you can switch around being an editor or admin, but you simply can't go 
+    back to being role 'user'. This helps keep strict separation on things.
+    */
+		valueOptions: ["Admin", "Editor"],
 
 		// Convert numerical roles to human readable roles for the data grid.
 		valueGetter: ({ row }) => getRoleString(row.role),
