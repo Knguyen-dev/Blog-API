@@ -9,7 +9,6 @@ export interface IUser {
   password: string;
   fullName: string;
   role: number;
-  isEmployee: boolean;
 
   // These properties could be could be undefined, so they may not even be in the BSON object
   lastLogin?: Date;

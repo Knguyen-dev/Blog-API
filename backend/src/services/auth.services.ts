@@ -14,7 +14,6 @@ const signupUser = async (email: string, username: string, password: string, ful
 
   // Defaults; users have role user, and they aren't marked as an employee
   const role = roles_map.user;
-  const isEmployee = false;
 
   // Generate a password hash
   const hash = await generatePasswordHash(password);
@@ -25,8 +24,7 @@ const signupUser = async (email: string, username: string, password: string, ful
     username,
     password: hash,
     fullName,
-    role,
-    isEmployee
+    role
   });
 
   // Then return the user
