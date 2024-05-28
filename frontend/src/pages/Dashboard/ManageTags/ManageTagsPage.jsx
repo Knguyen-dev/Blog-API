@@ -56,7 +56,7 @@ export default function ManageTagsPage() {
 				{isLoading ? (
 					<Typography>Loading tags...</Typography>
 				) : error ? (
-					<Typography>Error: {error.message}</Typography>
+					<Typography>Error: {error}</Typography>
 				) : tags.length === 0 ? (
 					<Typography>No tags have been created. Please make a tag!</Typography>
 				) : (

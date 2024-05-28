@@ -5,6 +5,7 @@ import { saveFileToDisk} from "../middleware/fileUpload";
 import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/errorUtils";
 import userServices from "../services/user.services";
+import employeeCache from "../services/caches/EmployeeCache";
 
 /**
  * Gets all users in the database
@@ -35,10 +36,38 @@ const deleteUser = [
   asyncHandler(async (req, res) => {
     
     // Attempt to delete the user via their id and using the inputted password
-    const result = await userServices.deleteAccount(req.params.id, req.body.password);
+    const user = await userServices.deleteAccount(req.params.id, req.body.password);
 
-    // Return the result of the deletion operation; which should be success
-    res.status(200).json(result);
+    /*
+    - If the user is an employee, we'll invalidate the employee cache. This prevents the 
+      scenario where an admin receives cached data where the deleted employee still shows 
+      up as an employee
+
+    - NOTE: user will be defined at this point as the deleteAccount operation has worked. If any failed 
+      in the delete account operation, an error would be thrown and this code won't be reached. We 
+
+    + Deleting the employee cache:
+    In our controllers deleteUser, updateAvatar, deleteAvatar, updateUsername, updateEmail,
+    and updateFullName, if the user being updated is an employee, we want to delete the 
+    employees cache. 
+
+    We use the employee cache to display dashboard data for our administrators about our current
+    employees, and so we want it to be as fresh information as possible. So when an employee's 
+    information changes, we invalidate the current cache, forcing the request to get fresh data 
+    from our database. So if employees have no changes to their avatar, username, email, name, role,
+    or the time they last logged in, then we can continue to serve cached data, and our cache 
+    is insync with the database; the ideal which is fresh cached data.
+
+    One more thing to note is that if a service function fails it would throw an
+    error which would be caught and sent to the error handling middleware. In essence
+    in our controllers, if those functions succeed our 'user' is guaranteed to be defined.
+    */
+    if (user.isEmployee()) {
+      await employeeCache.deleteCachedEmployees();
+    }
+
+    // Return the deleted user
+    res.status(200).json(user);
   })
 ]
 
@@ -61,6 +90,12 @@ const updateAvatar = [
     // Attempt to update the avatar of the user; 
     const user = await userServices.updateAvatar(req.params.id, fileName);
 
+    // If the user who updated their avatar was an employee
+    // Invalidate the employee cache; 
+    if (user.isEmployee()) {
+      await employeeCache.deleteCachedEmployees();
+    }
+
     // Send the user back in json 
     res.status(200).json(user);
   })
@@ -77,6 +112,12 @@ const deleteAvatar = asyncHandler(async(req, res) => {
   // Attempt to delete the avatar linked to id <req.params.id>
   const user = await userServices.deleteAvatar(req.params.id);
 
+  // If an employeee was updated, invalidate the employees cache
+  // NOTE: if deleteAvatar works, then 'user' is guaranteed to be defined
+  if (user && user.isEmployee()) {
+    await employeeCache.deleteCachedEmployees();
+  }
+
   res.status(200).json(user);
 });
 
@@ -91,6 +132,10 @@ const updateUsername = [
 
     // Attempt to update the username; if successful, we get the updated user back
     const user = await userServices.updateUsername(req.params.id, req.body.username);
+
+    if (user.isEmployee()) {
+      await employeeCache.deleteCachedEmployees();
+    }
 
     res.status(200).json(user);
   })
@@ -107,6 +152,10 @@ const updateEmail = [
    
     // Attempt to update the username
     const user = await userServices.updateEmail(req.params.id, req.body.email);
+
+    if (user.isEmployee()) {
+      await employeeCache.deleteCachedEmployees();
+    }
 
     // Return the updated user after success
     res.status(200).json(user);
@@ -126,6 +175,10 @@ const updateFullName = [
     // Attempt to update the user's full name, provide the user's id the full name value
     // they want to change to.
     const user = await userServices.updateFullName(req.params.id, req.body.fullName);
+
+    if (user.isEmployee()) {
+      await employeeCache.deleteCachedEmployees();
+    }
 
     // Return updated user as json
     res.status(200).json(user);

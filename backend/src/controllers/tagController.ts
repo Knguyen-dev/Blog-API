@@ -3,6 +3,7 @@ import tagValidators from "../middleware/validators/tagValidators";
 import { handleValidationErrors } from "../middleware/errorUtils";
 import { convertQueryParamToArray } from "../middleware/queryUtils";
 import tagServices from "../services/tag.services";
+import tagCache from "../services/caches/TagCache";
 
 
 /**
@@ -15,6 +16,8 @@ const createTag = [
 
     // Attempt to create tag; req.user is defined due to verifyJWT middleware
     const tag = await tagServices.createTag(req.body.title, req.user!.id);
+
+    await tagCache.deleteCachedTags();
 
     // Return the successfully created tag
     res.status(200).json(tag);
@@ -29,6 +32,9 @@ const deleteTag = [
 
     // Delete the tag and get the result
     const result = await tagServices.deleteTag(req.params.id);
+
+    await tagCache.deleteCachedTags();
+
     res.status(200).json(result);
   })
 ]
@@ -47,6 +53,9 @@ const updateTag = [
       // req.user is guaranteed to be defined due to the verifyJWT middleware
       req.user!.id
     );
+
+    await tagCache.deleteCachedTags();
+
     res.status(200).json(tag);
   }
 )]
@@ -59,8 +68,13 @@ const updateTag = [
  */
 const getTags = asyncHandler(async(req, res) => {
 
+  let tags = await tagCache.getCachedTags();
+  if (!tags) {
+    tags = await tagServices.getTags();
+    await tagCache.setCachedTags(tags);
+  }
+
   // Get all tags from the database
-  const tags = await tagServices.getTags();
   res.status(200).json(tags);
 })
 

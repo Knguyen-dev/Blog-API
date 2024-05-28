@@ -10,14 +10,20 @@ import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/errorUtils";
 import employeeServices from "../services/employee.services";
 import { Request, Response, NextFunction } from "express";
+import employeeCache from "../services/caches/EmployeeCache";
+
 
 /**
  * Gets all users that are employees.
  * 
  */
 const getEmployees = asyncHandler(async(req: Request, res: Response) => {
-  const users = await employeeServices.getAllEmployees();
-  res.status(200).json(users);
+  let employees = await employeeCache.getCachedEmployees();
+  if (!employees) {
+    employees = await employeeServices.getAllEmployees();
+    await employeeCache.setCachedEmployees(employees);
+  }
+  res.status(200).json(employees);
 })
 
 
@@ -35,8 +41,10 @@ const updateEmployee = [
     
     // Update an employee; req.user will be defined due to verifyJWT middleware
     const user = await employeeServices.updateEmployee(req.params.id, req.user!.id, req.body.username, req.body.email, req.body.fullName, req.body.role);
+
+    await employeeCache.deleteCachedEmployees();
+
     res.status(200).json(user);
-    
   })
 ]
 
@@ -54,6 +62,8 @@ const addEmployee = [
   // Try to find user with the passed in username
   const user = await employeeServices.addEmployee(req.body.username, req.body.role);
 
+  await employeeCache.deleteCachedEmployees();
+
   // Return updated user
   res.status(200).json(user);
 })]
@@ -65,6 +75,8 @@ const removeEmployee = asyncHandler(async(req: Request, res: Response, next: Nex
 
   // Remove an employee; req.user will be defined due to verifyJWT middleware
   const result = await employeeServices.removeEmployee(req.params.id, req.user!.id);
+
+  await employeeCache.deleteCachedEmployees();
 
   // Return the results of removing said employee
   res.status(200).json(result);

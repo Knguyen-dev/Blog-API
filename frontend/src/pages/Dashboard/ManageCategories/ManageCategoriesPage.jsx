@@ -88,7 +88,7 @@ export default function ManageCategoriesPage() {
 				{isLoading ? (
 					<Typography>Loading Categories...</Typography>
 				) : error ? (
-					<Typography>{error.message}</Typography>
+					<Typography>Error: {error}</Typography>
 				) : categories.length === 0 ? (
 					<Typography>
 						No categories have been created. Please make a category!

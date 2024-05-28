@@ -7,7 +7,7 @@ import { createError, handleValidationErrors } from "../middleware/errorUtils";
 import {generateAccessToken, setRefreshTokenCookie} from "../middleware/tokenUtils";
 import {Request, Response, NextFunction} from "express";
 import authServices from "../services/auth.services";
-
+import employeeCache from "../services/caches/EmployeeCache";
 
 
 /**
@@ -99,6 +99,17 @@ const loginUser = [
       user.refreshToken is defined at this point in time.
     */
     setRefreshTokenCookie(res, user.refreshToken!);
+
+
+    /*
+    - If user is an employee, they just logged in and their lastLogin attribute was 
+      updated, so invalidate the current cache of employees so that we'll
+      fetch fresh data.
+    */
+    if (user.isEmployee()) {
+      await employeeCache.deleteCachedEmployees(); 
+    }
+
 
     // Return the access token and user back
     res.status(200).json({user, accessToken})

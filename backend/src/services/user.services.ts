@@ -82,11 +82,11 @@ const deleteUser = async (user: IUserDoc) => {
       await Post.deleteMany({user: user._id})
     }
 
-    // Delete the user themselves; 
-    const result = await User.deleteOne({_id: user._id});
-
+    // Delete the user themselves and return the deleted user
+    const deletedUser = await User.findByIdAndDelete(user._id);
+    
     // Return the results of the deletion
-    return result;
+    return deletedUser;
 
   } catch (err) {
     await session.abortTransaction() // cancel the transaction since something failed
@@ -129,8 +129,13 @@ const deleteAccount = async (id: string, password: string) => {
     throw createError(400, "Password is incorrect!");
   }  
 
-  const result = await deleteUser(user);
-  return result;
+  // Attempt to delete user, if something goes wrong, an error will be thrown, and 
+  // stopping this function's execution and propagating the error
+  await deleteUser(user);
+
+
+  // At this point deletion was successful, so return the user that was deleted
+  return user;
 }
 
 
@@ -146,19 +151,19 @@ const updateAvatar = async(id: string, avatarFileName: string) => {
 
   // If user has an old avatar, delete it
   if (user.avatar) {      
-      const oldAvatarPath = path.join(imageDirectory, user.avatar);
-      try {
-        await deleteFromDisk(oldAvatarPath);
-      } catch (err) {
-        // Small error could happen during development where we're deleting 
-        // an avatar that doesn't exist in our own personal folder.
-        console.log("Avatar deletion error: ", err)
-      }
+    const oldAvatarPath = path.join(imageDirectory, user.avatar);
+    try {
+      await deleteFromDisk(oldAvatarPath);
+    } catch (err) {
+      // Small error could happen during development where we're deleting 
+      // an avatar that doesn't exist in our own personal folder.
+      console.log("Avatar deletion error: ", err)
     }
+  }
 
-    user.avatar = avatarFileName;
-    await user.save();
-    return user;
+  user.avatar = avatarFileName;
+  await user.save();
+  return user;
 }
 
 /**

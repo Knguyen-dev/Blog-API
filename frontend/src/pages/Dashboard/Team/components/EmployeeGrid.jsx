@@ -188,7 +188,19 @@ const columns = [
 		type: "dateTime",
 		width: 180,
 		valueGetter: ({ row }) => {
+			if (!row.lastLogin) {
+				return null;
+			}
+
 			return new Date(row.lastLogin);
+		},
+
+		valueFormatter: ({ value }) => {
+			if (!value) {
+				return "User hasn't logged in yet!";
+			}
+
+			return value;
 		},
 	},
 ];

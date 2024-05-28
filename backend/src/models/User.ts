@@ -165,6 +165,10 @@ userSchema.methods.updateUsername = async function(username: string) {
   ;
 }
 
+userSchema.methods.isEmployee = function() {
+  return this.role === roles_map.editor || this.role === roles_map.admin;
+}
+
 
 
 

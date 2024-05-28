@@ -3,6 +3,9 @@ import categoryValidators from "../middleware/validators/categoryValidators";
 import { handleValidationErrors } from "../middleware/errorUtils";
 import categoryServices from "../services/category.services";
 import { convertQueryParamToArray } from "../middleware/queryUtils";
+import categoryCache from "../services/caches/CategoryCache";
+
+
 /**
  * Function for creating a new category
  */
@@ -19,6 +22,8 @@ const createCategory = [
       req.user!.id
     );
 
+    await categoryCache.deleteCachedCategories();
+
     // Return category as json
     res.status(200).json(category);
   })
@@ -30,6 +35,8 @@ const createCategory = [
 const deleteCategory = asyncHandler(async(req, res) => {
   // Attempt to delete the category, and get the result
   const result = await categoryServices.deleteCategory(req.params.id);
+
+  await categoryCache.deleteCachedCategories();
 
   // At this point, successfully deleted the category, so return the result
   res.status(200).json(result);
@@ -52,6 +59,8 @@ const updateCategory = [
       // req.user should be defined with the id of course, since we go through verifyJWT middleware
       req.user!.id
     );
+
+    await categoryCache.deleteCachedCategories();
     
     // Return new category as JSON
     res.status(200).json(category);
@@ -68,9 +77,13 @@ const updateCategory = [
  * that their request went through and was successful, it's just that none were available.
  */
 const getCategories = asyncHandler(async(req, res) => {
-  const categories = await categoryServices.getAllCategories();
+  let categories = await categoryCache.getCachedCategories();
+  if (!categories) {
+    categories = await categoryServices.getAllCategories();
+    await categoryCache.setCachedCategories(categories);
+  }
   res.status(200).json(categories);
-})
+});
 
 /**
  * Get the category details
@@ -79,7 +92,6 @@ const getCategories = asyncHandler(async(req, res) => {
  * @param (express.Response) res - The response object
  */
 const getCategoryAndPosts = asyncHandler(async(req, res) => {
-
   // Fetch category and posts
   const { category, posts } = await categoryServices.getCategoryAndPosts(req.params.id);
 

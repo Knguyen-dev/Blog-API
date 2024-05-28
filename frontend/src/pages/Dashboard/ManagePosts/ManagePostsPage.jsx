@@ -90,7 +90,7 @@ export default function ManagePostsPage() {
 				{isLoading ? (
 					cardSkeletons
 				) : loadError ? (
-					<Typography>{loadError.message}</Typography>
+					<Typography>{loadError}</Typography>
 				) : posts.length === 0 ? (
 					<Typography>
 						No posts have been created. Please make a post!

@@ -3,6 +3,7 @@ import createSlug from "../middleware/createSlug";
 import categoryServices from "./category.services";
 import Post from "../models/Post";
 import Tag from "../models/Tag";
+
 import { post_status_map } from "../config/post_status_map";
 import { Types, isValidObjectId } from "mongoose";
 import { canUpdatePost, canDeletePost } from "../middleware/permissions/postPerms";
@@ -10,7 +11,7 @@ import { canUpdatePost, canDeletePost } from "../middleware/permissions/postPerm
 /**
  * Finds a post with its ID
  * 
- * @param id 
+ * @param id - String that may or may not be the objectId of a document
  * @param populateOptions 
  * @returns 
  */

@@ -42,23 +42,24 @@ const updateEmployee = async (id: string, userId: string, username: string, emai
       throw createError(400, "As an admin, you can't change your own role!"); 
     }
 
-    // Attempt to find user via their ID
-    const user = await userServices.findUserByID(id);
-
-    // Check if user is an employee
-    if (user.role === roles_map.user) {
-      throw createError(400, "User being updated isn't an employee since they have role 'user'!");
-    }
-
     /*
     - If role is user, then we are trying to change an existing employee's  role back to 'user'. In this case,
       stop the operation and return back an error, as an employee (can't have their role changed back to user.
-
     - NOTE: Employee is a user who already have the role 'editor' or 'admin'
     */
     if (role === roles_map.user) {
       throw createError(400, "Employees (editors and admins), can't have their role changed back to role 'user'!");
     }
+
+    // Attempt to find user via their ID
+    const user = await userServices.findUserByID(id);
+
+    // If the user isn't an employee
+    if (!user.isEmployee()) {
+      throw createError(400, "User being updated isn't an employee since they have role 'user'!");
+    }
+
+    
 
     // Attempt to update the username attribute on our instance; not saved in db yet 
     await user.updateUsername(username);
@@ -93,7 +94,7 @@ const addEmployee = async (username: string, role: number) => {
   }
 
   // If they are already an employee, return an error message saying so.
-  if (user.role === roles_map.editor || user.role === roles_map.admin) {
+  if (user.isEmployee()) {
     throw createError(400, `User '${user.username}' is already an employee with role '${getRoleString(user.role)}' !`);    
   }
 
@@ -126,7 +127,7 @@ const removeEmployee = async (id: string, userId: string) => {
   const user = await userServices.findUserByID(id);
 
   // If not an employee then we're not performing the deletion operation
-  if (user.role === roles_map.user) {
+  if (!user.isEmployee()) {
     throw createError(400, "User being deleted isn't an employee!");
   }
 

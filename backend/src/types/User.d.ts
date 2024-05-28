@@ -25,6 +25,7 @@ export interface IUserDoc extends IUser, Document {
   avatarSrc: string;
   avatarInitials: string;
   updateUsername(username: string): Promise<void>;
+  isEmployee(): boolean;
   toJSON(): any;
 }
 
