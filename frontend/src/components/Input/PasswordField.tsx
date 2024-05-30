@@ -1,12 +1,32 @@
-import { IconButton, InputAdornment, TextField } from "@mui/material";
+import {
+	IconButton,
+	InputAdornment,
+	TextField,
+	TextFieldVariants,
+} from "@mui/material";
+
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-
 import { useState } from "react";
-import PropTypes from "prop-types";
+
+interface PasswordFieldProps {
+	variant?: TextFieldVariants;
+	id?: string;
+	name: string;
+	placeholder?: string;
+	label?: string;
+	value?: string;
+	helperText?: string;
+	error?: boolean;
+	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	required?: boolean;
+	className?: string;
+	autoComplete?: string;
+}
 
 export default function PasswordField({
 	variant,
+	id,
 	name,
 	placeholder,
 	label,
@@ -17,12 +37,17 @@ export default function PasswordField({
 	required,
 	className,
 	autoComplete,
-}) {
+}: PasswordFieldProps) {
 	const [showPassword, setShowPassword] = useState(false);
 	const toggleShowPassword = () => setShowPassword((show) => !show);
-	const handleMouseDown = (e) => e.preventDefault();
+
+	const handleMouseDown = (
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+	) => e.preventDefault();
+
 	return (
 		<TextField
+			id={id}
 			name={name}
 			label={label}
 			placeholder={placeholder}
@@ -51,16 +76,3 @@ export default function PasswordField({
 		/>
 	);
 }
-PasswordField.propTypes = {
-	variant: PropTypes.string,
-	name: PropTypes.string,
-	placeholder: PropTypes.string,
-	label: PropTypes.string,
-	value: PropTypes.string,
-	helperText: PropTypes.string,
-	error: PropTypes.bool,
-	onChange: PropTypes.func,
-	required: PropTypes.bool,
-	className: PropTypes.string,
-	autoComplete: PropTypes.string,
-};

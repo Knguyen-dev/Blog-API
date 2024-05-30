@@ -5,8 +5,15 @@ import {
 	DialogTitle,
 	DialogActions,
 } from "@mui/material";
+import { ReactNode } from "react";
 
-import PropTypes from "prop-types";
+interface AlertDialogProps {
+	open: boolean;
+	title: string;
+	handleClose: () => void;
+	dialogText: ReactNode;
+	dialogActions: ReactNode;
+}
 
 export default function AlertDialog({
 	open,
@@ -14,7 +21,7 @@ export default function AlertDialog({
 	handleClose,
 	dialogText,
 	dialogActions,
-}) {
+}: AlertDialogProps) {
 	return (
 		<Dialog
 			open={open}
@@ -31,11 +38,3 @@ export default function AlertDialog({
 		</Dialog>
 	);
 }
-
-AlertDialog.propTypes = {
-	open: PropTypes.bool,
-	title: PropTypes.string,
-	handleClose: PropTypes.func,
-	dialogText: PropTypes.element,
-	dialogActions: PropTypes.element,
-};

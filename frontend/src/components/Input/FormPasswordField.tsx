@@ -1,6 +1,15 @@
 import PasswordField from "./PasswordField";
-import { Controller } from "react-hook-form";
-import PropTypes from "prop-types";
+import { Controller, Control } from "react-hook-form";
+
+interface FormPasswordFieldProps {
+	id?: string;
+	name: string;
+	control: Control<any>;
+	label?: string;
+	placeholder: string;
+	className?: string;
+	autoComplete?: string;
+}
 
 export default function FormPasswordField({
 	id,
@@ -10,7 +19,7 @@ export default function FormPasswordField({
 	placeholder,
 	className,
 	autoComplete,
-}) {
+}: FormPasswordFieldProps) {
 	return (
 		<Controller
 			name={name}
@@ -19,7 +28,7 @@ export default function FormPasswordField({
 				<PasswordField
 					id={id}
 					name={name}
-					helperText={error ? error.message : null}
+					helperText={error ? error.message : undefined}
 					error={!!error}
 					onChange={onChange}
 					value={value}
@@ -32,13 +41,3 @@ export default function FormPasswordField({
 		/>
 	);
 }
-
-FormPasswordField.propTypes = {
-	id: PropTypes.string,
-	name: PropTypes.string,
-	control: PropTypes.object,
-	label: PropTypes.string,
-	placeholder: PropTypes.string,
-	className: PropTypes.string,
-	autoComplete: PropTypes.string,
-};

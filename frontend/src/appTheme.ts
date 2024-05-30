@@ -90,7 +90,7 @@ const appTransitions = {
 	},
 };
 
-export const getTheme = (preferences) => {
+export const getTheme = (preferences: any) => {
 	const theme = createTheme({
 		breakpoints: {
 			values: {
@@ -99,7 +99,6 @@ export const getTheme = (preferences) => {
 				md: 768,
 				lg: 1024,
 				xl: 1280,
-				"2xl": 1536,
 			},
 		},
 

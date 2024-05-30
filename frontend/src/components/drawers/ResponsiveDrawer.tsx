@@ -1,17 +1,38 @@
-import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import { Typography, Fab } from "@mui/material";
+import {
+	Box,
+	Divider,
+	Drawer,
+	Typography,
+	Fab,
+	List,
+	ListItem,
+	ListItemButton,
+	ListItemIcon,
+	ListItemText,
+} from "@mui/material";
 import MiniDrawer from "./MiniDrawer";
 import CloseIcon from "@mui/icons-material/Close";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useState, Fragment } from "react";
-import PropTypes from "prop-types";
+import { useState, Fragment, ReactNode } from "react";
+
+interface DrawerTab {
+	id: number;
+	icon?: ReactNode;
+	text: string;
+}
+
+interface DrawerSection {
+	title?: string;
+	tabs: DrawerTab[];
+}
+
+interface ResponsiveDrawerProps {
+	drawerWidth: number;
+	drawerArr: DrawerSection[];
+	activeTabID: number;
+	handleTabClick: (tabObj: DrawerTab) => void;
+	className?: string;
+}
 
 export default function ResponsiveDrawer({
 	drawerWidth,
@@ -19,7 +40,7 @@ export default function ResponsiveDrawer({
 	activeTabID,
 	handleTabClick,
 	className,
-}) {
+}: ResponsiveDrawerProps) {
 	/*
   1. mobileOpen: Tracks when the Drawer is showing on the mobile 
     screens.
@@ -82,7 +103,6 @@ export default function ResponsiveDrawer({
 			{/* Position fixed button for toggling the mobile sidebar */}
 			<Fab
 				aria-label="open drawer"
-				edge="start"
 				onClick={handleDrawerToggle}
 				size="small"
 				sx={{
@@ -133,11 +153,3 @@ export default function ResponsiveDrawer({
 		</Box>
 	);
 }
-
-ResponsiveDrawer.propTypes = {
-	drawerWidth: PropTypes.number,
-	drawerArr: PropTypes.array,
-	activeTabID: PropTypes.number,
-	handleTabClick: PropTypes.func,
-	className: PropTypes.string,
-};

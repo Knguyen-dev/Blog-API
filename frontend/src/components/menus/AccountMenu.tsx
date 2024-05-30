@@ -17,19 +17,19 @@ import { useState } from "react";
 import useProfileNavigation from "../../pages/Dashboard/Profile/hooks/useProfileNavigation";
 import useManagePostsNavigation from "../../pages/Dashboard/ManagePosts/hooks/useManagePostsNavigation";
 import useLogout from "../../hooks/useLogout";
-
-import PropTypes from "prop-types";
+import useAuthContext from "../../hooks/useAuthContext";
 
 /*
 - Define the width of the menu. Then define a width for the text, and if the 
   text goes over that width, then we truncate it. Of course feel free to play
   around with truncateWidth to get the appearance you want
-
 */
 const menuWidth = 275;
 const truncateWidth = menuWidth - 75;
 
-export default function AccountMenu({ user }) {
+export default function AccountMenu() {
+	const { auth } = useAuthContext();
+
 	const logout = useLogout();
 	const goToProfilePage = useProfileNavigation();
 	const goToManagePostsPage = useManagePostsNavigation();
@@ -76,7 +76,7 @@ export default function AccountMenu({ user }) {
         tab object = false. This is why later when creating 'menuItems' we only look for 
         tabObj with truthy values.
       */
-			user.role !== parseInt(import.meta.env.VITE_ROLE_USER) && {
+			auth.user.role !== parseInt(import.meta.env.VITE_ROLE_USER) && {
 				icon: <UploadIcon fontSize="small" />,
 				text: "Create Post",
 				id: 2,
@@ -134,8 +134,8 @@ export default function AccountMenu({ user }) {
               we have problems loading hte image, then we'll use the initials.
             
             */}
-						<Avatar src={user.avatarSrc} alt="">
-							{user.avatarInitials}
+						<Avatar src={auth.user.avatarSrc} alt="">
+							{auth.user.avatarInitials}
 						</Avatar>
 					</IconButton>
 				</Tooltip>
@@ -184,8 +184,8 @@ export default function AccountMenu({ user }) {
 					}}
 					tabIndex={-1}
 					aria-label="Account Menu header">
-					<Avatar src={user.avatarSrc} alt="">
-						{user.avatarInitials}
+					<Avatar src={auth.user.avatarSrc} alt="">
+						{auth.user.avatarInitials}
 					</Avatar>
 					<Box sx={{ display: "flex", flexDirection: "column" }}>
 						{/* 
@@ -202,10 +202,10 @@ export default function AccountMenu({ user }) {
 							fontSize={16}
 							noWrap
 							sx={{ width: truncateWidth }}>
-							{user.fullName}
+							{auth.user.fullName}
 						</Typography>
 						<Typography variant="span" noWrap sx={{ width: truncateWidth }}>
-							{user.email}
+							{auth.user.email}
 						</Typography>
 					</Box>
 				</MenuItem>
@@ -216,7 +216,3 @@ export default function AccountMenu({ user }) {
 		</>
 	);
 }
-
-AccountMenu.propTypes = {
-	user: PropTypes.object,
-};

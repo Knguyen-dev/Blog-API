@@ -15,9 +15,6 @@ import useAuthContext from "../hooks/useAuthContext";
   2. If user does a refresh, auth will be null. However, when 
     this component mounts for the first time, it'll try to refresh 
     the user.
-
-
-
 */
 export default function PersistLogin() {
 	const [isLoading, setIsLoading] = useState(true);

@@ -1,13 +1,21 @@
-import { Snackbar, Alert } from "@mui/material";
-import PropTypes from "prop-types";
+import { Snackbar, Alert, AlertProps, SnackbarOrigin } from "@mui/material";
 
 /*
 + Simple alert snackbar: A reusable alert snackbar.
-
 - note: 'Severity' affects the icon shown and color. However you
   can make this more customizable if we want to pass in background color
   and text color.
 */
+
+interface AlertToastProps {
+	open: boolean;
+	handleClose: () => void;
+	autoHideDuration?: number;
+	message: string;
+	anchorOrigin?: SnackbarOrigin;
+	severity: AlertProps["severity"];
+	handleExited?: () => void;
+}
 
 export default function AlertToast({
 	open,
@@ -17,7 +25,7 @@ export default function AlertToast({
 	anchorOrigin,
 	severity,
 	handleExited,
-}) {
+}: AlertToastProps) {
 	return (
 		<Snackbar
 			open={open}
@@ -35,13 +43,3 @@ export default function AlertToast({
 		</Snackbar>
 	);
 }
-
-AlertToast.propTypes = {
-	open: PropTypes.bool,
-	handleClose: PropTypes.func,
-	autoHideDuration: PropTypes.number,
-	message: PropTypes.string,
-	anchorOrigin: PropTypes.object,
-	severity: PropTypes.string,
-	handleExited: PropTypes.func,
-};

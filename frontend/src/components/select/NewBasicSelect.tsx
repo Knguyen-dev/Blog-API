@@ -1,13 +1,14 @@
-import Box from "@mui/material/Box";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import PropTypes from "prop-types";
+import {
+	Box,
+	InputLabel,
+	MenuItem,
+	FormControl,
+	Select,
+	SelectChangeEvent,
+} from "@mui/material";
 
 /*
 + NewBasicSelect: A select drop down component that's supposed to be controlled by a state
-
 We can think of NewBasicSelect as a glorified map or dictionary. Where the 
 keys we enter are the 'value' parameter, and the value of the dictionary. 
 By setting the 'id', value, then we will display the appropriate output (username).
@@ -37,9 +38,19 @@ options = [
     title: 'MyTitle' 
   },
 ]
-
-
 */
+
+interface NewBasicSelectProps {
+	value: string;
+	setValue: (newValue: string) => void;
+	label?: string;
+	options: any[];
+	placeholder?: string;
+	getOptionLabel: (option: any) => string;
+	getOptionValue: (option: any) => string;
+	required?: boolean;
+	allowNone?: boolean;
+}
 
 export default function NewBasicSelect({
 	value,
@@ -51,8 +62,8 @@ export default function NewBasicSelect({
 	placeholder = "None",
 	required, // gives us that asterisks for required form controls
 	allowNone = false, // determines whether or not the user can select 'none' as an option
-}) {
-	const handleChange = (event) => {
+}: NewBasicSelectProps) {
+	const handleChange = (event: SelectChangeEvent) => {
 		setValue(event.target.value);
 	};
 
@@ -66,13 +77,12 @@ export default function NewBasicSelect({
 					value={value}
 					label={label}
 					onChange={handleChange}>
-					{/* If allowNone is true, then this won't be disabled */}
-					<MenuItem
-						value={null}
-						disabled={!allowNone}
-						aria-disabled={!allowNone}>
-						<em>{placeholder}</em>
-					</MenuItem>
+					{/* If allowNone, render this disabled menu item as placeholder */}
+					{allowNone && (
+						<MenuItem value="" disabled={true} aria-disabled={true}>
+							<em>{placeholder}</em>
+						</MenuItem>
+					)}
 
 					{options.map((option, index) => (
 						// On click, the value is the entire option object.
@@ -85,19 +95,3 @@ export default function NewBasicSelect({
 		</Box>
 	);
 }
-NewBasicSelect.propTypes = {
-	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-	setValue: PropTypes.func,
-	label: PropTypes.string,
-	options: PropTypes.arrayOf(
-		PropTypes.shape({
-			label: PropTypes.string,
-			value: PropTypes.string,
-		})
-	),
-	placeholder: PropTypes.string,
-	getOptionLabel: PropTypes.func,
-	getOptionValue: PropTypes.func,
-	required: PropTypes.bool,
-	allowNone: PropTypes.bool,
-};

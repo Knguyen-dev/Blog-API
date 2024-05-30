@@ -23,9 +23,24 @@
   ,then use TextField or some other component instead of this.
 */
 
-import { Controller } from "react-hook-form";
+import { Controller, Control } from "react-hook-form";
 import { TextField } from "@mui/material";
-import PropTypes from "prop-types";
+
+interface FormInputFieldProps {
+	id?: string;
+	name: string;
+	control: Control<any>; // Assuming Control is from react-hook-form
+	label?: string;
+	placeholder?: string;
+	className?: string;
+	fullWidth?: boolean;
+	variant?: "standard" | "outlined" | "filled";
+	autoComplete?: string;
+	defaultValue?: string | number;
+	multiline?: boolean;
+	rows?: number;
+	required?: boolean;
+}
 
 export default function FormInputField({
 	id,
@@ -41,7 +56,7 @@ export default function FormInputField({
 	multiline = false,
 	rows,
 	required,
-}) {
+}: FormInputFieldProps) {
 	return (
 		<Controller
 			name={name}
@@ -73,18 +88,3 @@ export default function FormInputField({
 		/>
 	);
 }
-FormInputField.propTypes = {
-	id: PropTypes.string,
-	name: PropTypes.string,
-	control: PropTypes.object,
-	label: PropTypes.string,
-	placeholder: PropTypes.string,
-	className: PropTypes.string,
-	fullWidth: PropTypes.bool,
-	variant: PropTypes.string,
-	autoComplete: PropTypes.string,
-	defaultValue: PropTypes.string,
-	multiline: PropTypes.bool,
-	rows: PropTypes.number,
-	required: PropTypes.bool,
-};

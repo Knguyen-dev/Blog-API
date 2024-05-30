@@ -1,19 +1,26 @@
 import { useLocation, Navigate } from "react-router-dom";
 import useAuthContext from "../hooks/useAuthContext";
 import PropTypes from "prop-types";
+import { ReactNode } from "react";
 
 /*
 + ProtectedRoute: Component we use to wrap around our routes to protect them.
   At minimum this makes it so a user has to be authenticated before being able 
   to go to those routes. Then with our 'allowedRoles' array, even if they are 
   authenticated, we can choose which roles are able to access that route!
-
 - allowedRoles: An array of roles. By default if nothing is passed, then it becomes 
   an empty array.
-
 */
 
-export default function ProtectedRoute({ allowedRoles = [], children }) {
+interface ProtectedRouteProps {
+	allowedRoles: string[];
+	children: ReactNode;
+}
+
+export default function ProtectedRoute({
+	allowedRoles = [],
+	children,
+}: ProtectedRouteProps) {
 	const { auth } = useAuthContext();
 	const location = useLocation();
 
@@ -42,8 +49,3 @@ export default function ProtectedRoute({ allowedRoles = [], children }) {
 		allowedRoles.map((role) => parseInt(role)).includes(auth.user.role);
 	return isAuthorized ? children : <Navigate to="/unauthorized" />;
 }
-
-ProtectedRoute.propTypes = {
-	allowedRoles: PropTypes.array,
-	children: PropTypes.element,
-};

@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { InputBase, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { styled } from "@mui/material/styles";
+import { FormEvent } from "react";
 
 // Contains the input element and button
 const Search = styled("div")(() => ({
@@ -45,12 +46,19 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   you should be all good.
 */
 
+interface SearchBarProps {
+	onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+	placeholder?: string;
+	className?: string;
+	name?: string;
+}
+
 export default function SearchBar({
 	onSubmit,
 	placeholder = "Search",
 	className,
 	name = "search",
-}) {
+}: SearchBarProps) {
 	return (
 		<form onSubmit={onSubmit} className={className}>
 			<Search>
@@ -70,10 +78,3 @@ export default function SearchBar({
 		</form>
 	);
 }
-
-SearchBar.propTypes = {
-	onSubmit: PropTypes.func,
-	placeholder: PropTypes.string,
-	className: PropTypes.string,
-	name: PropTypes.string,
-};

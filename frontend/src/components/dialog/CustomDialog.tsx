@@ -1,6 +1,16 @@
+/*
+- Improvements: Hey is this a pretty good dialog component, but you don't need
+  to have 'form' prop. Literally this component is able to contain anything, so 
+  replace 'form' with children, to make this more flexible.
+
+  As well as this you could replace quite a bit of this with 'children' prop
+
+
+*/
+
 import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
-import PropTypes from "prop-types";
+import { ReactNode } from "react";
 import {
 	IconButton,
 	Dialog,
@@ -19,13 +29,22 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 	},
 }));
 
+interface CustomDialogProps {
+	openBtn: ReactNode;
+	modalTitle: string;
+	dialogText?: ReactNode;
+	CustomForm: ReactNode;
+	open: boolean;
+	handleClose: () => void;
+}
+
 export default function CustomDialog({
 	modalTitle,
 	dialogText,
 	CustomForm,
 	open,
 	handleClose,
-}) {
+}: CustomDialogProps) {
 	return (
 		<BootstrapDialog
 			onClose={handleClose}
@@ -56,11 +75,3 @@ export default function CustomDialog({
 		</BootstrapDialog>
 	);
 }
-CustomDialog.propTypes = {
-	openBtn: PropTypes.element,
-	modalTitle: PropTypes.string,
-	dialogText: PropTypes.element,
-	CustomForm: PropTypes.element,
-	open: PropTypes.bool,
-	handleClose: PropTypes.func,
-};

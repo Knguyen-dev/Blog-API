@@ -1,6 +1,19 @@
 import { Autocomplete, TextField } from "@mui/material";
 import PropTypes from "prop-types";
 
+interface Option {
+	label: string;
+	value: string;
+}
+
+interface BasicAutoProps {
+	options: Option[];
+	onChange: (event: React.ChangeEvent<{}>, value: Option | null) => void;
+	label: string;
+	isOptionEqualToValue: (option: Option, value: Option) => boolean;
+	value: Option;
+}
+
 BasicAuto.propTypes = {
 	options: PropTypes.arrayOf(
 		PropTypes.shape({
@@ -23,7 +36,7 @@ export default function BasicAuto({
 	value,
 	label,
 	isOptionEqualToValue,
-}) {
+}: BasicAutoProps) {
 	return (
 		<Autocomplete
 			disablePortal

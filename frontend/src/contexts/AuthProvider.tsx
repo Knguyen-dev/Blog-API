@@ -1,10 +1,23 @@
-import { createContext, useReducer } from "react";
+import { createContext, useReducer, ReactNode } from "react";
 import authActions from "../constants/authActions";
-import PropTypes from "prop-types";
+import { AuthState } from "../types/auth";
 
-const AuthContext = createContext();
+const AuthContext = createContext<{
+	auth: AuthState;
+	dispatch: React.Dispatch<any>;
+}>({
+	auth: {
+		user: null,
+		accessToken: null,
+	},
+	dispatch: () => {},
+});
 
-const authReducer = (state, action) => {
+interface AuthProviderProps {
+	children: ReactNode;
+}
+
+const authReducer = (state: AuthState, action: any) => {
 	switch (action.type) {
 		// Logging in case, assume action.payload is an object {user, accessToken}
 		case authActions.login:
@@ -33,20 +46,17 @@ const authReducer = (state, action) => {
 	}
 };
 
-const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }: AuthProviderProps) => {
 	const [auth, dispatch] = useReducer(authReducer, {
 		user: null,
 		accessToken: null,
-	});
+	} as AuthState);
 
 	return (
 		<AuthContext.Provider value={{ auth, dispatch }}>
 			{children}
 		</AuthContext.Provider>
 	);
-};
-AuthProvider.propTypes = {
-	children: PropTypes.element,
 };
 
 export { AuthContext, AuthProvider };

@@ -1,9 +1,6 @@
 /*
 - Making a global snackbar. Essentially we want a snackbar can persist across 
   pages at times.
-
-
-
 */
 
 import { createContext, useState, useEffect } from "react";

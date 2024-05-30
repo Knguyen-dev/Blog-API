@@ -1,7 +1,5 @@
 import { Autocomplete, TextField } from "@mui/material";
 
-import PropTypes from "prop-types";
-
 /*
 + FilteredAutoSelect: A multi-select autocomplete for mui. It shows available optiosn
   and forces the user to pick one of those options. As well as this it creates chips
@@ -12,30 +10,22 @@ import PropTypes from "prop-types";
   give you the value of your 'option', that was never in the question, but rather the 
   index position of that option which is located as a data-attribute.
 */
+interface Option {
+	label: string;
+	value: string;
+}
 
-FilteredAutoSelect.propTypes = {
-	id: PropTypes.string,
-	label: PropTypes.string,
-	placeholder: PropTypes.string,
-
-	options: PropTypes.arrayOf(
-		PropTypes.shape({
-			label: PropTypes.string,
-			value: PropTypes.string,
-		})
-	),
-
-	selectedValues: PropTypes.arrayOf(
-		PropTypes.shape({
-			label: PropTypes.string,
-			value: PropTypes.string,
-		})
-	),
-	setSelectedValues: PropTypes.func,
-	getOptionLabel: PropTypes.func,
-	isOptionEqualToValue: PropTypes.func,
-	limitTags: PropTypes.number,
-};
+interface FilteredAutoSelectProps {
+	id?: string;
+	label?: string;
+	placeholder?: string;
+	options: Option[];
+	selectedValues: Option[];
+	setSelectedValues: (newValues: Option[] | null) => void;
+	getOptionLabel: (option: Option) => string;
+	isOptionEqualToValue: (option: Option, value: Option) => boolean;
+	limitTags?: number;
+}
 
 export default function FilteredAutoSelect({
 	id,
@@ -47,8 +37,11 @@ export default function FilteredAutoSelect({
 	getOptionLabel,
 	isOptionEqualToValue,
 	limitTags,
-}) {
-	const handleTagsChange = (event, newValues) => {
+}: FilteredAutoSelectProps) {
+	const handleTagsChange = (
+		event: React.ChangeEvent<{}>,
+		newValues: Option[] | null
+	) => {
 		setSelectedValues(newValues);
 	};
 

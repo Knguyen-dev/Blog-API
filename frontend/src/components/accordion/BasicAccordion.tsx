@@ -1,14 +1,23 @@
 /*
 + BasicAccordion: Simple accordion component that allows us to create one accordion.
 */
-
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import Typography from "@mui/material/Typography";
+import {
+	Accordion,
+	AccordionDetails,
+	AccordionSummary,
+	Typography,
+} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import PropTypes from "prop-types";
+import { ReactNode } from "react";
 import { useTheme } from "@emotion/react";
+
+interface BasicAccordionProps {
+	expanded: boolean;
+	handleChange: () => void;
+	headerTitle: string;
+	children: ReactNode;
+	id?: string;
+}
 
 /**
  * Simple accordion component that allows us to create one accordion
@@ -19,7 +28,7 @@ export default function BasicAccordion({
 	headerTitle,
 	children,
 	id,
-}) {
+}: BasicAccordionProps) {
 	const theme = useTheme();
 	return (
 		<Accordion
@@ -40,12 +49,3 @@ export default function BasicAccordion({
 		</Accordion>
 	);
 }
-BasicAccordion.propTypes = {
-	expanded: PropTypes.bool,
-	handleChange: PropTypes.func,
-	className: PropTypes.string,
-	headerTitle: PropTypes.string,
-	children: PropTypes.element,
-	id: PropTypes.string,
-	ariaControls: PropTypes.string,
-};
