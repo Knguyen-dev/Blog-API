@@ -5,14 +5,45 @@
 
 */
 
-import { createContext, useReducer } from "react";
-import { minWordCount, postActions } from "../data/postConstants";
-import useSavePost from "../hooks/useSavePost";
-import useGetCategories from "../hooks/useGetCategories";
-import useGetTags from "../hooks/useGetTags";
+import { ReactNode, createContext, useReducer, Dispatch} from "react";
+import { minWordCount, postActions } from "./postConstants";
+import useSavePost from "./hooks/useSavePost";
+import useGetCategories from "./hooks/useGetCategories";
+import useGetTags from "./hooks/useGetTags";
 import PropTypes from "prop-types";
 import { Box, Typography } from "@mui/material";
-const EditorContext = createContext();
+import { ICategory, IPostData, PostStatusType, ITag } from "../../types/Post";
+
+interface IEditorProviderProps {
+	children: ReactNode;
+}
+
+interface EditorContextType {
+	categories: ICategory[];
+	tags: ITag[];
+	state: IPostData;
+	dispatch: Dispatch<PostActionType>;
+	initialState: IPostData;
+	error: string | null;
+	isLoading: boolean;
+	onSubmitPost: () => Promise<boolean|undefined>;
+}
+
+
+type PostActionType =
+	| { type: typeof postActions.SET_TITLE; payload: string }
+	| { type: typeof postActions.SET_BODY; payload: { body: string; wordCount: number } }
+	| { type: typeof postActions.SET_CATEGORY; payload: string }
+	| { type: typeof postActions.SET_TAGS; payload: ITag[] }
+	| { type: typeof postActions.SET_IMAGE; payload: string }
+	| { type: typeof postActions.SET_IMAGE_CREDITS; payload: string }
+	| { type: typeof postActions.SET_STATUS; payload: "draft" | "published" | "private" | "" }
+	| { type: typeof postActions.SET_POST; payload: IPostData }
+	| { type: "unknown"; payload?: any; callback?: (state: IPostData) => void };
+
+const EditorContext = createContext<EditorContextType | undefined>(undefined);
+
+
 
 /*
 + postReducer: Our reducer state contains all of the closely 
@@ -21,7 +52,7 @@ const EditorContext = createContext();
   'EditPostAccordion', and also rendering the post in PostPreview.
 
 */
-const postReducer = (state, action) => {
+const postReducer = (state: IPostData, action: PostActionType) => {
 	let newState;
 
 	switch (action.type) {
@@ -70,7 +101,7 @@ const postReducer = (state, action) => {
 	return newState;
 };
 
-const initialState = {
+const initialState: IPostData = {
 	title: "",
 	body: "",
 	wordCount: 0, // wordCount is closely associated with 'body'
@@ -78,14 +109,14 @@ const initialState = {
 	tags: [], // array of tag objects
 	imgSrc: "",
 	imgCredits: "",
-	status: "",
+	status: "draft",
 };
 
 /*
 + EditorProvider: Context provider that provides the shared variables and 
   functionality for the 'CreatePostPage' and 'EditPostPage'.
 */
-const EditorProvider = ({ children }) => {
+const EditorProvider = ({ children } : IEditorProviderProps) => {
 	const [state, dispatch] = useReducer(postReducer, initialState);
 	const { error, setError, isLoading, savePost } = useSavePost();
 
@@ -94,15 +125,15 @@ const EditorProvider = ({ children }) => {
 
 	const onSubmitPost = async () => {
 		/*
-    + General function submission function that handles the client-side
-      validation, and also calls the savePost function from our hook to 
-      make the api call.
+		+ General function submission function that handles the client-side
+			validation, and also calls the savePost function from our hook to 
+			make the api call.
 
-    - Do client-side validation to ensure required fields are at least filled: 
-    1. title: Needs to be between 1 and 100 characters; should match server-side validation and postSchema
-    2. categories: Needs to be filled 
-    3. status: Needs to be filled, with 'publish', 'unpublished', or 'private'.
-    */
+		- Do client-side validation to ensure required fields are at least filled: 
+		1. title: Needs to be between 1 and 100 characters; should match server-side validation and postSchema
+		2. categories: Needs to be filled 
+		3. status: Needs to be filled, with 'publish', 'unpublished', or 'private'.
+		*/
 
 		if (state.title.length < 1 || state.title.length > 100) {
 			setError("Post title needs to be between 1 and 100 characters!");
@@ -148,28 +179,17 @@ const EditorProvider = ({ children }) => {
 		return success;
 	};
 
-	/*
-  - If categories isn't defined (data not obtained yet) AND categoriesError isn't defined, then that 
-    means we are still ongoing in our request, that is neither failed or successfully. It has two options:
 
-    1. Success: categories is defined, at minimum an empty array. Then categoriesError is falsy.
-    2. Fail: categories is falsy (null), and then this means categoriesError is defined.
-  
-    - The same logic goes for the tags.
-
-  - NOTE: The reason we do this is to ensure that if we're going to load the CreatePostPage and 
-  EditPostPage, that our categories and tags are arrays, and that we don't throw an error when they're 
-  undefined.
-  */
-
-	if ((!categories && !categoriesError) || (!tags && !tagsError)) {
-		return;
+	if (error) {
+		return (
+			<Box>
+				{error && (
+					<Typography>Error getting post: {error}</Typography>
+				)}
+			</Box>
+		)
 	}
 
-	/*
-  - Categories request finished, either a success (categories truthy) or categoriesError is truthy.
-    Check for errors, if there's a categories error, we stop our rendering here
-  */
 	if (categoriesError) {
 		return (
 			<Box>
@@ -188,6 +208,26 @@ const EditorProvider = ({ children }) => {
 			</Box>
 		);
 	}
+
+	/*
+	- Make sure 
+	- NOTE: The reason we do this is to ensure that if we're going to load the CreatePostPage and 
+	EditPostPage, that our categories and tags are arrays, and that we don't throw an error when they're 
+	undefined.
+
+	Though with our current implementation it if there's an error getting categories or tags, then our 
+	Create and edit post pages won't render, though right now I don't think that's a bad thing
+	*/
+
+	if (!categories || !tags) {
+		return;
+	}
+
+	/*
+  - Categories request finished, either a success (categories truthy) or categoriesError is truthy.
+    Check for errors, if there's a categories error, we stop our rendering here
+  */
+	
 
 	return (
 		<EditorContext.Provider

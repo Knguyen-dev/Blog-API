@@ -38,6 +38,22 @@ interface IPost {
 	imgCredits: string;
 	wordCount: number;
 	lastUpdatedBy: string;
+	type: "IPost"
 }
 
-export { IUser, ICategory, ITag, IPost };
+type PostStatusType = "draft" | "published" | "private";
+
+// Defines the properties of the object that's needed to be passed to the backend when creating a post
+interface IPostData {
+	title: string;
+	body: string;
+	wordCount: number;
+	category: string | null; // category ID
+	tags: ITag[]; 
+	imgSrc: string;
+	imgCredits: string;
+	status: PostStatusType;
+	type: "IPostData"
+}
+
+export { IUser, ICategory, ITag, IPost, IPostData, PostStatusType};

@@ -1,6 +1,6 @@
 import { createContext, useReducer, ReactNode } from "react";
 import authActions from "../constants/authActions";
-import { AuthState } from "../types/auth";
+import { AuthState } from "../types/Auth";
 
 const AuthContext = createContext<{
 	auth: AuthState;

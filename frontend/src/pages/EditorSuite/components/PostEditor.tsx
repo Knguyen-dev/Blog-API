@@ -1,3 +1,4 @@
+
 /*
 + PostEditor: A custom TinyMCE editor that's a controlled component. Allows users 
   to enter in text input (some markup patterns supported), and that is turned into HTML.
@@ -18,9 +19,18 @@
 */
 
 import { Editor } from "@tinymce/tinymce-react";
+import { Editor as TinyMCEEditor } from 'tinymce';
 import PropTypes from "prop-types";
 
-export default function PostEditor({ initialValue, value, setValue }) {
+interface IPostEditorProps {
+	initialValue?: string;
+	value?: string;
+	onChange: (newValue: string, editor: TinyMCEEditor) => void;
+}
+
+export default function PostEditor({ initialValue, value, onChange } : IPostEditorProps) {
+
+	/*
 	const handleEditChange = (newValue, editor) => {
 		const wordCount = editor.plugins.wordcount.body.getWordCount();
 
@@ -28,13 +38,20 @@ export default function PostEditor({ initialValue, value, setValue }) {
 		setValue({ body: newValue, wordCount });
 	};
 
+	*/
+
+	
+
+
+
+
 	return (
 		<Editor
 			textareaName="body"
 			apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
 			initialValue={initialValue}
 			value={value}
-			onEditorChange={handleEditChange}
+			onEditorChange={onChange}
 			init={{
 				ui_mode: "split",
 				image_caption: true,
@@ -122,8 +139,3 @@ export default function PostEditor({ initialValue, value, setValue }) {
 		/>
 	);
 }
-PostEditor.propTypes = {
-	initialValue: PropTypes.string,
-	value: PropTypes.string,
-	setValue: PropTypes.func,
-};

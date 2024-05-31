@@ -2,13 +2,13 @@ import { useParams } from "react-router-dom";
 import { Typography, Container } from "@mui/material";
 import NewPostPreview from "./NewPostPreview";
 import usePublicFetchData from "../../hooks/usePublicFetchData";
-
+import { IPost }from "../../types/Post"
 export default function PostPage() {
-	const { slug } = useParams();
+	const { slug } = useParams(); // slug for a given post
 
-	const { data: post, error } = usePublicFetchData(
-		`/posts/published/slug/${slug}`
-	);
+
+	const { data: post, error } = usePublicFetchData<IPost>(`/posts/published/slug/${slug}`);
+
 
 	return (
 		<div className="tw-flex-1 tw-overflow-y-auto">

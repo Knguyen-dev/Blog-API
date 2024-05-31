@@ -8,8 +8,19 @@ import { formatBlogDate } from "../../api/intl";
 import { TagContainer } from "../../components/styles/TagContainer.styled";
 import useTagRedirect from "./hooks/useTagNavigation";
 import useCategoryNavigation from "./hooks/useCategoryNavigation";
+import { ICategory, ITag } from "../../types/Post";
 
-import PropTypes from "prop-types";
+
+interface INewPostPreviewProps {
+	title: string;
+	category?: ICategory;
+	body: string;
+	dateStr: string;
+	authorName: string;
+	imgSrc: string;
+	imgCredits: string;
+	tags?: ITag[];
+}
 
 export default function NewPostPreview({
 	title,
@@ -20,7 +31,7 @@ export default function NewPostPreview({
 	imgSrc,
 	imgCredits,
 	tags,
-}) {
+} : INewPostPreviewProps) {
 	const handleTagRedirect = useTagRedirect();
 	const goToCategoryPage = useCategoryNavigation();
 
@@ -52,7 +63,7 @@ export default function NewPostPreview({
 				<Box className="tw-mt-2">
 					<img src={imgSrc} alt="" className="tw-w-full tw-object-cover" />
 					<Typography
-						variant="span"
+						variant="body2"
 						className="tw-text-xs tw-text-gray-400 tw-italic">
 						{imgCredits}
 					</Typography>
@@ -72,7 +83,7 @@ export default function NewPostPreview({
 			{/* Footer of the post */}
 			<Box component="footer" className="tw-text-center">
 				{/* Post tags section: contains all tags associated with post */}
-				{tags?.length > 0 && (
+				{tags && tags.length > 0 && (
 					<Box>
 						<Typography variant="h4" component="h2" className="tw-mb-3">
 							Tags
@@ -94,23 +105,3 @@ export default function NewPostPreview({
 		</Box>
 	);
 }
-
-// Accepts primitives to make things less coupled
-NewPostPreview.propTypes = {
-	title: PropTypes.string,
-	category: PropTypes.shape({
-		_id: PropTypes.string,
-		title: PropTypes.string,
-	}),
-	body: PropTypes.string,
-	dateStr: PropTypes.string,
-	authorName: PropTypes.string,
-	imgSrc: PropTypes.string,
-	imgCredits: PropTypes.string,
-	tags: PropTypes.arrayOf(
-		PropTypes.shape({
-			_id: PropTypes.string,
-			title: PropTypes.string,
-		})
-	),
-};

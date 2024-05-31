@@ -12,38 +12,26 @@ import BasicAccordion from "../../../components/accordion/BasicAccordion";
 import { Box, TextField, Button } from "@mui/material";
 import { postActions, postStatuses } from "../data/postConstants";
 import PostEditor from "./PostEditor";
-import PropTypes from "prop-types";
+import { ICategory, ITag, PostStatusType } from "../../../types/Post";
 
-EditPostAccordion.propTypes = {
-	title: PropTypes.string,
-	category: PropTypes.string,
-	body: PropTypes.string,
-	selectedTags: PropTypes.arrayOf(
-		PropTypes.shape({
-			title: PropTypes.string,
-			_id: PropTypes.string,
-		})
-	),
-	imgSrc: PropTypes.string,
-	imgCredits: PropTypes.string,
-	status: PropTypes.string,
-	dispatch: PropTypes.func,
-	handleSubmitPost: PropTypes.func,
-	error: PropTypes.string,
-	isLoading: PropTypes.bool,
-	categories: PropTypes.arrayOf(
-		PropTypes.shape({
-			_id: PropTypes.string,
-			title: PropTypes.string,
-		})
-	),
-	tags: PropTypes.arrayOf(
-		PropTypes.shape({
-			_id: PropTypes.string,
-			title: PropTypes.string,
-		})
-	),
-};
+
+interface IEditPostAccordion {
+	title: string;
+	cateogry: string;
+	body: string;
+	selectedTags: ITag[];
+	imgSrc: string;
+	imgCredits: string;
+	// dispatch:
+	// handleSubmitPost
+	status: PostStatusType;
+	error: string;
+	isLoading: boolean;
+	categories: ICategory[];
+	tags: ITag[];
+
+}
+
 
 export default function EditPostAccordion({
 	title,
