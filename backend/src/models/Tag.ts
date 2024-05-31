@@ -47,6 +47,13 @@ tagSchema.statics.checkTags = async function(tagIDs: string[]) {
 }
 
 
+tagSchema.methods.toJSON = function() {
+  const tagObj= this.toObject();
+  delete tagObj.__v;
+  delete tagObj.lastUpdatedBy;
+  return tagObj;
+}
+
 
 const Tag = mongoose.model<ITag, ITagModel>("Tag", tagSchema);
 export default Tag;

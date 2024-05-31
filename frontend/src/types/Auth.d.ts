@@ -15,4 +15,4 @@ interface AuthState {
 	accessToken: string | null;
 }
 
-export { AuthUser, AuthState };
+export { AuthAction, AuthUser, AuthState };

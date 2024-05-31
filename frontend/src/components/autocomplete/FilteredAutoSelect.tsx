@@ -1,5 +1,5 @@
 import { Autocomplete, TextField } from "@mui/material";
-
+import { Dispatch, SetStateAction } from "react";
 /*
 + FilteredAutoSelect: A multi-select autocomplete for mui. It shows available optiosn
   and forces the user to pick one of those options. As well as this it creates chips
@@ -10,24 +10,19 @@ import { Autocomplete, TextField } from "@mui/material";
   give you the value of your 'option', that was never in the question, but rather the 
   index position of that option which is located as a data-attribute.
 */
-interface Option {
-	label: string;
-	value: string;
-}
-
-interface FilteredAutoSelectProps {
+interface FilteredAutoSelectProps<T> {
 	id?: string;
 	label?: string;
 	placeholder?: string;
-	options: Option[];
-	selectedValues: Option[];
-	setSelectedValues: (newValues: Option[] | null) => void;
-	getOptionLabel: (option: Option) => string;
-	isOptionEqualToValue: (option: Option, value: Option) => boolean;
+	options: T[];
+	selectedValues: T[] | undefined;
+	setSelectedValues: Dispatch<SetStateAction<T[] | undefined>>;
+	getOptionLabel: (option: T) => string;
+	isOptionEqualToValue: (option: T, value: T) => boolean;
 	limitTags?: number;
 }
 
-export default function FilteredAutoSelect({
+export default function FilteredAutoSelect<T>({
 	id,
 	label,
 	placeholder,
@@ -37,10 +32,10 @@ export default function FilteredAutoSelect({
 	getOptionLabel,
 	isOptionEqualToValue,
 	limitTags,
-}: FilteredAutoSelectProps) {
-	const handleTagsChange = (
+}: FilteredAutoSelectProps<T>) {
+	const handleValuesChange = (
 		event: React.ChangeEvent<{}>,
-		newValues: Option[] | null
+		newValues: T[] | undefined
 	) => {
 		setSelectedValues(newValues);
 	};
@@ -54,7 +49,7 @@ export default function FilteredAutoSelect({
 			getOptionLabel={getOptionLabel}
 			value={selectedValues}
 			isOptionEqualToValue={isOptionEqualToValue}
-			onChange={handleTagsChange}
+			onChange={handleValuesChange}
 			renderInput={(params) => (
 				<TextField {...params} label={label} placeholder={placeholder} />
 			)}

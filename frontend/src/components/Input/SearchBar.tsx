@@ -1,8 +1,7 @@
-import PropTypes from "prop-types";
 import { InputBase, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { styled } from "@mui/material/styles";
-import { FormEvent } from "react";
+import { Dispatch, SetStateAction, ChangeEvent } from "react";
 
 // Contains the input element and button
 const Search = styled("div")(() => ({
@@ -34,7 +33,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 		paddingLeft: `calc(1em + ${theme.spacing(4)})`,
 	},
 
-	backgroundColor: theme.palette.inputBg,
+	// backgroundColor: theme.palette.inputBg,
 
 	// Ensures that input stretches out to fill 'search container.
 	flex: "auto",
@@ -47,10 +46,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 */
 
 interface SearchBarProps {
-	onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+	onSubmit: () => void;
 	placeholder?: string;
 	className?: string;
 	name?: string;
+	value: string;
+	onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function SearchBar({
@@ -58,9 +59,11 @@ export default function SearchBar({
 	placeholder = "Search",
 	className,
 	name = "search",
+	value,
+	onChange,
 }: SearchBarProps) {
 	return (
-		<form onSubmit={onSubmit} className={className}>
+		<form className={className}>
 			<Search>
 				<SearchIconWrapper>
 					<SearchIcon />
@@ -69,9 +72,15 @@ export default function SearchBar({
 					placeholder={placeholder}
 					inputProps={{ "aria-label": "search" }}
 					name={name}
+					value={value}
+					onChange={onChange}
 				/>
 
-				<Button variant="contained" sx={{ borderRadius: 0 }} type="submit">
+				<Button
+					variant="contained"
+					sx={{ borderRadius: 0 }}
+					type="submit"
+					onClick={onSubmit}>
 					Search
 				</Button>
 			</Search>

@@ -95,7 +95,12 @@ const postSchema = new mongoose.Schema<IPost, IPostModel>(
 	}
 );
 
-
+postSchema.methods.toJSON = function() {
+  const postObj = this.toObject();
+  delete postObj.__v;
+  delete postObj.lastUpdatedBy;
+  return postObj;
+}
 /**
  * Updates the status of a post
  * 

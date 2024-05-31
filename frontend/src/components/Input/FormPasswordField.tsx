@@ -6,7 +6,7 @@ interface FormPasswordFieldProps {
 	name: string;
 	control: Control<any>;
 	label?: string;
-	placeholder: string;
+	placeholder?: string;
 	className?: string;
 	autoComplete?: string;
 }

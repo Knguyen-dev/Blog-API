@@ -5,8 +5,8 @@ import "./index.css";
 
 import { StyledEngineProvider } from "@mui/material";
 import { AuthProvider } from "./contexts/AuthProvider.js";
-import ColorModeProvider from "./contexts/ColorModeProvider.jsx";
-import { ToastProvider } from "./contexts/ToastProvider.jsx";
+import ColorModeProvider from "./contexts/SettingsProvider.js";
+import { ToastProvider } from "./contexts/ToastProvider.js";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>

@@ -1,6 +1,5 @@
 import { useLocation, Navigate } from "react-router-dom";
 import useAuthContext from "../hooks/useAuthContext";
-import PropTypes from "prop-types";
 import { ReactNode } from "react";
 
 /*

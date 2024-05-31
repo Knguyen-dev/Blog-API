@@ -1,19 +1,25 @@
-import { Snackbar, Alert, AlertProps, SnackbarOrigin } from "@mui/material";
+import {
+	Snackbar,
+	Alert,
+	AlertColor,
+	SnackbarOrigin,
+	SnackbarCloseReason,
+} from "@mui/material";
 
 /*
 + Simple alert snackbar: A reusable alert snackbar.
-- note: 'Severity' affects the icon shown and color. However you
-  can make this more customizable if we want to pass in background color
-  and text color.
 */
 
 interface AlertToastProps {
 	open: boolean;
-	handleClose: () => void;
+	handleClose: (
+		event?: React.SyntheticEvent | Event,
+		reason?: SnackbarCloseReason
+	) => void;
 	autoHideDuration?: number;
 	message: string;
 	anchorOrigin?: SnackbarOrigin;
-	severity: AlertProps["severity"];
+	severity?: AlertColor;
 	handleExited?: () => void;
 }
 

@@ -1,3 +1,4 @@
+import { FormEvent } from "react";
 import { useParams } from "react-router-dom";
 import { Typography, Box } from "@mui/material";
 import PostCard from "./PostCard";
