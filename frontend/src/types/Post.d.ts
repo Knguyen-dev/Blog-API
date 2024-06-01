@@ -17,9 +17,9 @@ interface ICategory {
 }
 
 interface ICategoryFormData {
-    _id?: string;
-    title: string;
-    description: string;
+	_id?: string;
+	title: string;
+	description: string;
 }
 
 interface ITag {
@@ -46,7 +46,7 @@ interface IPostState {
 	_id?: string;
 }
 
-interface IPostData {
+interface IPost {
 	title: string;
 	category?: ICategory;
 	body: string;
@@ -55,9 +55,7 @@ interface IPostData {
 	imgSrc: string;
 	imgCredits: string;
 	status: PostStatusType;
-}
 
-interface IPost extends IPostData {
 	_id: string;
 	user: IUser;
 	slug: string;
@@ -65,22 +63,6 @@ interface IPost extends IPostData {
 	createdAt: string;
 	updatedAt: string;
 	lastUpdatedBy: string;
-}
-
-// Defines the properties of the state managed by the CreatePostPage and EditPostPage
-interface IPostData {
-	title: string;
-	body: string;
-	wordCount: number;
-	/*
-  - 'category' can be null which is the idea of 'clearing' the category. But remember
-  that in the end, all posts must have categories before they're submitted to be saved.
-  */
-	category?: ICategory;
-	tags: ITag[];
-	imgSrc: string;
-	imgCredits: string;
-	status: PostStatusType;
 }
 
 // Interface for the object you need to pass to the backend for creating a new post
@@ -104,7 +86,6 @@ export {
 	ICategoryFormData,
 	ITag,
 	IPost,
-	IPostData,
 	PostStatusType,
 	IAPIPostData,
 	IPostState,

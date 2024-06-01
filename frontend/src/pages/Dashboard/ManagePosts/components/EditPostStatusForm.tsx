@@ -1,21 +1,24 @@
-import { Button, Box } from "@mui/material";
-import { useState } from "react";
-import PropTypes from "prop-types";
+import { Button, Box, SelectChangeEvent } from "@mui/material";
+import { useState, FormEvent } from "react";
 
 import useSavePostStatus from "../hooks/useSavePostStatus";
-import { postStatuses } from "../../../EditorSuite/data/postConstants";
+import { postStatuses } from "../../../EditorSuite/postConstants";
 import NewBasicSelect from "../../../../components/select/NewBasicSelect";
+import { IPost, PostStatusType } from "../../../../types/Post";
 
-EditPostStatusForm.propTypes = {
-	postID: PropTypes.string,
-	onSuccess: PropTypes.func,
-};
+interface IEditPostStatusFormProps {
+	postID: string;
+	onSuccess: (newPost: IPost) => void;
+}
 
-export default function EditPostStatusForm({ postID, onSuccess }) {
-	const [status, setStatus] = useState("");
+export default function EditPostStatusForm({
+	postID,
+	onSuccess,
+}: IEditPostStatusFormProps) {
+	const [status, setStatus] = useState<PostStatusType>(postStatuses[0].value);
 	const { isLoading, error, savePostStatus } = useSavePostStatus();
 
-	const onSubmit = async (e) => {
+	const onSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 
 		const formData = {
@@ -35,12 +38,16 @@ export default function EditPostStatusForm({ postID, onSuccess }) {
 		}
 	};
 
+	const onStatusChange = (event: SelectChangeEvent) => {
+		setStatus(event.target.value as PostStatusType);
+	};
+
 	return (
 		<form onSubmit={onSubmit}>
 			<Box sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}>
 				<NewBasicSelect
 					value={status}
-					setValue={setStatus}
+					onChange={onStatusChange}
 					label="Status"
 					placeholder="Select the post's status"
 					options={postStatuses}

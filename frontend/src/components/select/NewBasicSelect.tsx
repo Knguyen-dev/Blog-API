@@ -13,31 +13,7 @@ We can think of NewBasicSelect as a glorified map or dictionary. Where the
 keys we enter are the 'value' parameter, and the value of the dictionary. 
 By setting the 'id', value, then we will display the appropriate output (username).
 
-id : username
-1 : Kevin12
-2 : John209
 
-index : name
-0 : "Jaems"
-1 : "Ryan"
-2 : "Conan"
-3 : "Aleks"
-
-However, to be able to make things flexible like this, we should be able 
-to pass in functions such as getOptionLabel and getOptionValue to decide how the 
-label and value should be calculated from our options array. 
-
-Ex. 1:
-options = [
-  {
-    id: 1
-    title: 'MyTitle' 
-  },
-  {
-    id: 2
-    title: 'MyTitle' 
-  },
-]
 */
 
 interface NewBasicSelectProps {

@@ -1,24 +1,22 @@
 import AlertDialog from "../../../../components/dialog/AlertDialog";
 import { Typography, Box, Button } from "@mui/material";
-import PropTypes from "prop-types";
 import useDeletePost from "../hooks/useDeletePost";
+import { IPost } from "../../../../types/Post";
+import { Dispatch, SetStateAction } from "react";
 
-DeletePostDialog.propTypes = {
-	post: PropTypes.shape({
-		_id: PropTypes.string.isRequired,
-		title: PropTypes.string.isRequired,
-	}),
-	open: PropTypes.bool,
-	handleClose: PropTypes.func,
-	setPosts: PropTypes.func,
-};
+interface IDeletePostDialogProps {
+	post: IPost;
+	open: boolean;
+	handleClose: () => void;
+	setPosts: Dispatch<SetStateAction<IPost[] | undefined>>;
+}
 
 export default function DeletePostDialog({
 	post,
 	open,
 	handleClose,
 	setPosts,
-}) {
+}: IDeletePostDialogProps) {
 	const { isLoading, error, deletePost } = useDeletePost();
 
 	const onDeletePost = async () => {
@@ -28,7 +26,7 @@ export default function DeletePostDialog({
 		// On success, close the dialog and update the state of the posts array
 		if (success) {
 			handleClose();
-			setPosts((posts) => {
+			setPosts((posts = []) => {
 				const newPosts = posts.filter((p) => p._id !== post._id);
 				return newPosts;
 			});

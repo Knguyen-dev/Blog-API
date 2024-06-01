@@ -1,25 +1,22 @@
 import CustomDialog from "../../../../components/dialog/CustomDialog";
 import { Typography } from "@mui/material";
 import EditPostStatusForm from "./EditPostStatusForm";
-import PropTypes from "prop-types";
+import { IPost } from "../../../../types/Post";
+import { Dispatch, SetStateAction } from "react";
 
-EditPostStatusDialog.propTypes = {
-	selectedPost: PropTypes.shape({
-		_id: PropTypes.string.isRequired,
-		title: PropTypes.string.isRequired,
-		status: PropTypes.string.isRequired,
-	}),
-	open: PropTypes.bool,
-	handleClose: PropTypes.func,
-	setPosts: PropTypes.func,
-};
+interface IEditPostStatusDialog {
+	selectedPost: IPost;
+	open: boolean;
+	handleClose: () => void;
+	setPosts: Dispatch<SetStateAction<IPost[] | undefined>>;
+}
 
 export default function EditPostStatusDialog({
 	selectedPost,
 	open,
 	handleClose,
 	setPosts,
-}) {
+}: IEditPostStatusDialog) {
 	/*
   - Handles clean up operations for UI once the request for updating the post's status
     has finished successfully.
@@ -28,9 +25,9 @@ export default function EditPostStatusDialog({
   2. Updates the state of the posts array by replacing the old version of the post
      we edited, with the updated version.
   */
-	const onSuccess = (newPost) => {
+	const onSuccess = (newPost: IPost) => {
 		handleClose();
-		setPosts((posts) => {
+		setPosts((posts = []) => {
 			const newPosts = posts.map((post) =>
 				newPost._id === post._id ? newPost : post
 			);
@@ -40,7 +37,7 @@ export default function EditPostStatusDialog({
 
 	const dialogText = (
 		<Typography>
-			{`You sure you want update the status of '${selectedPost?.title}'?`}
+			{`You sure you want update the status of '${selectedPost.title}'?`}
 		</Typography>
 	);
 
@@ -49,7 +46,7 @@ export default function EditPostStatusDialog({
 			modalTitle="Update the status of a post"
 			dialogText={dialogText}
 			CustomForm={
-				<EditPostStatusForm postID={selectedPost?._id} onSuccess={onSuccess} />
+				<EditPostStatusForm postID={selectedPost._id} onSuccess={onSuccess} />
 			}
 			open={open}
 			handleClose={handleClose}

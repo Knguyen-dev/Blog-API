@@ -1,14 +1,19 @@
 import { useState } from "react";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import handleRequestError from "../../../../utils/handleRequestError";
+import { PostStatusType } from "../../../../types/Post";
+
+interface IPostStatusFormData {
+	status: PostStatusType;
+}
 
 export default function useSavePostStatus() {
 	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 	const axiosPrivate = useAxiosPrivate();
 
 	// Handles making request to update the status of a post
-	const savePostStatus = async (id, formData) => {
+	const savePostStatus = async (id: string, formData: IPostStatusFormData) => {
 		setIsLoading(true);
 		setError(null);
 		let responseData;
@@ -20,7 +25,7 @@ export default function useSavePostStatus() {
 			);
 
 			responseData = response.data;
-		} catch (err) {
+		} catch (err: any) {
 			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);

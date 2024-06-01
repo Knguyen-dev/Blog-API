@@ -4,10 +4,10 @@ import handleRequestError from "../../../../utils/handleRequestError";
 
 export default function useDeletePost() {
 	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 	const axiosPrivate = useAxiosPrivate();
 
-	const deletePost = async (id) => {
+	const deletePost = async (id: string) => {
 		setIsLoading(true);
 		setError(null);
 		let success = false;
@@ -17,7 +17,7 @@ export default function useDeletePost() {
 			await axiosPrivate.delete(`/posts/${id}`);
 
 			success = true;
-		} catch (err) {
+		} catch (err: any) {
 			handleRequestError(err, setError);
 		}
 		setIsLoading(false);

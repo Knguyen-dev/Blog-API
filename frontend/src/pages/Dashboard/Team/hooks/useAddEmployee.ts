@@ -7,7 +7,10 @@ import handleRequestError from "../../../../utils/handleRequestError";
 
 const endpoint = "/employees/add";
 
-import {IAddEmployeeFormData} from "../../../../types/Employee";
+interface IAddEmployeeFormData {
+	username: string;
+	role: string;
+}
 
 export default function useAddEmployee() {
 	const [error, setError] = useState<string | null>(null);

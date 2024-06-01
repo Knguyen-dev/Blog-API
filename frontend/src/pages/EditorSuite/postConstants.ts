@@ -1,8 +1,13 @@
 import getCurrentDateStr from "../../utils/getCurrentDateStr";
-import { IPostState } from "../../types/Post";
+import { IPostState, PostStatusType } from "../../types/Post";
 
 // The various 'status' a post can be in.
-const postStatuses = [
+interface PostStatusOption {
+	label: string;
+	value: PostStatusType;
+}
+
+const postStatuses: PostStatusOption[] = [
 	{
 		label: "Draft",
 		value: "draft",
