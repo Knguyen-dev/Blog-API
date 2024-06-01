@@ -2,6 +2,13 @@ import AlertDialog from "../../../../components/dialog/AlertDialog";
 import { DialogActions, Button, Typography, Box } from "@mui/material";
 import PropTypes from "prop-types";
 import useRemoveEmployee from "../hooks/useRemoveEmployee";
+import { IUser } from "../../../../types/Post";
+
+interface IRemoveEmployeeDialogProps {
+	open: boolean;
+	handleClose: () => void;
+	targetUser: IUser
+}
 
 /*
 - RemoveEmployeeDialog: Dialog that asks for confirmation before you remove
@@ -11,7 +18,7 @@ export default function RemoveEmployeeDialog({
 	open,
 	handleClose,
 	targetUser,
-}) {
+} : IRemoveEmployeeDialogProps) {
 	const { error, isLoading, removeEmployee } = useRemoveEmployee();
 
 	// The onSubmit function basically
@@ -52,7 +59,7 @@ export default function RemoveEmployeeDialog({
 	);
 
 	const dialogText = (
-		<Typography variant="span">
+		<Typography>
 			Do you want to confirm removing user &apos;{targetUser.username}&apos; AKA
 			&apos;{targetUser.fullName}&apos; as an employee? Removing this user as an
 			employee will delete their account and all posts associated with it.
@@ -69,12 +76,3 @@ export default function RemoveEmployeeDialog({
 		/>
 	);
 }
-RemoveEmployeeDialog.propTypes = {
-	open: PropTypes.bool,
-	handleClose: PropTypes.func,
-	targetUser: PropTypes.shape({
-		_id: PropTypes.string,
-		username: PropTypes.string,
-		fullName: PropTypes.string,
-	}),
-};

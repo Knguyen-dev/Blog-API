@@ -1,18 +1,9 @@
-import { TextField, Button, Box } from "@mui/material";
+import { TextField, Button, Box, SelectChangeEvent } from "@mui/material";
 import NewBasicSelect from "../../../../components/select/NewBasicSelect";
 import { getRoleNumber } from "../utils/roleUtilities";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import useAddEmployee from "../hooks/useAddEmployee";
-const options = [
-	{
-		label: "Editor",
-		value: getRoleNumber("editor"),
-	},
-	{
-		label: "Admin",
-		value: getRoleNumber("admin"),
-	},
-];
+import { roleSelectOptions } from "../data/employeeConstants";
 
 // Defines our default state values
 const defaultValues = {
@@ -22,10 +13,10 @@ const defaultValues = {
 
 export default function AddEmployeeForm() {
 	const [username, setUsername] = useState(defaultValues.username);
-	const [role, setRole] = useState(defaultValues.role);
+	const [role, setRole] = useState<string | undefined>(defaultValues.role);
 	const { error, setError, isLoading, addEmployee } = useAddEmployee();
 
-	const onSubmit = async (e) => {
+	const onSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 
 		// Ensure both fields are defined before making api call
@@ -44,6 +35,10 @@ export default function AddEmployeeForm() {
 		}
 	};
 
+	const onRoleChange = (e: SelectChangeEvent) => {
+		setRole(e.target.value);
+	}
+
 	return (
 		<form onSubmit={onSubmit}>
 			<Box sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}>
@@ -57,11 +52,11 @@ export default function AddEmployeeForm() {
 				/>
 
 				<NewBasicSelect
-					value={role}
-					setValue={setRole}
+					value={role || "Role selected isn't recognized!"}
+					onChange={onRoleChange}
 					label="Role"
 					placeholder="Select user's role"
-					options={options}
+					options={roleSelectOptions}
 					getOptionLabel={(option) => option.label}
 					getOptionValue={(option) => option.value}
 				/>

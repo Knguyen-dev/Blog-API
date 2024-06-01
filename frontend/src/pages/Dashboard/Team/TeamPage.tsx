@@ -4,8 +4,8 @@
   team/associated with the company.
 */
 import { Typography } from "@mui/material";
-import EmployeeGrid from "./components/EmployeeGrid";
-import { EmployeeProvider } from "./context/EmployeeProvider";
+import EmployeeGrid from "./components/EmployeeGrid.js";
+import { EmployeeProvider } from "./context/EmployeeProvider.js";
 export default function TeamPage() {
 	return (
 		<div>

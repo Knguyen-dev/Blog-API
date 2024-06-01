@@ -5,11 +5,15 @@ import AddEmployeeDialog from "./AddEmployeeDialog";
 import RemoveEmployeeDialog from "./RemoveEmployeeDialog";
 import useEmployeeContext from "../hooks/useEmployeeContext";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import employeeActions from "../data/employeeActions";
+import { employeeActions } from "../data/employeeConstants";
 import { getRoleNumber, getRoleString } from "../utils/roleUtilities";
 import useToast from "../../../../hooks/useToast";
-
 import getErrorData from "../../../../utils/getErrorData";
+import { IUser } from "../../../../types/Post";
+
+
+
+
 
 export default function EmployeeGrid() {
 	const { state, dispatch } = useEmployeeContext();
@@ -17,10 +21,12 @@ export default function EmployeeGrid() {
 	const axiosPrivate = useAxiosPrivate();
 
 	// Represents selected user
-	const [selectedRowID, setSelectedRowID] = useState(null);
+	const [selectedRowID, setSelectedRowID] = useState<string | undefined>(undefined);
+
+	// Represents the name of the dialog that will be active
 	const [activeDialog, setActiveDialog] = useState("");
 
-	const handleOpenDialog = (dialogName) => setActiveDialog(dialogName);
+	const handleOpenDialog = (dialogName: string) => setActiveDialog(dialogName);
 	const handleCloseDialog = () => setActiveDialog("");
 
 	// Effect loads employees into the employee state for the data-grid.
@@ -53,9 +59,7 @@ export default function EmployeeGrid() {
 
 	// Handles updating a row in our employee grid
 	const processRowUpdate = useCallback(
-		async (newRow) => {
-			// Convert role back to its numerical representation for call to server
-			newRow.role = getRoleNumber(newRow.role);
+		async (newRow: IUser): Promise<IUser> => {
 
 			const response = await axiosPrivate.patch(
 				`/employees/${newRow._id}`,
@@ -69,20 +73,19 @@ export default function EmployeeGrid() {
 			});
 
 			/*
-	    - Remember to update the global state. This allows things such as
-	    the 'RemoveEmployeeDialog' to keep in sync.
-	    */
-
+			- Remember to update the global state. This allows things such as
+			the 'RemoveEmployeeDialog' to keep in sync.
+			*/
 			dispatch({
 				type: employeeActions.UPDATE_EMPLOYEE,
 				payload: response.data,
 			});
 
 			/*
-	    - Return response, or the item that would meet the column criteria.
-	      This is the thing that's directly responsible for the update in the
-	      data grid.
-	    */
+			- Return response, or the item that would meet the column criteria.
+			This is the thing that's directly responsible for the update in the
+			data grid.
+			*/
 			return response.data;
 		},
 		[axiosPrivate, dispatch, showToast]
@@ -90,7 +93,7 @@ export default function EmployeeGrid() {
 
 	// Handles catching/showing potential errors for processRowUpdate
 	const handleRowUpdateError = useCallback(
-		(err) => {
+		(err: any) => {
 			let errMessage = "";
 			if (err.response) {
 				errMessage = getErrorData(err);
@@ -104,12 +107,29 @@ export default function EmployeeGrid() {
 		[showToast]
 	);
 
+	
+	/*
+	- Initialize a user that we want to delete. If 'activeDialog' is 'removeEmployee' that means 
+	our selectedRowID is the id of the user that we want to delete. Set that userToDelete value, 
+	which will cause our RemoveEmployeeDialog to render.
+
+	NOTE: So if activeDialog is 'removeEmployee' then only the RemoveEmployeeDialog will be rendered whilst 
+	the other dialog isn't. And the vice versa is true.
+	*/
+	let userToDelete: IUser | undefined = undefined;
+	if (activeDialog === "removeEmployee") {
+		userToDelete = state.employees.find((e) => e._id === selectedRowID);
+	}
+
 	return (
 		<Box>
 			<EditSelectGrid
 				selectedRowID={selectedRowID}
 				setSelectedRowID={setSelectedRowID}
 				rows={state.employees}
+
+				// Mui uses field 'id' by default. To get it to work when our id field is not '.id' 
+				// we use getRowId to indicate how to get ID on a row.
 				getRowId={(row) => row._id}
 				processRowUpdate={processRowUpdate}
 				handleRowUpdateError={handleRowUpdateError}
@@ -125,22 +145,18 @@ export default function EmployeeGrid() {
 				handleClose={handleCloseDialog}
 			/>
 
-			{/* 
-      If we pass 'openRemoveEmployee' to 'open', our component will render regardless, 
-      even if its invisible, the calculations will be done. We set it up so that 
-      when 'openRemoveEmployee' is true, they have selected a 'user' or row. So then targetUser
-      exists, and we only have to do this calculation when the boolean is true.     
-      */}
-			{activeDialog === "removeEmployee" && (
+			{/* If userToDelete is defined, we are deleting a user so render the RemoveEmployeeDialog */}
+			{userToDelete && (
 				<RemoveEmployeeDialog
 					open={true}
-					handleClose={() => handleCloseDialog("removeEmployee")}
-					targetUser={state.employees.find((e) => e._id === selectedRowID)}
+					handleClose={handleCloseDialog}
+					targetUser={userToDelete}
 				/>
 			)}
 		</Box>
 	);
 }
+
 
 const columns = [
 	{ field: "id", headerName: "ID" },
@@ -148,7 +164,7 @@ const columns = [
 		field: "avatar",
 		headerName: "Avatar",
 		width: 100,
-		renderCell: ({ row }) => (
+		renderCell: ({ row } : {row: IUser}) => (
 			<Avatar alt="Avatar" sx={{ color: "black" }} src={row.avatarSrc}>
 				{row.avatarInitials}
 			</Avatar>
@@ -173,7 +189,13 @@ const columns = [
 		valueOptions: ["Admin", "Editor"],
 
 		// Convert numerical roles to human readable roles for the data grid.
-		valueGetter: ({ row }) => getRoleString(row.role),
+		valueGetter: ({ row } : {row: IUser}) => row.role,
+
+		// Display the corresponding human-readable role string for each role number
+		valueFormatter: ({ roleNumber } : {roleNumber : number}) => {
+			const roleString = getRoleString(roleNumber);
+			return roleString;
+		},
 	},
 	/*
   - 'lastLogin' should be a date string in ISO 8601 format in UTC time. 
@@ -187,20 +209,20 @@ const columns = [
 		headerName: "Last Login",
 		type: "dateTime",
 		width: 180,
-		valueGetter: ({ row }) => {
+		valueGetter: ({ row }: {row: IUser}) => {
 			if (!row.lastLogin) {
 				return null;
 			}
 
 			return new Date(row.lastLogin);
 		},
-
-		valueFormatter: ({ value }) => {
-			if (!value) {
+		
+		// Manipulate/render the date object created from lastLogin
+		valueFormatter: ({ lastLogin } : {lastLogin: Date}) => {
+			if (!lastLogin) {
 				return "User hasn't logged in yet!";
 			}
-
-			return value;
+			return lastLogin;
 		},
 	},
 ];

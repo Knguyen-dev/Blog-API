@@ -12,10 +12,6 @@ import useNewEditorContext from "./hooks/useNewEditorContext";
 import { IPostState } from "../../types/Post";
 import { initialPostState } from "./postConstants";
 
-const isValidPostData = (value: any) => {
-	// Create a validation function for post data from local storage
-};
-
 export default function CreatePostPage() {
 	const { auth } = useAuthContext();
 	const { categories, tags, submitLoading, submitError, onSubmitPost } =

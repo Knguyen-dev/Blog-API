@@ -30,7 +30,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 interface CustomDialogProps {
-	openBtn: ReactNode;
+	openBtn?: ReactNode;
 	modalTitle: string;
 	dialogText?: ReactNode;
 	CustomForm: ReactNode;

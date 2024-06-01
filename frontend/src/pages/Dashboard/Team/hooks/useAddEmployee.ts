@@ -1,20 +1,22 @@
 import { useState } from "react";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import useEmployeeContext from "./useEmployeeContext";
-import employeeActions from "../data/employeeActions";
+import { employeeActions } from "../data/employeeConstants";
 import useToast from "../../../../hooks/useToast";
 import handleRequestError from "../../../../utils/handleRequestError";
 
 const endpoint = "/employees/add";
 
+import {IAddEmployeeFormData} from "../../../../types/Employee";
+
 export default function useAddEmployee() {
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const axiosPrivate = useAxiosPrivate();
 	const { dispatch } = useEmployeeContext();
 	const { showToast } = useToast();
 
-	const addEmployee = async (formData) => {
+	const addEmployee = async (formData: IAddEmployeeFormData) => {
 		setIsLoading(true);
 		setError(null);
 
@@ -37,7 +39,7 @@ export default function useAddEmployee() {
 				message: `User ${response.data.username} has been added as an employee!`,
 				severity: "success",
 			});
-		} catch (err) {
+		} catch (err: any) {
 			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);

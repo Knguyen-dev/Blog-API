@@ -1,13 +1,31 @@
 /*
 + EmployeeProvider: Provider used for storing state data about the employee grid.
 */
-import { createContext, useReducer } from "react";
-import employeeActions from "../data/employeeActions";
-import PropTypes from "prop-types";
+import { Dispatch, ReactNode, createContext, useReducer } from "react";
+import { employeeActions } from "../data/employeeConstants";
+import { IUser } from "../../../../types/Post";
 
-const EmployeeContext = createContext();
+interface IEmployeeState {
+	employees: IUser[];
+}
 
-const employeeReducer = (state, action) => {
+interface EmployeeAction {
+	type: string;
+	payload?: any;
+}
+
+interface IEmployeeContext {
+	state: IEmployeeState;
+	dispatch: Dispatch<EmployeeAction>
+}
+
+interface IEmployeeProviderProps {
+	children: ReactNode;
+}
+
+const EmployeeContext = createContext<IEmployeeContext | undefined>(undefined);
+
+const employeeReducer = (state: IEmployeeState, action: EmployeeAction) => {
 	switch (action.type) {
 		case employeeActions.ADD_EMPLOYEE: // assumes payload is new user object
 			return {
@@ -41,20 +59,20 @@ const employeeReducer = (state, action) => {
 	}
 };
 
-const EmployeeProvider = ({ children }) => {
+const EmployeeProvider = ({ children }: IEmployeeProviderProps) => {
+
 	const [state, dispatch] = useReducer(employeeReducer, {
 		employees: [],
 	});
+
+
+
 
 	return (
 		<EmployeeContext.Provider value={{ state, dispatch }}>
 			{children}
 		</EmployeeContext.Provider>
 	);
-};
-
-EmployeeProvider.propTypes = {
-	children: PropTypes.element,
 };
 
 export { EmployeeContext, EmployeeProvider };

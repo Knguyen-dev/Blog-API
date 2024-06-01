@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import useEmployeeContext from "./useEmployeeContext";
-import employeeActions from "../data/employeeActions";
+import { employeeActions } from "../data/employeeConstants";
 import useToast from "../../../../hooks/useToast";
 import handleRequestError from "../../../../utils/handleRequestError";
 
@@ -14,13 +14,13 @@ import handleRequestError from "../../../../utils/handleRequestError";
 */
 
 export default function useRemoveEmployee() {
-	const [error, setError] = useState();
+	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const axiosPrivate = useAxiosPrivate();
 	const { dispatch } = useEmployeeContext();
 	const { showToast } = useToast();
 
-	const removeEmployee = async (id) => {
+	const removeEmployee = async (id: string) => {
 		setIsLoading(true);
 		setError(null);
 
@@ -46,7 +46,7 @@ export default function useRemoveEmployee() {
 				message: `User successfully removed as an employee!`,
 				severity: "success",
 			});
-		} catch (err) {
+		} catch (err: any) {
 			// Record the error state to show on the dialog.
 			handleRequestError(err, setError);
 		} finally {
