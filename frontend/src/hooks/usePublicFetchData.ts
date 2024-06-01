@@ -1,8 +1,5 @@
 /*
 Custom hook for fetching data from our backend, that doesn't require the user to login (a jwt).
-
-
-
 */
 import { axiosPublic } from "../api/axios";
 import handleRequestError from "../utils/handleRequestError";

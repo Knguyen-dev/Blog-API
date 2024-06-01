@@ -16,7 +16,7 @@ interface FilteredAutoSelectProps<T> {
 	placeholder?: string;
 	options: T[];
 	selectedValues: T[] | undefined;
-	setSelectedValues: Dispatch<SetStateAction<T[] | undefined>>;
+	onChange: (event: React.ChangeEvent<{}>, newValues: T[] | undefined) => void;
 	getOptionLabel: (option: T) => string;
 	isOptionEqualToValue: (option: T, value: T) => boolean;
 	limitTags?: number;
@@ -28,18 +28,11 @@ export default function FilteredAutoSelect<T>({
 	placeholder,
 	options,
 	selectedValues,
-	setSelectedValues,
+	onChange,
 	getOptionLabel,
 	isOptionEqualToValue,
 	limitTags,
 }: FilteredAutoSelectProps<T>) {
-	const handleValuesChange = (
-		event: React.ChangeEvent<{}>,
-		newValues: T[] | undefined
-	) => {
-		setSelectedValues(newValues);
-	};
-
 	return (
 		<Autocomplete
 			multiple
@@ -49,7 +42,7 @@ export default function FilteredAutoSelect<T>({
 			getOptionLabel={getOptionLabel}
 			value={selectedValues}
 			isOptionEqualToValue={isOptionEqualToValue}
-			onChange={handleValuesChange}
+			onChange={onChange}
 			renderInput={(params) => (
 				<TextField {...params} label={label} placeholder={placeholder} />
 			)}

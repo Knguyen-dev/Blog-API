@@ -10,7 +10,6 @@ import useTagRedirect from "./hooks/useTagNavigation";
 import useCategoryNavigation from "./hooks/useCategoryNavigation";
 import { ICategory, ITag } from "../../types/Post";
 
-
 interface INewPostPreviewProps {
 	title: string;
 	category?: ICategory;
@@ -31,7 +30,7 @@ export default function NewPostPreview({
 	imgSrc,
 	imgCredits,
 	tags,
-} : INewPostPreviewProps) {
+}: INewPostPreviewProps) {
 	const handleTagRedirect = useTagRedirect();
 	const goToCategoryPage = useCategoryNavigation();
 

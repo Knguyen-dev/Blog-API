@@ -20,7 +20,6 @@
 
 import { Editor } from "@tinymce/tinymce-react";
 import { Editor as TinyMCEEditor } from 'tinymce';
-import PropTypes from "prop-types";
 
 interface IPostEditorProps {
 	initialValue?: string;
@@ -29,22 +28,6 @@ interface IPostEditorProps {
 }
 
 export default function PostEditor({ initialValue, value, onChange } : IPostEditorProps) {
-
-	/*
-	const handleEditChange = (newValue, editor) => {
-		const wordCount = editor.plugins.wordcount.body.getWordCount();
-
-		// reducer expects payload to be in format: {body, wordCount}
-		setValue({ body: newValue, wordCount });
-	};
-
-	*/
-
-	
-
-
-
-
 	return (
 		<Editor
 			textareaName="body"

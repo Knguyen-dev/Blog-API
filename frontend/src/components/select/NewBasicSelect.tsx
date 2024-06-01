@@ -42,7 +42,7 @@ options = [
 
 interface NewBasicSelectProps {
 	value: string;
-	setValue: (newValue: string) => void;
+	onChange: (event: SelectChangeEvent) => void;
 	label?: string;
 	options: any[];
 	placeholder?: string;
@@ -54,7 +54,7 @@ interface NewBasicSelectProps {
 
 export default function NewBasicSelect({
 	value,
-	setValue,
+	onChange,
 	label,
 	options,
 	getOptionLabel,
@@ -63,10 +63,6 @@ export default function NewBasicSelect({
 	required, // gives us that asterisks for required form controls
 	allowNone = false, // determines whether or not the user can select 'none' as an option
 }: NewBasicSelectProps) {
-	const handleChange = (event: SelectChangeEvent) => {
-		setValue(event.target.value);
-	};
-
 	return (
 		<Box sx={{ minWidth: 120 }}>
 			<FormControl fullWidth required={required}>
@@ -76,7 +72,7 @@ export default function NewBasicSelect({
 					id="demo-simple-select"
 					value={value}
 					label={label}
-					onChange={handleChange}>
+					onChange={onChange}>
 					{/* If allowNone, render this disabled menu item as placeholder */}
 					{allowNone && (
 						<MenuItem value="" disabled={true} aria-disabled={true}>

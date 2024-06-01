@@ -1,15 +1,5 @@
-// Actions for the postReducer
-const postActions = {
-	SET_TITLE: "SET_TITLE",
-	SET_BODY: "SET_BODY",
-	SET_CATEGORY: "SET_CATEGORY",
-	SET_TAGS: "SET_TAGS",
-	SET_IMAGE: "SET_IMAGE",
-	SET_IMAGE_CREDITS: "SET_IMAGE_CREDITS",
-	SET_STATUS: "SET_STATUS",
-	SET_POST: "SET_POST",
-	CLEAR_POST: "CLEAR_POST",
-};
+import getCurrentDateStr from "../../utils/getCurrentDateStr";
+import { IPostState } from "../../types/Post";
 
 // The various 'status' a post can be in.
 const postStatuses = [
@@ -33,4 +23,19 @@ const postStatuses = [
 */
 const minWordCount = 150;
 
-export { minWordCount, postActions, postStatuses };
+const todayStr = getCurrentDateStr();
+
+const initialPostState: IPostState = {
+	title: "",
+	body: "",
+	category: undefined,
+	wordCount: 0,
+	tags: [],
+	imgSrc: "",
+	imgCredits: "",
+	status: "draft",
+	authorName: "", // populate this with auth.user.fullName on render
+	createdAt: todayStr, // default value is iso string representing today/now
+};
+
+export { minWordCount, postStatuses, initialPostState };

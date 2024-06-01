@@ -37,7 +37,7 @@ export default function useLocalStorage<T>(
 	initValue: T,
 	validate: (value: any) => boolean
 ) {
-	const [value, setValue] = useState(() => {
+	const [value, setValue] = useState<T>(() => {
 		const localValue = getLocalValue<T>(key, initValue);
 
 		// Ensure that the local value is valid, else return initial value

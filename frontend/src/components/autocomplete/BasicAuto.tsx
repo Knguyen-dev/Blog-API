@@ -1,52 +1,35 @@
 import { Autocomplete, TextField } from "@mui/material";
-import PropTypes from "prop-types";
 
-interface Option {
+interface BasicAutoProps<T> {
+	options: T[];
+	onChange: (event: React.ChangeEvent<{}>, value: T | null) => void;
+	getOptionLabel: (option: T) => string;
 	label: string;
-	value: string;
+	isOptionEqualToValue: (option: T, value: T) => boolean;
+	value: T | null | undefined;
+	required: boolean;
 }
 
-interface BasicAutoProps {
-	options: Option[];
-	onChange: (event: React.ChangeEvent<{}>, value: Option | null) => void;
-	label: string;
-	isOptionEqualToValue: (option: Option, value: Option) => boolean;
-	value: Option;
-}
-
-BasicAuto.propTypes = {
-	options: PropTypes.arrayOf(
-		PropTypes.shape({
-			label: PropTypes.string,
-			value: PropTypes.string,
-		})
-	),
-	onChange: PropTypes.func,
-	value: PropTypes.shape({
-		label: PropTypes.string,
-		value: PropTypes.string,
-	}),
-	label: PropTypes.string,
-	isOptionEqualToValue: PropTypes.func,
-};
-
-export default function BasicAuto({
+export default function BasicAuto<T>({
 	options,
 	onChange,
+	getOptionLabel,
 	value,
 	label,
 	isOptionEqualToValue,
-}: BasicAutoProps) {
+	required,
+}: BasicAutoProps<T>) {
 	return (
 		<Autocomplete
 			disablePortal
 			id="combo-box-demo"
 			options={options}
-			getOptionLabel={(option) => option.label}
-			onChange={onChange}
-			// If value has keys, then return value, else nothing was picked so default to options[0]
+			getOptionLabel={getOptionLabel}
 			value={value}
-			renderInput={(params) => <TextField {...params} label={label} />}
+			onChange={onChange}
+			renderInput={(params) => (
+				<TextField {...params} label={label} required={required} />
+			)}
 			isOptionEqualToValue={isOptionEqualToValue}
 		/>
 	);

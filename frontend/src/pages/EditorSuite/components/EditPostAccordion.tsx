@@ -4,52 +4,52 @@
   edit the post that they're working on.
 */
 
-import { useState } from "react";
+import { ChangeEvent, Dispatch, useState, SetStateAction } from "react";
+import { SelectChangeEvent } from "@mui/material";
+import { Editor as TinyMCEEditor } from "tinymce";
 
 import NewBasicSelect from "../../../components/select/NewBasicSelect";
+import BasicAuto from "../../../components/autocomplete/BasicAuto";
 import FilteredAutoSelect from "../../../components/autocomplete/FilteredAutoSelect";
 import BasicAccordion from "../../../components/accordion/BasicAccordion";
 import { Box, TextField, Button } from "@mui/material";
-import { postActions, postStatuses } from "../data/postConstants";
+import { postStatuses } from "../postConstants";
 import PostEditor from "./PostEditor";
-import { ICategory, ITag, PostStatusType } from "../../../types/Post";
 
+import {
+	ICategory,
+	ITag,
+	PostStatusType,
+	IPostState,
+} from "../../../types/Post";
 
 interface IEditPostAccordion {
-	title: string;
-	cateogry: string;
-	body: string;
-	selectedTags: ITag[];
-	imgSrc: string;
-	imgCredits: string;
-	// dispatch:
-	// handleSubmitPost
-	status: PostStatusType;
-	error: string;
-	isLoading: boolean;
+	// State and state setter for the postData
+	postData: IPostState;
+
+	setPostData: Dispatch<SetStateAction<IPostState>>;
+
+	// Categories and tags that you can pick from
 	categories: ICategory[];
 	tags: ITag[];
 
+	// Post submission function and states; will be different based on the EditPostPage and CreatePostPage
+	onSubmitPost: () => void;
+	submitError: string | null;
+	submitLoading: boolean;
 }
 
-
 export default function EditPostAccordion({
-	title,
-	category,
-	body,
-	selectedTags,
-	imgSrc,
-	imgCredits,
-	status,
-	dispatch,
-	handleSubmitPost, // Depending on whether it's the edit or create page, the function could be different
-	error,
-	isLoading,
+	postData,
+	setPostData,
 	categories,
 	tags,
-}) {
+	onSubmitPost,
+	submitError,
+	submitLoading,
+}: IEditPostAccordion) {
 	// State that indicates the current accordion that's expanded.
-	const [activeIndex, setActiveIndex] = useState(0);
+	const [activeIndex, setActiveIndex] = useState<number>(0);
 
 	/*
   + Handles clicks on the accordion given the index position
@@ -60,12 +60,74 @@ export default function EditPostAccordion({
   - Else, they are clicking on a section that is different from the opened 
     one, so just set the active index to the new index.
   */
-	const handleChange = (index) => {
+	const handleAccordionChange = (index: number) => {
 		if (index === activeIndex) {
 			setActiveIndex(-1);
 			return;
 		}
 		setActiveIndex(index);
+	};
+
+	const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const newPostData: IPostState = {
+			...postData,
+			title: e.target.value,
+		};
+		setPostData(newPostData);
+	};
+
+	const handleCategoryChange = (event: any, newValue: ICategory | null) => {
+		const newPostData: IPostState = {
+			...postData,
+			category: newValue ? newValue : undefined,
+		};
+		setPostData(newPostData);
+	};
+
+	const handleBodyChange = (newValue: string, editor: TinyMCEEditor) => {
+		const wordCount = editor.plugins.wordcount.body.getWordCount();
+		const newPostData: IPostState = {
+			...postData,
+			body: newValue,
+			wordCount: wordCount,
+		};
+		setPostData(newPostData);
+	};
+
+	const handleTagChange = (
+		e: ChangeEvent<{}>,
+		newValues: ITag[] | undefined
+	) => {
+		const newPostData: IPostState = {
+			...postData,
+			// If we have tags return them, else it's undefined set it to an empty array
+			tags: newValues ? newValues : ([] as ITag[]),
+		};
+		setPostData(newPostData);
+	};
+
+	const handleImgSrcChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const newPostData: IPostState = {
+			...postData,
+			imgSrc: e.target.value,
+		};
+		setPostData(newPostData);
+	};
+
+	const handleImgCreditsChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const newPostData: IPostState = {
+			...postData,
+			imgCredits: e.target.value,
+		};
+		setPostData(newPostData);
+	};
+
+	const handleStatusChange = (e: SelectChangeEvent) => {
+		const newPostData: IPostState = {
+			...postData,
+			status: e.target.value as PostStatusType,
+		};
+		setPostData(newPostData);
 	};
 
 	// Create sections for the accordion that we'll use to render
@@ -79,33 +141,21 @@ export default function EditPostAccordion({
 						label="Title"
 						id="title"
 						name="title"
-						value={title}
-						onChange={(e) =>
-							dispatch({ type: postActions.SET_TITLE, payload: e.target.value })
-						}
+						value={postData.title}
+						onChange={handleTitleChange}
+						required
+					/>
+					<BasicAuto
+						value={postData.category}
+						onChange={handleCategoryChange}
+						options={categories}
+						getOptionLabel={(option) => option?.title || "Select a category!"}
+						label="Post Category"
+						isOptionEqualToValue={(option, value) => option?._id === value?._id}
 						required
 					/>
 
-					<NewBasicSelect
-						value={category || ""}
-						setValue={(newCategory) =>
-							dispatch({ type: postActions.SET_CATEGORY, payload: newCategory })
-						}
-						options={categories || []}
-						getOptionLabel={(option) => option.title}
-						getOptionValue={(option) => option._id}
-						label="Category"
-						placeholder="Select a category for the post"
-						required
-					/>
-
-					<PostEditor
-						value={body}
-						// 'payload' will be an object with values for {body, wordCount}
-						setValue={(payload) =>
-							dispatch({ type: postActions.SET_BODY, payload })
-						}
-					/>
+					<PostEditor value={postData.body} onChange={handleBodyChange} />
 				</Box>
 			),
 		},
@@ -117,10 +167,8 @@ export default function EditPostAccordion({
 					label="Post Tags"
 					placeholder="Select Tags"
 					options={tags}
-					selectedValues={selectedTags}
-					setSelectedValues={(newValues) =>
-						dispatch({ type: postActions.SET_TAGS, payload: newValues })
-					}
+					selectedValues={postData.tags}
+					onChange={handleTagChange}
 					getOptionLabel={(option) => option.title}
 					isOptionEqualToValue={(option, value) => option._id === value._id}
 					limitTags={3}
@@ -134,10 +182,8 @@ export default function EditPostAccordion({
 					<TextField
 						label="Post Image"
 						helperText="The src link of the image will be the thunmbnail of the post"
-						value={imgSrc}
-						onChange={(e) =>
-							dispatch({ type: postActions.SET_IMAGE, payload: e.target.value })
-						}
+						value={postData.imgSrc}
+						onChange={handleImgSrcChange}
 						required
 					/>
 
@@ -145,13 +191,8 @@ export default function EditPostAccordion({
 						label="Image Credits"
 						name="imgCredits"
 						helperText="Credits to the photographer of the image and platform it came from"
-						value={imgCredits}
-						onChange={(e) =>
-							dispatch({
-								type: postActions.SET_IMAGE_CREDITS,
-								payload: e.target.value,
-							})
-						}
+						value={postData.imgCredits}
+						onChange={handleImgCreditsChange}
 					/>
 				</Box>
 			),
@@ -161,10 +202,8 @@ export default function EditPostAccordion({
 			content: (
 				<Box className="tw-flex tw-flex-col tw-gap-y-2">
 					<NewBasicSelect
-						value={status || ""}
-						setValue={(status) =>
-							dispatch({ type: postActions.SET_STATUS, payload: status })
-						}
+						value={postData.status}
+						onChange={handleStatusChange}
 						label="Status"
 						options={postStatuses}
 						getOptionLabel={(option) => option.label}
@@ -173,12 +212,14 @@ export default function EditPostAccordion({
 						required
 					/>
 
-					{error && <div className="error">{error}</div>}
+					{submitError && <div className="error">{submitError}</div>}
 					{/* Action Buttons for the form */}
-					<Box
-						className="tw-flex tw-justify-end tw-gap-x-4"
-						onClick={handleSubmitPost}>
-						<Button variant="contained" color="primary" disabled={isLoading}>
+					<Box className="tw-flex tw-justify-end tw-gap-x-4">
+						<Button
+							variant="contained"
+							color="primary"
+							onClick={onSubmitPost}
+							disabled={submitLoading}>
 							Submit
 						</Button>
 					</Box>
@@ -193,7 +234,7 @@ export default function EditPostAccordion({
 				<BasicAccordion
 					key={index}
 					expanded={activeIndex === index}
-					handleChange={() => handleChange(index)}
+					handleChange={() => handleAccordionChange(index)}
 					headerTitle={section.title}
 					id={`accordion-${index}`}>
 					{section.content}

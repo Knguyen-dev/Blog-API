@@ -1,4 +1,6 @@
-import { FormEvent, useState } from "react";
+import { SelectChangeEvent } from "@mui/material";
+import { useState, ChangeEvent } from "react";
+
 import { Typography, Box, Grid } from "@mui/material";
 import PostCard from "./PostCard";
 import { ITag, IPost } from "../../types/Post";
@@ -39,6 +41,17 @@ export default function BlogPage() {
 		});
 	};
 
+	const handleCategoryChange = (e: SelectChangeEvent) => {
+		setCategoryID(e.target.value);
+	};
+
+	const handleTagChange = (
+		e: ChangeEvent<{}>,
+		newValues: ITag[] | undefined
+	) => {
+		setSelectedTags(newValues);
+	};
+
 	return (
 		<div className="tw-flex tw-flex-col tw-flex-1">
 			{/* Actually maybe this can be called the header; what would we normally call this */}
@@ -74,7 +87,7 @@ export default function BlogPage() {
 							{categories && (
 								<NewBasicSelect
 									value={categoryID || ""}
-									setValue={setCategoryID}
+									onChange={handleCategoryChange}
 									options={categories}
 									getOptionLabel={(option) => option.title}
 									getOptionValue={(option) => option._id}
@@ -91,7 +104,7 @@ export default function BlogPage() {
 									placeholder="Select Tags"
 									options={tags}
 									selectedValues={selectedTags}
-									setSelectedValues={setSelectedTags}
+									onChange={handleTagChange}
 									getOptionLabel={(option) => option.title}
 									isOptionEqualToValue={(option, value) =>
 										option._id === value._id
