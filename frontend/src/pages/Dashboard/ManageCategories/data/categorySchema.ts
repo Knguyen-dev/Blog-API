@@ -12,4 +12,9 @@ const descriptionSchema = yup
 	.required("Description is required")
 	.max(500, "Description must be between 1 to 500 characters");
 
-export { titleSchema, descriptionSchema };
+const categorySchema = yup.object().shape({
+	title: titleSchema,
+	description: descriptionSchema,
+});
+
+export default categorySchema;

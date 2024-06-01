@@ -1,13 +1,11 @@
 import { Button, Box } from "@mui/material";
-import PropTypes from "prop-types";
-
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FormInputField from "../../../../components/Input/FormInputField";
 import { useForm } from "react-hook-form";
-import { titleSchema, descriptionSchema } from "../data/categorySchemas";
-
+import categorySchema from "../data/categorySchema";
 import useSaveCategory from "../hooks/useSaveCategory";
+import { ICategory, ICategoryFormData } from "../../../../types/Post";
+import { Dispatch, SetStateAction } from "react";
 
 /* 
 + CategoryForm: Form for creating or editing an existing category. It accepts 
@@ -16,33 +14,23 @@ means we are updating/editing an existing category. Else category object is null
 that means we are creating a brand new category.
 */
 
-const validationSchema = yup.object().shape({
-	title: titleSchema,
-	description: descriptionSchema,
-});
 
-import propTypes from "prop-types";
-
-CategoryForm.propTypes = {
-	selectedCategory: propTypes.shape({
-		_id: propTypes.string.isRequired,
-		title: propTypes.string.isRequired,
-		description: propTypes.string.isRequired,
-	}),
-	onSuccess: PropTypes.func,
-	setCategories: PropTypes.func,
-};
+interface ICategoryFormProps {
+	selectedCategory?: ICategory;
+	onSuccess: () => void;
+	setCategories: Dispatch<SetStateAction<ICategory[] | undefined>>
+}
 
 export default function CategoryForm({
 	selectedCategory,
 	onSuccess,
 	setCategories,
-}) {
+}: ICategoryFormProps) {
 	const { control, handleSubmit } = useForm({
-		resolver: yupResolver(validationSchema),
+		resolver: yupResolver(categorySchema),
 		defaultValues: {
-			title: selectedCategory?.title,
-			description: selectedCategory?.description,
+			title: selectedCategory?.title || "",
+			description: selectedCategory?.description || "",
 		},
 	});
 
@@ -54,14 +42,14 @@ export default function CategoryForm({
 		createNewCategory,
 	} = useSaveCategory();
 
-	const onSubmit = async (formData) => {
+	const onSubmit = async (formData: ICategoryFormData) => {
 		let newCategory = null;
 		/*
-    - Handle making the request itself:
-    - If a category was passed in, that means we are editing an existing category.
-      So to indicate that, we include the id of the category we are updating in the formData 
-      so that our saveCategory hook knows what category we are supposed to be updating.
-    */
+		- Handle making the request itself:
+		- If a category was passed in, that means we are editing an existing category.
+		So to indicate that, we include the id of the category we are updating in the formData 
+		so that our saveCategory hook knows what category we are supposed to be updating.
+		*/
 		if (selectedCategory) {
 			if (
 				formData.title == selectedCategory.title &&
@@ -72,7 +60,7 @@ export default function CategoryForm({
 				);
 				return;
 			}
-
+			// Assign the ._id value to the formData, and do the request to save the existing category
 			formData._id = selectedCategory._id;
 			newCategory = await saveExistingCategory(formData);
 		} else {
@@ -85,27 +73,22 @@ export default function CategoryForm({
 		}
 
 		/*
-    - At this point request was successful and 'newCategory' is the newly created/updated
-      category. Now update the category state:
-
-    - If we were editing/updating an existing category, replace the category we're 
-      updating with the new version
-    - If !selectedCategory, we are creating a new category, our new state would be 
-      an array of categories and the new category we created at the end
-    */
-		if (selectedCategory) {
-			setCategories((categories) => {
-				const newCategories = categories.map((category) =>
+		- At this point request was successful and 'newCategory' is the newly created/updated
+		category. Now update the category state:
+		- If we were editing/updating an existing category, replace the category we're 
+		updating with the new version
+		- Else, we are creating a new category, our new state would be 
+		an array of categories and the new category we created at the end
+		*/
+		setCategories((categories = []) => {
+			if (selectedCategory) {
+				return categories.map((category) =>
 					category._id === newCategory._id ? newCategory : category
 				);
-				return newCategories;
-			});
-		} else {
-			setCategories((categories) => {
-				const newCategories = [...categories, newCategory];
-				return newCategories;
-			});
-		}
+			} else {
+				return [...categories, newCategory];
+			}
+		})
 
 		// If onSuccess was defined, then call onSuccess function
 		if (onSuccess) {

@@ -1,5 +1,5 @@
 import { Box, Grid, Typography } from "@mui/material";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useToast from "../../hooks/useToast";
 import { IPost, IPostState } from "../../types/Post";
 import useNewEditorContext from "./hooks/useNewEditorContext";
@@ -33,7 +33,6 @@ export default function EditPostPage() {
 	// States for fetching the existing post from the backend
 	const {
 		data: postData,
-		setData: setPostData,
 		error: postError,
 	} = usePrivateFetchData<IPost>(`/posts/${id}`);
 

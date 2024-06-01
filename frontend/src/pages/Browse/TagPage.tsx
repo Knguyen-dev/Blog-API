@@ -16,7 +16,7 @@ interface IFetchData {
 export default function TagPage() {
 	const { id } = useParams(); // tag ID
 
-	const { data, isLoading, error, fetchData } = usePublicFetchData<IFetchData>(
+	const { data, error, fetchData } = usePublicFetchData<IFetchData>(
 		`/tags/${id}/posts/published`
 	);
 

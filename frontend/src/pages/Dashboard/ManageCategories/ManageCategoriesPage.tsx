@@ -6,14 +6,15 @@ import DeleteCategoryDialog from "./components/DeleteCategoryDialog";
 import useGetCategories from "../../EditorSuite/hooks/useGetCategories";
 
 export default function ManageCategoriesPage() {
-	const { categories, setCategories, isLoading, error } = useGetCategories();
+	const { categories, setCategories, error } = useGetCategories();
 
 	// The index of the selected category;
-	const [activeIndex, setActiveIndex] = useState(null);
+	const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-	// Which dialog/form is active/visible
-	const [activeForm, setActiveForm] = useState(null);
+	// The name of the form that's active or showing up on a dialog
+	const [activeForm, setActiveForm] = useState<string | null>(null);
 
+	// Closes all dialogs 
 	const handleCloseDialog = () => setActiveForm(null);
 
 	/*
@@ -35,7 +36,7 @@ export default function ManageCategoriesPage() {
     a valid activeIndex, we'll know that we're opening the category form 
     to edit an existing category.
   */
-	const handleEditCategory = (index) => {
+	const handleEditCategory = (index: number) => {
 		setActiveIndex(index);
 		setActiveForm("categoryForm");
 	};
@@ -46,7 +47,7 @@ export default function ManageCategoriesPage() {
   2. Set activeForm to 'deleteCategory', which will indicate that 
     we are deleting a category.
   */
-	const handleDeleteCategory = (index) => {
+	const handleDeleteCategory = (index: number) => {
 		setActiveIndex(index);
 		setActiveForm("deleteCategory");
 	};
@@ -55,12 +56,15 @@ export default function ManageCategoriesPage() {
   - Represents the existing category being selected for being updated or deleted. If 
     activeIndex isn't null, then we can index it from our list of categories.
   */
-	const selectedCategory =
-		activeIndex !== null ? categories[activeIndex] : null;
+
+	let selectedCategory = undefined;
+	if (categories && activeIndex !== null) {
+		selectedCategory = categories[activeIndex];
+	}
 
 	return (
 		<Box>
-			<Box variant="header" className="tw-mb-4 ">
+			<Box component="header" className="tw-mb-4 ">
 				<Typography variant="h5" className="tw-mb-2">
 					Manage Categories
 				</Typography>
@@ -77,32 +81,36 @@ export default function ManageCategoriesPage() {
 				setCategories={setCategories}
 			/>
 
-			<DeleteCategoryDialog
-				category={selectedCategory}
-				open={activeForm === "deleteCategory"}
-				handleClose={handleCloseDialog}
-				setCategories={setCategories}
-			/>
+			{
+				(selectedCategory && activeForm === "deleteCategory") && (
+					<DeleteCategoryDialog
+						category={selectedCategory}
+						open={activeForm === "deleteCategory"}
+						handleClose={handleCloseDialog}
+						setCategories={setCategories}
+					/>
+				)
+			}
+			
 
 			<Box>
-				{isLoading ? (
-					<Typography>Loading Categories...</Typography>
+				{categories ? (
+					categories.length > 0 ? (
+						categories.map((category, index) => 
+							(<CategoryCard
+								key={category._id}
+								category={category}
+								handleDelete={() => handleDeleteCategory(index)}
+								handleEdit={() => handleEditCategory(index)}
+								className="tw-mb-2"
+							/>))
+					) : (
+						<Typography>No categories found! Create some new categories soon!</Typography>
+					)
 				) : error ? (
-					<Typography>Error: {error}</Typography>
-				) : categories.length === 0 ? (
-					<Typography>
-						No categories have been created. Please make a category!
-					</Typography>
+					<Typography>{error}</Typography>
 				) : (
-					categories.map((category, index) => (
-						<CategoryCard
-							key={index}
-							category={category}
-							handleDelete={() => handleDeleteCategory(index)}
-							handleEdit={() => handleEditCategory(index)}
-							className="tw-mb-2"
-						/>
-					))
+					<Typography variant="h4">Loading in categories...</Typography>
 				)}
 			</Box>
 		</Box>

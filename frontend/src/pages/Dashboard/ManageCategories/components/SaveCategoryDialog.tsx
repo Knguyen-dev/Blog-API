@@ -1,23 +1,24 @@
 import CategoryForm from "./CategoryForm";
 import CustomDialog from "../../../../components/dialog/CustomDialog";
 import { Typography } from "@mui/material";
-import PropTypes from "prop-types";
+import { ICategory } from "../../../../types/Post";
+import { Dispatch, SetStateAction } from "react";
 
-SaveCategoryDialog.propTypes = {
-	open: PropTypes.bool,
-	handleClose: PropTypes.func,
-	selectedCategory: PropTypes.object,
-	setCategories: PropTypes.func,
-};
+interface ISaveCategoryDialogProps {
+	open: boolean;
+	handleClose: () => void;
+	selectedCategory?: ICategory;
+	setCategories: Dispatch<SetStateAction<ICategory[] | undefined>>
+}
 
 export default function SaveCategoryDialog({
 	open,
 	handleClose,
 	selectedCategory,
 	setCategories,
-}) {
+} : ISaveCategoryDialogProps) {
 	const dialogText = (
-		<Typography variant="span">
+		<Typography>
 			{selectedCategory
 				? `Edit the existing category named '${selectedCategory.title}'!`
 				: "Create a new category!"}

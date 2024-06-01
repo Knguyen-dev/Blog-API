@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 
 export default function usePublicFetchData<T>(url: string) {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [data, setData] = useState<T | null>(null);
+	const [data, setData] = useState<T | undefined>();
 	const [error, setError] = useState<string | null>(null);
 
 	/*

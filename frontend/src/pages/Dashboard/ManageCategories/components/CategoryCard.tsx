@@ -6,25 +6,21 @@ import {
 	Button,
 	Typography,
 } from "@mui/material";
-import PropTypes from "prop-types";
+import { ICategory } from "../../../../types/Post";
 
-CategoryCard.propTypes = {
-	category: PropTypes.shape({
-		_id: PropTypes.string,
-		title: PropTypes.string,
-		description: PropTypes.string,
-	}),
-	handleDelete: PropTypes.func,
-	handleEdit: PropTypes.func,
-	className: PropTypes.string,
-};
+interface ICategoryCardProps {
+	category: ICategory;
+	handleDelete: () => void;
+	handleEdit: () => void;
+	className?: string;
+}
 
 export default function CategoryCard({
 	category,
 	handleDelete,
 	handleEdit,
 	className,
-}) {
+} : ICategoryCardProps) {
 	return (
 		<Card className={className}>
 			<CardContent sx={{ paddingBottom: 1 }}>

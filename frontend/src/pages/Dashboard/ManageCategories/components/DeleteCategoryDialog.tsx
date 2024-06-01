@@ -1,24 +1,23 @@
 import useDeleteCategory from "../hooks/useDeleteCategory";
 import AlertDialog from "../../../../components/dialog/AlertDialog";
 import { Button, Box, Typography } from "@mui/material";
-import PropTypes from "prop-types";
+import { ICategory } from "../../../../types/Post";
+import { Dispatch, SetStateAction } from "react";
 
-DeleteCategoryDialog.propTypes = {
-	category: PropTypes.shape({
-		_id: PropTypes.string,
-		title: PropTypes.string,
-	}),
-	open: PropTypes.bool,
-	handleClose: PropTypes.func,
-	setCategories: PropTypes.func,
-};
+interface IDeleteCategoryDialogProps {
+	category: ICategory;
+	open: boolean;
+	handleClose: () => void;
+	setCategories: Dispatch<SetStateAction<ICategory[] | undefined>>
+}
+
 
 export default function DeleteCategoryDialog({
 	category,
 	open,
 	handleClose,
 	setCategories,
-}) {
+} : IDeleteCategoryDialogProps) {
 	const { error, isLoading, deleteCategory } = useDeleteCategory();
 
 	const onSubmit = async () => {
@@ -26,7 +25,7 @@ export default function DeleteCategoryDialog({
 
 		// If we were successful, update the state and close the dialog
 		if (success) {
-			setCategories((categories) =>
+			setCategories((categories = []) =>
 				categories.filter((c) => c._id !== category._id)
 			);
 			handleClose();

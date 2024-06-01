@@ -7,7 +7,7 @@ import handleRequestError from "../utils/handleRequestError";
 */
 export default function usePrivateFetchData<T>(url: string) {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [data, setData] = useState<T | null>(null);
+	const [data, setData] = useState<T | undefined>();
 	const [error, setError] = useState<string | null>(null);
 	const axiosPrivate = useAxiosPrivate();
 

@@ -16,6 +16,12 @@ interface ICategory {
 	slug: string;
 }
 
+interface ICategoryFormData {
+    _id?: string;
+    title: string;
+    description: string;
+}
+
 interface ITag {
 	_id: string;
 	title: string;
@@ -95,6 +101,7 @@ interface IAPIPostData {
 export {
 	IUser,
 	ICategory,
+	ICategoryFormData,
 	ITag,
 	IPost,
 	IPostData,
