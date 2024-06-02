@@ -2,7 +2,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import XIcon from "@mui/icons-material/X";
 import YouTubeIcon from "@mui/icons-material/YouTube";
-import { Stack, Link } from "@mui/material";
+import { Stack, Link, StackProps } from "@mui/material";
 // Fake social links for the site; facebook, instagram, twitter, youtube
 const socialLinks = [
 	{
@@ -27,7 +27,7 @@ const socialLinks = [
 	},
 ];
 
-export default function SocialMediaStack(props) {
+export default function SocialMediaStack(props: StackProps) {
 	return (
 		<Stack {...props}>
 			{socialLinks.map((link, index) => (

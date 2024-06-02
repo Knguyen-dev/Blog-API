@@ -1,4 +1,5 @@
-import { getRoleNumber } from "../utils/roleUtilities";
+import { getRoleNumber } from "../../../../utils/roleUtils";
+
 const roleSelectOptions = [
 	{
 		label: "Editor",
@@ -17,7 +18,4 @@ const employeeActions = {
 	SET_EMPLOYEES: "SET_EMPLOYEES",
 };
 
-export {
-    roleSelectOptions,
-    employeeActions
-}
+export { roleSelectOptions, employeeActions };

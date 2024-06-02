@@ -1,14 +1,23 @@
 import { AxiosError } from "axios";
 
+interface IErrorDetail {
+	field: string;
+	message: string;
+}
+
+interface IErrorData {
+	message: string;
+	statusCode: number;
+	details?: IErrorDetail[];
+}
+
 /**
  * Gets the error message or data from axios error object, when an axios
  * call fails due to a server-side error, such as validation
  *
  * @param {object} err Error object thrown by axios when request fails
- * @param {boolean} isDetailed If true, we get the 'details' property, which should be
- *  a map with keys being the fields that were invalid, and the values being the message
- *  indicating why that field is invalid.
  */
 export default function getErrorData(err: AxiosError) {
-	return err?.response?.data?.message || "Had trouble getting error message!";
+	const errData = err.response?.data as IErrorData; // Assume err.response is defined, so we got a response from the server
+	return errData.message || "Had trouble getting error message!";
 }

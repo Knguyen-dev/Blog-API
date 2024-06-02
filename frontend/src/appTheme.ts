@@ -90,6 +90,7 @@ const appTransitions = {
 	},
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getTheme = (preferences: any) => {
 	const theme = createTheme({
 		breakpoints: {

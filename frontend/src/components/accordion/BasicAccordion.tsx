@@ -34,9 +34,11 @@ export default function BasicAccordion({
 		<Accordion
 			expanded={expanded}
 			onChange={handleChange}
-			sx={{
-				backgroundColor: theme.palette.accordionBg,
-			}}>
+			sx={
+				{
+					// backgroundColor: theme.palette.accordionBg,
+				}
+			}>
 			<AccordionSummary
 				expandIcon={<ExpandMoreIcon />}
 				aria-controls={`${id}-content`}

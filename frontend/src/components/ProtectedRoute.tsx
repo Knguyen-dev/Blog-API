@@ -12,7 +12,7 @@ import { ReactNode } from "react";
 */
 
 interface ProtectedRouteProps {
-	allowedRoles: string[];
+	allowedRoles?: string[];
 	children: ReactNode;
 }
 
@@ -23,7 +23,7 @@ export default function ProtectedRoute({
 	const { auth } = useAuthContext();
 	const location = useLocation();
 
-	// If the user isn't authenticated, then redirect them.
+	// If the user isn't authenticated, then redirect them to the login page.
 	if (!auth.user) {
 		return (
 			<Navigate
@@ -35,8 +35,8 @@ export default function ProtectedRoute({
 	}
 
 	/*
-  - If there are no roles, then this route isn't protected by roles, so 
-    they are authorized. Or, if the user's role is 
+  - If there are no roles, then this route isn't protected by roles (user just has to be logged in, no specific 
+    roles required), so  they are authorized. Or, if the user's role is 
     included in the allowedRoles list, then they are also authorized.
 
   - NOTE: So isAuthorized will be true if either of these conditions are true. And
