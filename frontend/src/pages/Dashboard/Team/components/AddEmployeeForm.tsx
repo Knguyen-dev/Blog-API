@@ -1,6 +1,6 @@
 import { TextField, Button, Box, SelectChangeEvent } from "@mui/material";
 import NewBasicSelect from "../../../../components/select/NewBasicSelect";
-import { getRoleNumber } from "../utils/roleUtilities";
+import { getRoleNumber } from "../../../../utils/roleUtils";
 import { FormEvent, useState } from "react";
 import useAddEmployee from "../hooks/useAddEmployee";
 import { roleSelectOptions } from "../data/employeeConstants";

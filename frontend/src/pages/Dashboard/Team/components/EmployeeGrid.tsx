@@ -6,7 +6,7 @@ import RemoveEmployeeDialog from "./RemoveEmployeeDialog";
 import useEmployeeContext from "../hooks/useEmployeeContext";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import { employeeActions } from "../data/employeeConstants";
-import { getRoleString } from "../utils/roleUtilities";
+import { getRoleString } from "../../../../utils/roleUtils";
 import useToast from "../../../../hooks/useToast";
 import getErrorData from "../../../../utils/getErrorData";
 import { IUser } from "../../../../types/Post";

@@ -1,14 +1,13 @@
 import { Button, Box } from "@mui/material";
 import CustomDialog from "../../../../components/dialog/CustomDialog";
-import EditFullNameForm from "./EditFullNameForm";
+import EditEmailForm from "./EditEmailForm";
 import { useState } from "react";
-import PropTypes from "prop-types";
 
-EditFullNameDialog.propTypes = {
-	fullName: PropTypes.string,
-};
+interface IEditEmailDialogProps {
+	email: string;
+}
 
-export default function EditFullNameDialog({ fullName }) {
+export default function EditEmailDialog({ email } : IEditEmailDialogProps) {
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
@@ -16,15 +15,12 @@ export default function EditFullNameDialog({ fullName }) {
 	return (
 		<Box>
 			<Button variant="outlined" onClick={handleOpen}>
-				Edit Name
+				Edit Email
 			</Button>
 			<CustomDialog
-				modalTitle="Edit Your Name"
-				CustomForm={
-					<EditFullNameForm fullName={fullName} onSuccess={handleClose} />
-				}
+				modalTitle="Edit Your Email"
+				CustomForm={<EditEmailForm email={email} onSuccess={handleClose} />}
 				open={open}
-				handleOpen={handleOpen}
 				handleClose={handleClose}
 			/>
 		</Box>

@@ -22,6 +22,15 @@ export default function ProfilePage() {
 	const { auth } = useAuthContext();
 	const logout = useLogout();
 
+	/*
+	- NOTE: auth.user should be defined since this is behind a ProtectedRoute, but if not 
+	throw an error to make it clear what happened. This helps TypeScript and also 
+	helps developers.
+	*/
+	if (!auth.user) {
+		throw new Error("ProfilePage component tried to render, but 'auth.user' wasn't defined!");
+	}
+
 	return (
 		<Container maxWidth="md">
 			{/* Avatar Section: Edit avatar*/}

@@ -1,4 +1,3 @@
-import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Button } from "@mui/material";
@@ -6,24 +5,12 @@ import FormPasswordField from "../../../../components/Input/FormPasswordField";
 import useChangePassword from "../hooks/useChangePassword";
 import PropTypes from "prop-types";
 import useToast from "../../../../hooks/useToast";
-
-import {
-	passwordSchema,
-	confirmPasswordSchema,
-} from "../../../../constants/validationSchemas";
-
-const validationSchema = yup.object().shape({
-	// Old/Current Password
-	oldPassword: yup.string().required("Please enter your current password"),
-
-	// New Password
-	password: passwordSchema,
-	confirmPassword: confirmPasswordSchema,
-});
+import { changePasswordSchema } from "../data/userSchema";
+import { IChangePasswordFormData } from "../../../../types/Auth";
 
 export default function ChangePasswordForm() {
 	const { control, handleSubmit } = useForm({
-		resolver: yupResolver(validationSchema),
+		resolver: yupResolver(changePasswordSchema),
 		defaultValues: {
 			oldPassword: "",
 			password: "",
@@ -35,8 +22,11 @@ export default function ChangePasswordForm() {
 
 	const { error, isLoading, changePassword } = useChangePassword();
 
-	const onSubmit = async (formData) => {
+	const onSubmit = async (formData: IChangePasswordFormData) => {
+		// Attempt to change password; if successful this will logout the user and redirect them to the the login page
 		const success = await changePassword(formData);
+
+		// If successful, use our global toast (persists across pages) to tell the user to log back in
 		if (success) {
 			showToast({
 				message: "Password Change Successful! Please log back in.",

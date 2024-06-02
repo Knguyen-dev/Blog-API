@@ -15,32 +15,42 @@ import CloseIcon from "@mui/icons-material/Close";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useState, Fragment, ReactNode } from "react";
 
-interface DrawerTab {
+/*
+- NOTE: At minimum a DrawerTab object needs to contain an id, 
+ text (the title of the tab), and then optionally an icon.
+
+ We will then let our generic T inherit this DrawerTab interface.
+ So the user should pass in an object 'T' to represent a tab. This 
+ object can have whatever properties, but it just needs to have 
+ certain attributes defined in DrawerTab interface.
+
+*/
+export interface DrawerTab {
 	id: number;
 	icon?: ReactNode;
 	text: string;
 }
 
-interface DrawerSection {
+export interface DrawerSection<T extends DrawerTab> {
 	title?: string;
-	tabs: DrawerTab[];
+	tabs: T[];
 }
 
-interface ResponsiveDrawerProps {
+interface ResponsiveDrawerProps<T extends DrawerTab> {
 	drawerWidth: number;
-	drawerArr: DrawerSection[];
+	drawerArr: DrawerSection<T>[];
 	activeTabID: number;
-	handleTabClick: (tabObj: DrawerTab) => void;
+	handleTabClick: (tabObj: T) => void;
 	className?: string;
 }
 
-export default function ResponsiveDrawer({
+export default function ResponsiveDrawer<T extends DrawerTab>({
 	drawerWidth,
 	drawerArr,
 	activeTabID,
 	handleTabClick,
 	className,
-}: ResponsiveDrawerProps) {
+}: ResponsiveDrawerProps<T>) {
 	/*
   1. mobileOpen: Tracks when the Drawer is showing on the mobile 
     screens.

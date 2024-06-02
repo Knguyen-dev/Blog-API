@@ -3,7 +3,7 @@ import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import DOMPurify from "dompurify";
 import handleRequestError from "../../../utils/handleRequestError";
 
-import { PostStatusType, IPostFormData } from "../../../types/Post";
+import { IPostFormData } from "../../../types/Post";
 
 export default function useSavePost() {
 	const [error, setError] = useState<string | null>(null);

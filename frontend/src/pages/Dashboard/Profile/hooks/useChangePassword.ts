@@ -3,17 +3,22 @@ import useAuthContext from "../../../../hooks/useAuthContext";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import useLogout from "../../../../hooks/useLogout";
 import handleRequestError from "../../../../utils/handleRequestError";
+import { IChangePasswordFormData } from "../../../../types/Auth";
 
 export default function useChangePassword() {
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const { auth } = useAuthContext();
 	const logout = useLogout();
 	const axiosPrivate = useAxiosPrivate();
 
+	if (!auth.user) {
+		throw new Error("useChangePassword hook was called, but 'auth.user' wasn't defined!");
+	}
+
 	const endpoint = `/users/${auth.user._id}/password`;
 
-	const changePassword = async (formData) => {
+	const changePassword = async (formData: IChangePasswordFormData) => {
 		setIsLoading(true);
 		setError(null);
 		let success = false;
@@ -28,7 +33,7 @@ export default function useChangePassword() {
 			await logout();
 
 			// On success, we will reset the auth state with our useLogout Hook
-		} catch (err) {
+		} catch (err: any) {
 			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);

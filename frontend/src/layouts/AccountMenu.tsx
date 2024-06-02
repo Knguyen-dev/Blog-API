@@ -13,11 +13,11 @@ import {
 	Tooltip,
 } from "@mui/material";
 
-import { useState } from "react";
-import useProfileNavigation from "../../pages/Dashboard/Profile/hooks/useProfileNavigation";
-import useManagePostsNavigation from "../../pages/Dashboard/ManagePosts/hooks/useManagePostsNavigation";
-import useLogout from "../../hooks/useLogout";
-import useAuthContext from "../../hooks/useAuthContext";
+import { useState, MouseEvent } from "react";
+import useProfileNavigation from "../pages/Dashboard/Profile/hooks/useProfileNavigation";
+import useManagePostsNavigation from "../pages/Dashboard/ManagePosts/hooks/useManagePostsNavigation";
+import useLogout from "../hooks/useLogout";
+import useAuthContext from "../hooks/useAuthContext";
 
 /*
 - Define the width of the menu. Then define a width for the text, and if the 
@@ -34,9 +34,15 @@ export default function AccountMenu() {
 	const goToProfilePage = useProfileNavigation();
 	const goToManagePostsPage = useManagePostsNavigation();
 
-	const [anchorEl, setAnchorEl] = useState(null);
+	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+	if (!auth.user) {
+		throw ("AccountMenu component tried to render, but 'auth.user' was undefined!");
+	}
+
+
 	const open = Boolean(anchorEl);
-	const handleClick = (event) => {
+	const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
 
@@ -50,7 +56,7 @@ export default function AccountMenu() {
     we'll be able to run the code for an individual tab, whilst 
     being able to close the account menu too.
   */
-	const handleTabClick = (callback) => {
+	const handleTabClick = (callback: () => void) => {
 		handleClose();
 		callback();
 	};
@@ -80,8 +86,6 @@ export default function AccountMenu() {
 				icon: <UploadIcon fontSize="small" />,
 				text: "Create Post",
 				id: 2,
-
-				// goToManagePostsPage
 				onClick: goToManagePostsPage,
 				ariaLabel: "Go to manage posts page",
 			},
@@ -198,13 +202,13 @@ export default function AccountMenu() {
               then the rest will be truncated with ellipses.
             */}
 						<Typography
-							variant="span"
+							component="span"
 							fontSize={16}
 							noWrap
 							sx={{ width: truncateWidth }}>
 							{auth.user.fullName}
 						</Typography>
-						<Typography variant="span" noWrap sx={{ width: truncateWidth }}>
+						<Typography component="span" noWrap sx={{ width: truncateWidth }}>
 							{auth.user.email}
 						</Typography>
 					</Box>

@@ -3,18 +3,23 @@ import useAuthContext from "../../../../hooks/useAuthContext";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import { useState } from "react";
 import handleRequestError from "../../../../utils/handleRequestError";
+import { IDeleteAccountFormData } from "../../../../types/Auth";
 
 export default function useDeleteAccount() {
 	const logout = useLogout();
 	const { auth } = useAuthContext();
 	const axiosPrivate = useAxiosPrivate();
 
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
+	if (!auth.user) {
+		throw new Error("useDeleteAccount hook was called, but 'auth.user' wasn't defined!");
+	}
+	
 	const endpoint = `/users/${auth.user._id}`;
 
-	const deleteAccount = async (formData) => {
+	const deleteAccount = async (formData: IDeleteAccountFormData) => {
 		setIsLoading(true);
 		setError(null);
 		let success = false;
@@ -31,7 +36,7 @@ export default function useDeleteAccount() {
 
 			// Then clear/logout the user for front-end/back-end
 			await logout();
-		} catch (err) {
+		} catch (err: any) {
 			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);

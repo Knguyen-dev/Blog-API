@@ -9,6 +9,8 @@ import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 
+import { DrawerTab, DrawerSection } from "./ResponsiveDrawer";
+
 const openedMixin = (theme: Theme, drawerWidth: number) => ({
 	width: drawerWidth,
 	transition: theme.transitions.create("width", {
@@ -55,35 +57,26 @@ const Drawer = styled(MuiDrawer as any, {
 	}),
 }));
 
-interface DrawerTab {
-	id: number;
-	icon?: ReactNode;
-	text: string;
-}
 
-interface DrawerSection {
-	title?: string;
-	tabs: DrawerTab[];
-}
 
-interface MiniDrawerProps {
+interface MiniDrawerProps<T extends DrawerTab> {
 	open: boolean;
 	sx?: object;
 	drawerWidth: number;
-	drawerArr: DrawerSection[];
+	drawerArr: DrawerSection<T>[];
 	activeTabID: number;
-	handleTabClick: (tabObj: DrawerTab) => void;
+	handleTabClick: (tabObj: T) => void;
 	className?: string;
 }
 
-export default function MiniDrawer({
+export default function MiniDrawer<T extends DrawerTab>({
 	open,
 	sx,
 	drawerWidth,
 	drawerArr,
 	handleTabClick,
 	activeTabID,
-}: MiniDrawerProps) {
+}: MiniDrawerProps<T>) {
 	const drawer = drawerArr.map((sectionObj, sectionIndex) => (
 		<Fragment key={sectionIndex}>
 			<List>

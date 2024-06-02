@@ -1,12 +1,3 @@
-/*
-+ validationSchemas: 
-  File where we create and export all of the yup
-  validation schemas that we use in some of our forms such as the 
-  sign up form, or the 'edit username' form. As a result 
-  everything is kept in one place so whenever we want to change our 
-  validation rules, we only have to make changes here.
-*/
-
 import * as yup from "yup";
 
 const emailSchema = yup
@@ -46,7 +37,7 @@ const confirmPasswordSchema = yup
 	.oneOf([yup.ref("password")], "Passwords must match!")
 	.required("Confirm pasword is required!");
 
-const signupValidationSchema = yup.object().shape({
+const signupSchema = yup.object().shape({
 	email: emailSchema,
 	username: usernameSchema,
 	fullName: fullNameSchema,
@@ -54,17 +45,32 @@ const signupValidationSchema = yup.object().shape({
 	confirmPassword: confirmPasswordSchema,
 });
 
-const loginValidationSchema = yup.object().shape({
+const loginSchema = yup.object().shape({
 	username: yup.string().required("Username is required"),
 	password: yup.string().required("Password is required"),
 });
 
+const changePasswordSchema = yup.object().shape({
+	// Old/Current Password
+	oldPassword: yup.string().required("Please enter your current password"),
+
+	// New Password
+	password: passwordSchema,
+	confirmPassword: confirmPasswordSchema,
+});
+
+const deleteAccountSchema = yup.object().shape({
+	password: yup.string().required("Please enter your current password"),
+	confirmPassword: confirmPasswordSchema,
+});
 export {
 	emailSchema,
 	usernameSchema,
 	fullNameSchema,
 	passwordSchema,
 	confirmPasswordSchema,
-	signupValidationSchema,
-	loginValidationSchema,
+	signupSchema,
+	loginSchema,
+    changePasswordSchema,
+    deleteAccountSchema
 };

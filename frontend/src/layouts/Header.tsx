@@ -9,7 +9,7 @@ import {
 	Link,
 } from "@mui/material";
 import ContrastIcon from "@mui/icons-material/Contrast";
-import AccountMenu from "../components/menus/AccountMenu";
+import AccountMenu from "./AccountMenu";
 import useAuthContext from "../hooks/useAuthContext";
 import useColorContext from "../hooks/useSettingsContext";
 import { styled } from "@mui/material/styles";

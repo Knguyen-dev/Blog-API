@@ -1,30 +1,29 @@
 import { Button, Box, Typography } from "@mui/material";
 import CustomDialog from "../../../../components/dialog/CustomDialog";
-import DeleteAccountForm from "./DeleteAccountForm";
+import ChangePasswordForm from "./ChangePasswordForm";
 import { useState } from "react";
 
-export default function DeleteAccountDialog() {
+export default function ChangePasswordDialog() {
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
 
 	const dialogText = (
-		<Typography variant="span">
-			Deleting your account is permanent and cannot be undone.
+		<Typography component="span">
+			Changing your password will log you out of your account.
 		</Typography>
 	);
 
 	return (
 		<Box>
-			<Button variant="outlined" color="warning" onClick={handleOpen}>
-				Delete Account
+			<Button variant="outlined" onClick={handleOpen}>
+				Change Password
 			</Button>
 			<CustomDialog
-				modalTitle="Delete Your Account"
-				CustomForm={<DeleteAccountForm />}
+				modalTitle="Change Your Password"
+				CustomForm={<ChangePasswordForm />}
 				open={open}
 				dialogText={dialogText}
-				handleOpen={handleOpen}
 				handleClose={handleClose}
 			/>
 		</Box>

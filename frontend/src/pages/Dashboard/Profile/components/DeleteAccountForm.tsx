@@ -1,32 +1,25 @@
-import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Box, Typography } from "@mui/material";
 import FormPasswordField from "../../../../components/Input/FormPasswordField";
 import useDeleteAccount from "../hooks/useDeleteAccount";
 import useToast from "../../../../hooks/useToast";
-
-import PropTypes from "prop-types";
-import { confirmPasswordSchema } from "../../../../constants/validationSchemas";
-
-const validationSchema = yup.object().shape({
-	password: yup.string().required("Please enter your current password"),
-	confirmPassword: confirmPasswordSchema,
-});
+import { deleteAccountSchema } from "../data/userSchema";
+import { IDeleteAccountFormData } from "../../../../types/Auth";
 
 export default function DeleteAccountForm() {
 	const { control, handleSubmit } = useForm({
-		resolver: yupResolver(validationSchema),
+		resolver: yupResolver(deleteAccountSchema),
 		defaultValues: {
 			password: "",
 			confirmPassword: "",
 		},
 	});
-	const { error, isLoading, deleteAccount, submitDisabled } =
+	const { error, isLoading, deleteAccount } =
 		useDeleteAccount();
 	const { showToast } = useToast();
 
-	const onSubmit = async (formData) => {
+	const onSubmit = async (formData: IDeleteAccountFormData) => {
 		const success = await deleteAccount(formData);
 
 		// If successful, handle showing the snackbar
@@ -76,7 +69,7 @@ export default function DeleteAccountForm() {
 						variant="contained"
 						color="warning"
 						type="submit"
-						disabled={isLoading || submitDisabled}>
+						disabled={isLoading}>
 						Delete
 					</Button>
 				</Box>
@@ -84,6 +77,3 @@ export default function DeleteAccountForm() {
 		</form>
 	);
 }
-DeleteAccountForm.propTypes = {
-	handleCloseForm: PropTypes.func,
-};

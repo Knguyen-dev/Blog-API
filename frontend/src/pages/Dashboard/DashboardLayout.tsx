@@ -14,36 +14,16 @@
   Let the admin be able to add an existing user to the team.
   This way members of the team can create accounts and then admins
   can add them to the team as editors or fellow admins.
-*/
 
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Box } from "@mui/material";
-
-import ResponsiveDrawer from "../../components/drawers/ResponsiveDrawer";
-
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import PostAddIcon from "@mui/icons-material/PostAdd";
-import GroupsIcon from "@mui/icons-material/Groups";
-import CategoryIcon from "@mui/icons-material/Category";
-import TagIcon from "@mui/icons-material/Tag";
-import { useState, useEffect, useMemo } from "react";
-import useAuthContext from "../../hooks/useAuthContext";
-
-export default function DashboardLayout() {
-	const navigate = useNavigate();
-	const location = useLocation();
-	const { auth } = useAuthContext();
-
-	/*
-  - activeTabID: You should probably define an id on every tab rather than
-    rely on index because there may be mutiple 'sections' containing tabs
+- NOTE on activeTabID: You should define an id on every tab rather than
+    rely on index BECAUSE there may be mutiple 'sections' containing tabs
     rather than one. 
-    section1 = {
+    section1 = { 
       tab1,
       tab2,
       tab3
     }
-    section2 = {
+    section2 = {  
       tab4,
       tab5,
       tab6,
@@ -61,11 +41,50 @@ export default function DashboardLayout() {
       tab1,
       tab2,
     }
-  */
-	const [activeTabID, setActiveTabID] = useState(null);
+*/
 
-	// Tabs for the sidebar
-	const tabs = useMemo(() => {
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Box } from "@mui/material";
+
+import ResponsiveDrawer, {DrawerTab} from "../../components/drawers/ResponsiveDrawer";
+
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import PostAddIcon from "@mui/icons-material/PostAdd";
+import GroupsIcon from "@mui/icons-material/Groups";
+import CategoryIcon from "@mui/icons-material/Category";
+import TagIcon from "@mui/icons-material/Tag";
+import { useState, useEffect, useMemo, ReactNode } from "react";
+import useAuthContext from "../../hooks/useAuthContext";
+import { verifyAdmin, verifyEditor } from "../../utils/roleUtils";
+
+
+// Define an interface for a tab in the DashboardLayout
+interface DashboardTab extends DrawerTab {
+	path: string;
+	onClick: () => void;
+	visible: boolean;
+}
+
+
+export default function DashboardLayout() {
+	const navigate = useNavigate();
+	const location = useLocation();
+	const { auth } = useAuthContext();
+
+	/*
+	- activeTabID: The id of the tab that's currently active or selected. In this 
+	case, each tab correlates to a route/page. So if you're on the 'Profile' page, 
+	then the 'Profile' tab, a button that routes to the 'Profile' page, will be active
+	AND it will be 'highlighted' to indicate that you're on that tab or page.
+	
+	- NOTE: By default we'll set this to 0. This is merely for TypeScript purposes, and after the 
+	first render, our effect will run to correctly set the activeTabID and visually highlight the
+	tab that the user is on in the ResponsiveDrawer.
+	*/
+	const [activeTabID, setActiveTabID] = useState<number>(0);
+
+	// Tabs for the sidebar; auth.user will be defined since this component is behind a ProtectedRoute component
+	const tabs: DashboardTab[] = useMemo(() => {
 		return [
 			{
 				id: 1,
@@ -82,8 +101,8 @@ export default function DashboardLayout() {
 				path: "/dashboard/manage-posts",
 				onClick: () => navigate("manage-posts"),
 				visible:
-					auth.user.role === parseInt(import.meta.env.VITE_ROLE_EDITOR) ||
-					auth.user.role === parseInt(import.meta.env.VITE_ROLE_ADMIN),
+					// Visible if user is an editor or admin
+					verifyEditor(auth.user!.role) || verifyAdmin(auth.user!.role)
 			},
 			{
 				id: 3,
@@ -91,9 +110,7 @@ export default function DashboardLayout() {
 				text: "Manage Categories",
 				path: "/dashboard/manage-categories",
 				onClick: () => navigate("manage-categories"),
-				visible:
-					auth.user.role === parseInt(import.meta.env.VITE_ROLE_EDITOR) ||
-					auth.user.role === parseInt(import.meta.env.VITE_ROLE_ADMIN),
+				visible: verifyEditor(auth.user!.role) || verifyAdmin(auth.user!.role)
 			},
 			{
 				id: 4,
@@ -101,9 +118,7 @@ export default function DashboardLayout() {
 				text: "Manage Tags",
 				path: "/dashboard/manage-tags",
 				onClick: () => navigate("manage-tags"),
-				visible:
-					auth.user.role === parseInt(import.meta.env.VITE_ROLE_EDITOR) ||
-					auth.user.role === parseInt(import.meta.env.VITE_ROLE_ADMIN),
+				visible: verifyEditor(auth.user!.role) || verifyAdmin(auth.user!.role)
 			},
 			{
 				id: 5,
@@ -111,27 +126,31 @@ export default function DashboardLayout() {
 				text: "Team",
 				path: "/dashboard/team",
 				onClick: () => navigate("team"),
-				visible: auth.user.role === parseInt(import.meta.env.VITE_ROLE_ADMIN),
+
+				// Only visible to admin users
+				visible: verifyAdmin(auth.user!.role)
 			},
 		];
-	}, [auth.user.role, navigate]);
+	}, [auth.user!.role, navigate]);
 
 	/*
   + Effect:  Set the active tab ID when the user navigates to the dashboard.
    This effect runs whenever the location pathname changes. This then results 
    to the highlighting for the active tab.
-
-  1. Get the path. If the path ends with '/', then we remove the slash so that 
-    we can map it to a tabID. This is because "/some_path" and "/some_path/" route 
-    to the same place, so we 'normalize' the path to make it easier for us to map the 
-    tabIDs.
   2. Then set the activeTabID.
   */
 	useEffect(() => {
+
+		/*
+		Get the path. If the path ends with '/', then we remove the slash so that 
+		we can map it to a tabID. This is because "/some_path" and "/some_path/" route 
+		to the same place, so we 'normalize' the path to make it easier for us to map the 
+		tabIDs.
+		*/
 		const path = location.pathname;
 		const normalizedPath = path.endsWith("/") ? path.slice(0, -1) : path;
 
-		const pathMap = {};
+		const pathMap: {[key: string]: number}  = {};
 		tabs.map((tab) => {
 			pathMap[tab.path] = tab.id;
 		});
@@ -149,14 +168,14 @@ export default function DashboardLayout() {
 	];
 
 	/*
-  + Handles tab clicks for the DashboardLayout:
-  1. Run the onClick() function for the tab that was clicked.
+	+ Handles tab clicks for the DashboardLayout:
+	1. Run the onClick() function for the tab that was clicked.
 
-  NOTE: Why not use tabObj.onClick. By passing handleTabClick, it makes it 
-    easier to do things such as call the .onClick, but also potentially do other 
-    things with access to data only available in the DashboardLayout.
-  */
-	const handleTabClick = (tabObj) => {
+	- NOTE: Why not use tabObj.onClick() in the ResponsiveDrawer and removing handleTabClick
+		all together. By passing handleTabClick, it makes it easier to do things such as call 
+		the .onClick, but also potentially do other things with access to data only available in the DashboardLayout.
+	*/
+	const handleTabClick = (tabObj: DashboardTab) => {
 		tabObj.onClick();
 	};
 
@@ -174,7 +193,7 @@ export default function DashboardLayout() {
     
      */
 		<Box className="tw-flex tw-flex-1 tw-w-full">
-			<ResponsiveDrawer
+			<ResponsiveDrawer<DashboardTab>
 				drawerWidth={225}
 				drawerArr={dashboardDrawer}
 				activeTabID={activeTabID}

@@ -2,13 +2,12 @@ import { Button, Box } from "@mui/material";
 import CustomDialog from "../../../../components/dialog/CustomDialog";
 import EditUsernameForm from "./EditUsernameForm";
 import { useState } from "react";
-import PropTypes from "prop-types";
 
-EditUsernameDialog.propTypes = {
-	username: PropTypes.string,
-};
+interface IEditUsernameDialogProps {
+	username: string;
+}
 
-export default function EditUsernameDialog({ username }) {
+export default function EditUsernameDialog({ username }: IEditUsernameDialogProps) {
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
@@ -20,9 +19,8 @@ export default function EditUsernameDialog({ username }) {
 			</Button>
 			<CustomDialog
 				modalTitle="Edit Your Username"
-				CustomForm={<EditUsernameForm username={username} />}
+				CustomForm={<EditUsernameForm username={username} onSuccess={handleClose}/>}
 				open={open}
-				handleOpen={handleOpen}
 				handleClose={handleClose}
 			/>
 		</Box>

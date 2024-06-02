@@ -2,14 +2,7 @@ import { Button, Box } from "@mui/material";
 import CustomDialog from "../../../../components/dialog/CustomDialog";
 import AvatarForm from "./AvatarForm";
 import { useState } from "react";
-import PropTypes from "prop-types";
-
-EditAvatarDialog.propTypes = {
-	user: PropTypes.shape({
-		avatarSrc: PropTypes.string.isRequired,
-		avatarInitials: PropTypes.string.isRequired,
-	}),
-};
+import { IUser } from "../../../../types/Post";
 
 /*
 + NOTE: You could definitely go up another level of reusability by probably passing in the 
@@ -18,7 +11,11 @@ EditAvatarDialog.propTypes = {
   are being used at the same time, you could defintely reduce the amount of states you're 
   using from 7 to one, but it doesn't look as clean or organized.
 */
-export default function EditAvatarDialog({ user }) {
+interface IEditAvatarDialogProps {
+	user: IUser;
+}
+
+export default function EditAvatarDialog({ user } : IEditAvatarDialogProps) {
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
@@ -32,7 +29,6 @@ export default function EditAvatarDialog({ user }) {
 				modalTitle="Edit Your Avatar"
 				CustomForm={<AvatarForm user={user} />}
 				open={open}
-				handleOpen={handleOpen}
 				handleClose={handleClose}
 			/>
 		</Box>

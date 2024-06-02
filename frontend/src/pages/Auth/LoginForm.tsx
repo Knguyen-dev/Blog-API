@@ -5,15 +5,14 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FormInputField from "../../components/Input/FormInputField";
 import FormPasswordField from "../../components/Input/FormPasswordField";
-import { LoginFormData } from "../../types/AuthFormData";
-import { loginValidationSchema } from "../../constants/authValidationSchemas";
-
+import { ILoginFormData } from "../../types/Auth";
+import { loginSchema } from "../Dashboard/Profile/data/userSchema";
 export default function LoginForm() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const { error, setError, isLoading, login } = useLogin();
+	const { error, isLoading, login } = useLogin();
 	const { control, handleSubmit } = useForm({
-		resolver: yupResolver(loginValidationSchema),
+		resolver: yupResolver(loginSchema),
 		defaultValues: {
 			username: "",
 			password: "",
@@ -21,7 +20,7 @@ export default function LoginForm() {
 	});
 
 	// Handle form submission
-	const onSubmit = async (formData: LoginFormData) => {
+	const onSubmit = async (formData: ILoginFormData) => {
 		// Make request to login
 		const success = await login(formData);
 

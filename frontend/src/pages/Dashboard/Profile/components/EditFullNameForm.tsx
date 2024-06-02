@@ -4,41 +4,45 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Box, Typography } from "@mui/material";
 import FormInputField from "../../../../components/Input/FormInputField";
 import PropTypes from "prop-types";
+import useChangeFullName from "../hooks/useChangeFullName";
+import { fullNameSchema } from "../data/userSchema";
+import { IChangeFullNameFormData } from "../../../../types/Auth";
 
-import { emailSchema } from "../../../../constants/validationSchemas";
-import useChangeEmail from "../hooks/useChangeEmail";
+interface IEditFullNameProps {
+	fullName: string;
+	onSuccess: () => void;
+}
 
 const validationSchema = yup.object().shape({
-	email: emailSchema,
+	fullName: fullNameSchema,
 });
 
-export default function EditNameForm({ email, onSuccess }) {
+export default function EditFullNameForm({ fullName, onSuccess } : IEditFullNameProps) {
 	const { control, handleSubmit, setError } = useForm({
 		resolver: yupResolver(validationSchema),
 		defaultValues: {
-			email, // represents current user's email
+			fullName: fullName,
 		},
 	});
 
-	const { error, isLoading, changeEmail } = useChangeEmail();
-
-	const onSubmit = async (formData) => {
+	const { error, isLoading, changeFullName } = useChangeFullName();
+	const onSubmit = async (formData: IChangeFullNameFormData) => {
 		/*
-    - If the email they submitted, matches the current user's email, then
-		no changes will be made, so stop the request early.
+    - If submitted name isn't different from current account's name
+      then even if the changes went through, the user's name didn't really 
+      change. That would be a waste of server resources, so stop execution
+      early and set an error message.
+
     */
-		if (formData.email === email) {
-			setError("email", {
+		if (formData.fullName === fullName) {
+			setError("fullName", {
 				type: "client",
-				message: "New email must be different from current one!",
+				message: "New name must be different from the current one!",
 			});
 			return;
 		}
 
-		// Attempt to change the email
-		const success = await changeEmail(formData);
-
-		// If successful, close the form
+		const success = await changeFullName(formData);
 		if (success && onSuccess) {
 			onSuccess();
 		}
@@ -54,10 +58,10 @@ export default function EditNameForm({ email, onSuccess }) {
 					rowGap: 2,
 				}}>
 				<FormInputField
-					id="email"
-					name="email"
+					id="fullName"
+					name="fullName"
 					control={control}
-					label="Email"
+					label="Full Name"
 					variant="standard"
 				/>
 
@@ -81,7 +85,7 @@ export default function EditNameForm({ email, onSuccess }) {
 		</form>
 	);
 }
-EditNameForm.propTypes = {
+EditFullNameForm.propTypes = {
 	onSuccess: PropTypes.func,
-	email: PropTypes.string,
+	fullName: PropTypes.string,
 };

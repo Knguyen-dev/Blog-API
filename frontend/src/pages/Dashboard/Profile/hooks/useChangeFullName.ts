@@ -3,15 +3,21 @@ import useAuthContext from "../../../../hooks/useAuthContext";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import authActions from "../../../../constants/authActions";
 import handleRequestError from "../../../../utils/handleRequestError";
+import { IChangeFullNameFormData } from "../../../../types/Auth";
 
 export default function useChangeFullName() {
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string|null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const { auth, dispatch } = useAuthContext();
-	const endpoint = `/users/${auth.user._id}/fullName`;
 	const axiosPrivate = useAxiosPrivate();
+	
+	if (!auth.user) {
+		throw new Error("useChangeFullName hook was called, but 'auth.user' wasn't defined!");
+	}
+	const endpoint = `/users/${auth.user._id}/fullName`;
+	
 
-	const changeFullName = async (formData) => {
+	const changeFullName = async (formData: IChangeFullNameFormData) => {
 		setIsLoading(true);
 		setError(null);
 		let success = false;
@@ -21,7 +27,7 @@ export default function useChangeFullName() {
 
 			// On success, API should send back the updated user object
 			dispatch({ type: authActions.updateUser, payload: response.data });
-		} catch (err) {
+		} catch (err: any) {
 			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);

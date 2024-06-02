@@ -1,38 +1,41 @@
 import { useState } from "react";
 import useAuthContext from "../../../../hooks/useAuthContext";
-import authActions from "../../../../constants/authActions";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import handleRequestError from "../../../../utils/handleRequestError";
+import authActions from "../../../../constants/authActions";
 
-export default function useChangeUsername() {
-	const [error, setError] = useState(null);
+import handleRequestError from "../../../../utils/handleRequestError";
+import { IChangeEmailFormData } from "../../../../types/Auth";
+
+export default function useChangeEmail() {
+	const [error, setError] = useState<string|null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const { auth, dispatch } = useAuthContext();
+
+	if (!auth.user) {
+		throw new Error("useChangeEmail hook was called, but 'auth.user' wasn't defined!");
+	}
+
+	const endpoint = `/users/${auth.user._id}/email`;
 	const axiosPrivate = useAxiosPrivate();
 
-	const endpoint = `/users/${auth.user._id}/username`;
-
-	const changeUsername = async (formData) => {
+	const changeEmail = async (formData: IChangeEmailFormData) => {
 		setIsLoading(true);
 		setError(null);
 		let success = false;
-
 		try {
 			const response = await axiosPrivate.patch(endpoint, formData);
-
-			// At this point we have a successful username change
 			success = true;
-
 			// On success, API should send back the updated user object
 			dispatch({ type: authActions.updateUser, payload: response.data });
-		} catch (err) {
+		} catch (err: any) {
 			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);
 		}
 
+		// Return the success state
 		return success;
 	};
 
-	return { error, isLoading, changeUsername };
+	return { error, isLoading, changeEmail };
 }

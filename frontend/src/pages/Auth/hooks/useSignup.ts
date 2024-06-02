@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { axiosPublic } from "../../../api/axios";
 import handleRequestError from "../../../utils/handleRequestError";
-import { SignupFormData } from "../../../types/AuthFormData";
+import { ISignupFormData } from "../../../types/Auth";
 const endpoint = "/auth/signup";
 
 export default function useSignup() {
@@ -14,7 +14,7 @@ export default function useSignup() {
   */
 	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
-	const signup = async (formData: SignupFormData) => {
+	const signup = async (formData: ISignupFormData) => {
 		setIsLoading(true);
 		setError(null);
 		let success = false;

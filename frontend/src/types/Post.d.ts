@@ -5,7 +5,7 @@ interface IUser {
 	fullName: string;
 	role: number;
 	lastLogin: string;
-	avatarSrc: string;
+	avatarSrc?: string;
 	avatarInitials: string;
 }
 

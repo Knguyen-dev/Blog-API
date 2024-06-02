@@ -3,7 +3,7 @@ import useAuthContext from "../../../hooks/useAuthContext";
 import { axiosPrivate } from "../../../api/axios";
 import authActions from "../../../constants/authActions";
 import handleRequestError from "../../../utils/handleRequestError";
-import { LoginFormData } from "../../../types/AuthFormData";
+import { ILoginFormData } from "../../../types/Auth";
 
 const endpoint = "/auth/login";
 
@@ -12,7 +12,7 @@ export default function useLogin() {
 	const [isLoading, setIsLoading] = useState(false);
 	const { dispatch } = useAuthContext();
 
-	const login = async (formData: LoginFormData) => {
+	const login = async (formData: ILoginFormData) => {
 		setIsLoading(true);
 		setError(null);
 		let success = false;

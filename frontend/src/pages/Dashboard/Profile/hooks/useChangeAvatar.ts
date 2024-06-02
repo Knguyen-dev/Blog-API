@@ -5,18 +5,31 @@ import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import handleRequestError from "../../../../utils/handleRequestError";
 
 export default function useChangeAvatar() {
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const { auth, dispatch } = useAuthContext();
 
 	// Use axiosPrivate hook since we need to send over our access token for this request
 	const axiosPrivate = useAxiosPrivate();
+
+	/*
+	- Do a conditional check to see if auth.user is null.
+	
+	- NOTE: Acts like an extra check for developers and to prevent bugs. If the application
+	calls this hook when auth.user isn't defined, then we throw an error. Of course in all of 
+	our accounted cases, useChangeAvatar is only used in the Profile page (behind a protected route)
+	and at that point, we auth.user will be  defined!
+	*/
+	if (!auth.user) {
+		throw new Error("useChangeAvatar hook was called, but 'auth.user' wasn't defined!");
+	}
+
 	const endpoint = `/users/${auth.user._id}/avatar`;
 
 	/*
   - Makes a patch request to update the avatar. 
   */
-	const updateAvatar = (file) => {
+	const updateAvatar = (file: File) => {
 		const formData = new FormData();
 		formData.append("file", file);
 		return axiosPrivate.patch(endpoint, formData, {
@@ -40,7 +53,7 @@ export default function useChangeAvatar() {
     avatar.
   2. Else, if no file was passed, that means they want to remove/delete their avatar
   */
-	const changeAvatar = async (file) => {
+	const changeAvatar = async (file?: File) => {
 		setIsLoading(true);
 		setError(null);
 
@@ -55,7 +68,7 @@ export default function useChangeAvatar() {
 			// API should return a new user, with updated avatar
 			const user = response.data;
 			dispatch({ type: authActions.updateUser, payload: user });
-		} catch (err) {
+		} catch (err: any) {
 			handleRequestError(err, setError);
 		} finally {
 			setIsLoading(false);
@@ -64,6 +77,7 @@ export default function useChangeAvatar() {
 
 	return {
 		error,
+		setError,
 		isLoading,
 		changeAvatar,
 	};

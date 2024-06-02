@@ -15,13 +15,13 @@ import useSignup from "./hooks/useSignup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FormInputField from "../../components/Input/FormInputField";
 import FormPasswordField from "../../components/Input/FormPasswordField";
-import { signupValidationSchema } from "../../constants/authValidationSchemas";
+import { signupSchema } from "../Dashboard/Profile/data/userSchema";
 import useToast from "../../hooks/useToast";
-import { SignupFormData } from "../../types/AuthFormData";
+import { ISignupFormData } from "../../types/Auth";
 
 export default function SignupForm() {
 	const { control, handleSubmit } = useForm({
-		resolver: yupResolver(signupValidationSchema),
+		resolver: yupResolver(signupSchema),
 		defaultValues: {
 			email: "",
 			username: "",
@@ -38,7 +38,7 @@ export default function SignupForm() {
 
 	const { error, isLoading, signup } = useSignup();
 
-	const onSubmit = async (formData: SignupFormData) => {
+	const onSubmit = async (formData: ISignupFormData) => {
 		const success = await signup(formData);
 		/*
     - Conditionals:

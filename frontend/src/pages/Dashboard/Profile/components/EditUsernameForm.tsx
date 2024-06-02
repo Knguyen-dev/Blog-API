@@ -5,13 +5,19 @@ import { Button, Box, Typography } from "@mui/material";
 import FormInputField from "../../../../components/Input/FormInputField";
 import PropTypes from "prop-types";
 import useChangeUsername from "../hooks/useChangeUsername";
-import { usernameSchema } from "../../../../constants/validationSchemas";
+import { usernameSchema } from "../data/userSchema";
+import { IChangeUsernameFormData } from "../../../../types/Auth";
+
+interface IEditUsernameFormProps {
+	username: string;
+	onSuccess: () => void;
+}
 
 const validationSchema = yup.object().shape({
 	username: usernameSchema,
 });
 
-export default function EditUsernameForm({ username, onSuccess }) {
+export default function EditUsernameForm({ username, onSuccess } : IEditUsernameFormProps) {
 	const { control, handleSubmit, setError } = useForm({
 		resolver: yupResolver(validationSchema),
 		defaultValues: {
@@ -21,7 +27,7 @@ export default function EditUsernameForm({ username, onSuccess }) {
 
 	const { error, isLoading, changeUsername } = useChangeUsername();
 
-	const onSubmit = async (formData) => {
+	const onSubmit = async (formData: IChangeUsernameFormData) => {
 		/*
     - If submitted username matches the user's current username, nothing 
       changes so we don't bother making a call to the server. Stop function

@@ -7,7 +7,6 @@
 import { ChangeEvent, Dispatch, useState, SetStateAction } from "react";
 import { SelectChangeEvent } from "@mui/material";
 import { Editor as TinyMCEEditor } from "tinymce";
-
 import NewBasicSelect from "../../../components/select/NewBasicSelect";
 import BasicAuto from "../../../components/autocomplete/BasicAuto";
 import FilteredAutoSelect from "../../../components/autocomplete/FilteredAutoSelect";
@@ -15,7 +14,6 @@ import BasicAccordion from "../../../components/accordion/BasicAccordion";
 import { Box, TextField, Button } from "@mui/material";
 import { postStatuses } from "../postConstants";
 import PostEditor from "./PostEditor";
-
 import {
 	ICategory,
 	ITag,
