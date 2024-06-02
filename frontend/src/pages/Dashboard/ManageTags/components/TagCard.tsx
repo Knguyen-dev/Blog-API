@@ -6,18 +6,21 @@ import {
 	Button,
 	Typography,
 } from "@mui/material";
-import PropTypes from "prop-types";
+import { ITag } from "../../../../types/Post";
 
-TagCard.propTypes = {
-	tag: PropTypes.shape({
-		title: PropTypes.string.isRequired,
-	}),
-	handleDelete: PropTypes.func.isRequired,
-	handleEdit: PropTypes.func.isRequired,
-	className: PropTypes.string,
-};
+interface ITagCardProps {
+	tag: ITag;
+	handleDelete: () => void;
+	handleEdit: () => void;
+	className?: string;
+}
 
-export default function TagCard({ tag, handleDelete, handleEdit, className }) {
+export default function TagCard({
+	tag,
+	handleDelete,
+	handleEdit,
+	className,
+}: ITagCardProps) {
 	return (
 		<Card className={className}>
 			<CardContent sx={{ paddingBottom: 1 }}>

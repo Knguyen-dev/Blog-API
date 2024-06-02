@@ -1,13 +1,12 @@
 import AlertDialog from "../../../../components/dialog/AlertDialog";
 import { DialogActions, Button, Typography, Box } from "@mui/material";
-import PropTypes from "prop-types";
 import useRemoveEmployee from "../hooks/useRemoveEmployee";
 import { IUser } from "../../../../types/Post";
 
 interface IRemoveEmployeeDialogProps {
 	open: boolean;
 	handleClose: () => void;
-	targetUser: IUser
+	targetUser: IUser;
 }
 
 /*
@@ -18,7 +17,7 @@ export default function RemoveEmployeeDialog({
 	open,
 	handleClose,
 	targetUser,
-} : IRemoveEmployeeDialogProps) {
+}: IRemoveEmployeeDialogProps) {
 	const { error, isLoading, removeEmployee } = useRemoveEmployee();
 
 	// The onSubmit function basically

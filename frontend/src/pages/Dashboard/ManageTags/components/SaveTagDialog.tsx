@@ -1,22 +1,24 @@
 import TagForm from "./TagForm";
 import CustomDialog from "../../../../components/dialog/CustomDialog";
 import { Typography } from "@mui/material";
-import PropTypes from "prop-types";
+import { Dispatch, SetStateAction } from "react";
+import { ITag } from "../../../../types/Post";
 
-SaveTagDialog.propTypes = {
-	open: PropTypes.bool.isRequired,
-	handleClose: PropTypes.func.isRequired,
-	selectedTag: PropTypes.object,
-	setTags: PropTypes.func.isRequired,
-};
+interface ISaveTagDialogProps {
+	open: boolean;
+	handleClose: () => void;
+	selectedTag: ITag;
+	setTags: Dispatch<SetStateAction<ITag[] | undefined>>;
+}
+
 export default function SaveTagDialog({
 	open,
 	handleClose,
 	selectedTag,
 	setTags,
-}) {
+}: ISaveTagDialogProps) {
 	const dialogText = (
-		<Typography variant="span">
+		<Typography component="span">
 			{selectedTag
 				? `Edit the title of the existing tag named '${selectedTag.title}'. 
         Any posts that already have this tag will show the tag's new title!`

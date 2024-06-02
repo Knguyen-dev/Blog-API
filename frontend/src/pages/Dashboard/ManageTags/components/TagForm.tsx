@@ -1,38 +1,35 @@
 // Wait this needs to be validated by react-hook-form as well
 import { Button, Box } from "@mui/material";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FormInputField from "../../../../components/Input/FormInputField";
 import { useForm } from "react-hook-form";
-import { titleSchema } from "../data/tagSchemas";
+import tagSchema from "../data/tagSchema";
 import useSaveTag from "../hooks/useSaveTag";
-import PropTypes from "prop-types";
+import { ITag, ITagFormData } from "../../../../types/Post";
+import { Dispatch, SetStateAction } from "react";
 
-TagForm.propTypes = {
-	selectedTag: PropTypes.shape({
-		title: PropTypes.string.isRequired,
-		_id: PropTypes.string.isRequired,
-	}),
-	setTags: PropTypes.func,
-	onSuccess: PropTypes.func,
-};
+interface ITagFormProps {
+	selectedTag?: ITag;
+	setTags: Dispatch<SetStateAction<ITag[] | undefined>>;
+	onSuccess: () => void;
+}
 
-const validationSchema = yup.object().shape({
-	title: titleSchema,
-});
-
-export default function TagForm({ selectedTag, setTags, onSuccess }) {
+export default function TagForm({
+	selectedTag,
+	setTags,
+	onSuccess,
+}: ITagFormProps) {
 	const { control, handleSubmit } = useForm({
-		resolver: yupResolver(validationSchema),
+		resolver: yupResolver(tagSchema),
 		defaultValues: {
-			title: selectedTag?.title,
+			title: selectedTag?.title || "",
 		},
 	});
 
 	const { error, setError, isLoading, saveExistingTag, createNewTag } =
 		useSaveTag();
 
-	const onSubmit = async (formData) => {
+	const onSubmit = async (formData: ITagFormData) => {
 		/*
     - If tag was passed in, then we're editing an existing tag
     so include the id of that tag in formData so our saveTag hooks knows 
@@ -64,19 +61,17 @@ export default function TagForm({ selectedTag, setTags, onSuccess }) {
     - Else if !tags, we were creating a new tag so the new state should be an
       array with the new tag at the end.
     */
-		if (selectedTag) {
-			setTags((tags) => {
+		setTags((tags = []) => {
+			if (selectedTag) {
 				const newTags = tags.map((tag) =>
 					tag._id === newTag._id ? newTag : tag
 				);
 				return newTags;
-			});
-		} else {
-			setTags((tags) => {
+			} else {
 				const newTags = [...tags, newTag];
 				return newTags;
-			});
-		}
+			}
+		});
 
 		// If onSuccess (optional function), we call it.
 		// In this case it closes the dialog after success.

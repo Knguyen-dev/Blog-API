@@ -28,6 +28,11 @@ interface ITag {
 	slug: string;
 }
 
+interface ITagFormData {
+	_id?: string; // exists when we're editing an existing tag
+	title: string;
+}
+
 type PostStatusType = "draft" | "published" | "private";
 
 interface IPostState {
@@ -65,8 +70,7 @@ interface IPost {
 	lastUpdatedBy: string;
 }
 
-// Interface for the object you need to pass to the backend for creating a new post
-interface IAPIPostData {
+interface IPostFormData {
 	title: string;
 	body: string;
 	wordCount: number;
@@ -85,8 +89,9 @@ export {
 	ICategory,
 	ICategoryFormData,
 	ITag,
+	ITagFormData,
 	IPost,
+	IPostFormData,
 	PostStatusType,
-	IAPIPostData,
 	IPostState,
 };

@@ -19,7 +19,7 @@ import useGetTags from "./hooks/useGetTags";
 import { minWordCount } from "./postConstants";
 import useSavePost from "./hooks/useSavePost";
 import { Box, Typography } from "@mui/material";
-import { IAPIPostData, ICategory, IPostState, ITag } from "../../types/Post";
+import { ICategory, IPostState, ITag, IPostFormData } from "../../types/Post";
 
 interface INewEditorProviderProps {
 	children: ReactNode;
@@ -98,7 +98,7 @@ export default function NewEditorProvider({
 		}
 
 		// Format data so that it's ready for api call
-		const postData: IAPIPostData = {
+		const postData: IPostFormData = {
 			title: state.title,
 			body: state.body,
 			wordCount: state.wordCount,

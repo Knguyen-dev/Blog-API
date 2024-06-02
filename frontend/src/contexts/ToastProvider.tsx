@@ -96,7 +96,7 @@ export const ToastProvider = ({ children }: ToastProviderProps) => {
 
 	// Hides the snackbar, so it hides the current message
 	const handleClose = (
-		event?: React.SyntheticEvent | Event,
+		event?: SyntheticEvent | Event,
 		reason?: SnackbarCloseReason
 	) => {
 		if (reason === "clickaway") {

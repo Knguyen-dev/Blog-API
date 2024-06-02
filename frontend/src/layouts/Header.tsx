@@ -12,7 +12,7 @@ import ContrastIcon from "@mui/icons-material/Contrast";
 import AccountMenu from "../components/menus/AccountMenu";
 import useAuthContext from "../hooks/useAuthContext";
 import useColorContext from "../hooks/useSettingsContext";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 
 import useHomeNavigation from "../pages/Home/useHomeNavigation";
 import useAboutNavigation from "../pages/About/useAboutNavigation";

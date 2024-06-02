@@ -6,7 +6,6 @@ import {
 	CardActionArea,
 	Typography,
 	Avatar,
-	Skeleton,
 	IconButton,
 	Stack,
 } from "@mui/material";

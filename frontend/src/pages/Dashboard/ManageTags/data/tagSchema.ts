@@ -7,4 +7,8 @@ const titleSchema = yup
 		"Tag title must be between 1 and 50 characters long and can only contain letters, numbers, and underscores."
 	);
 
-export { titleSchema };
+const tagSchema = yup.object().shape({
+	title: titleSchema,
+});
+
+export default tagSchema;
