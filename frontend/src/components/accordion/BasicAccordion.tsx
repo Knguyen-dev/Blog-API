@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ReactNode } from "react";
-import { useTheme } from "@emotion/react";
 
 interface BasicAccordionProps {
 	expanded: boolean;
@@ -29,7 +28,6 @@ export default function BasicAccordion({
 	children,
 	id,
 }: BasicAccordionProps) {
-	const theme = useTheme();
 	return (
 		<Accordion
 			expanded={expanded}

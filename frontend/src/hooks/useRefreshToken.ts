@@ -7,11 +7,11 @@ import useToast from "./useToast";
 const endpoint = "/auth/refresh";
 
 export default function useRefreshToken() {
-	const { auth, dispatch } = useAuthContext();
-	const logout = useLogout();
+  const { auth, dispatch } = useAuthContext();
+  const logout = useLogout();
 
-	const { showToast } = useToast();
-	/*
+  const { showToast } = useToast();
+  /*
   - Call for the refresh token, which will set the global auth
     state and return the new access token.
 
@@ -45,17 +45,15 @@ export default function useRefreshToken() {
   
 
   */
-	const refresh = async () => {
-		try {
-			const response = await axiosPublic.get(endpoint, {
-				withCredentials: true,
-			});
-			dispatch({ type: authActions.login, payload: response.data });
-			return response.data.accessToken;
-		} catch (err) {
-			console.log("Failed to refresh 'access token': ", err);
-
-			/*
+  const refresh = async () => {
+    try {
+      const response = await axiosPublic.get(endpoint, {
+        withCredentials: true,
+      });
+      dispatch({ type: authActions.login, payload: response.data });
+      return response.data.accessToken;
+    } catch (err) {
+      /*
       - If catch block: Refresh token cookie expired, so the user has to enter
         their credentials again.
       1. Call logout function. This clears the auth state, clears our expired refresh
@@ -74,15 +72,15 @@ export default function useRefreshToken() {
         the user's credentials expired, but the auth state wasn't cleared yet so we 
         just need to clear it.
       */
-			if (auth.user) {
-				await logout();
-				showToast({
-					message: "User session has expired! Please log back in.",
-					severity: "info",
-				});
-			}
-		}
-	};
+      if (auth.user) {
+        await logout();
+        showToast({
+          message: "User session has expired! Please log back in.",
+          severity: "info",
+        });
+      }
+    }
+  };
 
-	return refresh;
+  return refresh;
 }

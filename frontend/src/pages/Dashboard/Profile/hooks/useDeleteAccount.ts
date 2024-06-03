@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import useLogout from "../../../../hooks/useLogout";
 import useAuthContext from "../../../../hooks/useAuthContext";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
@@ -6,44 +7,46 @@ import handleRequestError from "../../../../utils/handleRequestError";
 import { IDeleteAccountFormData } from "../../../../types/Auth";
 
 export default function useDeleteAccount() {
-	const logout = useLogout();
-	const { auth } = useAuthContext();
-	const axiosPrivate = useAxiosPrivate();
+  const logout = useLogout();
+  const { auth } = useAuthContext();
+  const axiosPrivate = useAxiosPrivate();
 
-	const [error, setError] = useState<string | null>(null);
-	const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-	if (!auth.user) {
-		throw new Error("useDeleteAccount hook was called, but 'auth.user' wasn't defined!");
-	}
-	
-	const endpoint = `/users/${auth.user._id}`;
+  if (!auth.user) {
+    throw new Error(
+      "useDeleteAccount hook was called, but 'auth.user' wasn't defined!"
+    );
+  }
 
-	const deleteAccount = async (formData: IDeleteAccountFormData) => {
-		setIsLoading(true);
-		setError(null);
-		let success = false;
+  const endpoint = `/users/${auth.user._id}`;
 
-		try {
-			// Do a delete request on the user on the backend.
-			await axiosPrivate.delete(endpoint, {
-				data: formData,
-			});
+  const deleteAccount = async (formData: IDeleteAccountFormData) => {
+    setIsLoading(true);
+    setError(null);
+    let success = false;
 
-			// If successful, mark it as so, and get the object containing the success message
-			// sent by our server.
-			success = true;
+    try {
+      // Do a delete request on the user on the backend.
+      await axiosPrivate.delete(endpoint, {
+        data: formData,
+      });
 
-			// Then clear/logout the user for front-end/back-end
-			await logout();
-		} catch (err: any) {
-			handleRequestError(err, setError);
-		} finally {
-			setIsLoading(false);
-		}
+      // If successful, mark it as so, and get the object containing the success message
+      // sent by our server.
+      success = true;
 
-		return success;
-	};
+      // Then clear/logout the user for front-end/back-end
+      await logout();
+    } catch (err: unknown) {
+      handleRequestError(err as AxiosError, setError);
+    } finally {
+      setIsLoading(false);
+    }
 
-	return { error, isLoading, deleteAccount };
+    return success;
+  };
+
+  return { error, isLoading, deleteAccount };
 }

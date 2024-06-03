@@ -6,32 +6,32 @@ import authActions from "../constants/authActions";
 const endpoint = "/auth/logout";
 
 export default function useLogout() {
-	const { dispatch } = useAuthContext();
-	const navigate = useNavigate();
+  const { dispatch } = useAuthContext();
+  const navigate = useNavigate();
 
-	/*
+  /*
   + Wipes global auth state (front-end), and makes call to wipe refresh token cookie (backend).
 
   - NOTE: Since there are no try/catch blocks here, the error will be propagated up
     to the nearest try/catch. This is especially convenient in useChangePassword as 
     our changePassword has a single try/catch that covers multiple requests.
   */
-	const logout = async () => {
-		await axiosPublic(endpoint, {
-			withCredentials: true,
-		});
-		dispatch({ type: authActions.logout });
+  const logout = async () => {
+    await axiosPublic(endpoint, {
+      withCredentials: true,
+    });
+    dispatch({ type: authActions.logout });
 
-		/*
+    /*
     - Clear the 'postData' which is the post data from the unsaved
       post that the user was creating
 
     NOTE: This prevents the 'postData' from transferring when a user on the same 
     computer AND they log out from one account and login to another account.
     */
-		localStorage.removeItem("postData");
+    localStorage.removeItem("postData");
 
-		/*
+    /*
     - Manually redirect the user to the login page.
     
     NOTE: Redirect the user to the login page, rather than let ProtectedRoute redirect them. 
@@ -52,8 +52,8 @@ export default function useLogout() {
     SOLUTION: Manually redirect the user to the login page so that ProtectedRoute doesn't have the 
     chance to record a 'location.state.from' value. 
     */
-		navigate("/auth/login");
-	};
+    navigate("/auth/login");
+  };
 
-	return logout;
+  return logout;
 }

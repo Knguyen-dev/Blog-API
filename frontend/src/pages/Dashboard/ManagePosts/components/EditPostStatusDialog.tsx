@@ -5,19 +5,19 @@ import { IPost } from "../../../../types/Post";
 import { Dispatch, SetStateAction } from "react";
 
 interface IEditPostStatusDialog {
-	selectedPost: IPost;
-	open: boolean;
-	handleClose: () => void;
-	setPosts: Dispatch<SetStateAction<IPost[] | undefined>>;
+  selectedPost: IPost;
+  open: boolean;
+  handleClose: () => void;
+  setPosts: Dispatch<SetStateAction<IPost[] | undefined>>;
 }
 
 export default function EditPostStatusDialog({
-	selectedPost,
-	open,
-	handleClose,
-	setPosts,
+  selectedPost,
+  open,
+  handleClose,
+  setPosts,
 }: IEditPostStatusDialog) {
-	/*
+  /*
   - Handles clean up operations for UI once the request for updating the post's status
     has finished successfully.
 
@@ -25,31 +25,31 @@ export default function EditPostStatusDialog({
   2. Updates the state of the posts array by replacing the old version of the post
      we edited, with the updated version.
   */
-	const onSuccess = (newPost: IPost) => {
-		handleClose();
-		setPosts((posts = []) => {
-			const newPosts = posts.map((post) =>
-				newPost._id === post._id ? newPost : post
-			);
-			return newPosts;
-		});
-	};
+  const onSuccess = (newPost: IPost) => {
+    handleClose();
+    setPosts((posts = []) => {
+      const newPosts = posts.map((post) =>
+        newPost._id === post._id ? newPost : post
+      );
+      return newPosts;
+    });
+  };
 
-	const dialogText = (
-		<Typography>
-			{`You sure you want update the status of '${selectedPost.title}'?`}
-		</Typography>
-	);
+  const dialogText = (
+    <Typography>
+      {`You sure you want update the status of '${selectedPost.title}'?`}
+    </Typography>
+  );
 
-	return (
-		<CustomDialog
-			modalTitle="Update the status of a post"
-			dialogText={dialogText}
-			CustomForm={
-				<EditPostStatusForm postID={selectedPost._id} onSuccess={onSuccess} />
-			}
-			open={open}
-			handleClose={handleClose}
-		/>
-	);
+  return (
+    <CustomDialog
+      modalTitle="Update the status of a post"
+      dialogText={dialogText}
+      CustomForm={
+        <EditPostStatusForm postID={selectedPost._id} onSuccess={onSuccess} />
+      }
+      open={open}
+      handleClose={handleClose}
+    />
+  );
 }

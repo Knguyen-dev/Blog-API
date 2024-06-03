@@ -1,5 +1,5 @@
 import { useLocation, Navigate } from "react-router-dom";
-import useAuthContext from "../hooks/useAuthContext";
+import useAuthContext from "../../../frontend/src/hooks/useAuthContext";
 import { ReactNode } from "react";
 
 /*
@@ -12,29 +12,29 @@ import { ReactNode } from "react";
 */
 
 interface ProtectedRouteProps {
-	allowedRoles?: string[];
-	children: ReactNode;
+  allowedRoles?: string[];
+  children: ReactNode;
 }
 
 export default function ProtectedRoute({
-	allowedRoles = [],
-	children,
+  allowedRoles = [],
+  children,
 }: ProtectedRouteProps) {
-	const { auth } = useAuthContext();
-	const location = useLocation();
+  const { auth } = useAuthContext();
+  const location = useLocation();
 
-	// If the user isn't authenticated, then redirect them to the login page.
-	if (!auth.user) {
-		return (
-			<Navigate
-				to="/auth/login"
-				replace={true}
-				state={{ from: location.pathname }}
-			/>
-		);
-	}
+  // If the user isn't authenticated, then redirect them to the login page.
+  if (!auth.user) {
+    return (
+      <Navigate
+        to="/auth/login"
+        replace={true}
+        state={{ from: location.pathname }}
+      />
+    );
+  }
 
-	/*
+  /*
   - If there are no roles, then this route isn't protected by roles (user just has to be logged in, no specific 
     roles required), so  they are authorized. Or, if the user's role is 
     included in the allowedRoles list, then they are also authorized.
@@ -43,8 +43,8 @@ export default function ProtectedRoute({
     it will be false if both conditions are false. Also we convert all roles 
     to integers
   */
-	const isAuthorized =
-		allowedRoles.length === 0 ||
-		allowedRoles.map((role) => parseInt(role)).includes(auth.user.role);
-	return isAuthorized ? children : <Navigate to="/unauthorized" />;
+  const isAuthorized =
+    allowedRoles.length === 0 ||
+    allowedRoles.map((role) => parseInt(role)).includes(auth.user.role);
+  return isAuthorized ? children : <Navigate to="/unauthorized" />;
 }

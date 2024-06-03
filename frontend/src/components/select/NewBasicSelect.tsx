@@ -16,19 +16,19 @@ By setting the 'id', value, then we will display the appropriate output (usernam
 
 */
 
-interface NewBasicSelectProps {
+interface NewBasicSelectProps<T> {
 	value: string;
 	onChange: (event: SelectChangeEvent) => void;
 	label?: string;
-	options: any[];
+	options: T[];
 	placeholder?: string;
-	getOptionLabel: (option: any) => string;
-	getOptionValue: (option: any) => string;
+	getOptionLabel: (option: T) => string;
+	getOptionValue: (option: T) => string;
 	required?: boolean;
 	allowNone?: boolean;
 }
 
-export default function NewBasicSelect({
+export default function NewBasicSelect<T>({
 	value,
 	onChange,
 	label,
@@ -38,7 +38,7 @@ export default function NewBasicSelect({
 	placeholder = "None",
 	required, // gives us that asterisks for required form controls
 	allowNone = false, // determines whether or not the user can select 'none' as an option
-}: NewBasicSelectProps) {
+}: NewBasicSelectProps<T>) {
 	return (
 		<Box sx={{ minWidth: 120 }}>
 			<FormControl fullWidth required={required}>

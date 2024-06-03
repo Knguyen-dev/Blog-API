@@ -1,8 +1,18 @@
-import { Autocomplete, TextField } from "@mui/material";
-
-interface BasicAutoProps<T> {
+import {
+	Autocomplete,
+	TextField,
+	AutocompleteChangeReason,
+	AutocompleteChangeDetails,
+} from "@mui/material";
+import { SyntheticEvent } from "react";
+interface IBasicAutoProps<T> {
 	options: T[];
-	onChange: (event: React.ChangeEvent<{}>, value: T | null) => void;
+	onChange: (
+		event: SyntheticEvent<Element, Event>,
+		value: T | null,
+		reason: AutocompleteChangeReason,
+		details?: AutocompleteChangeDetails<T> | undefined
+	) => void;
 	getOptionLabel: (option: T) => string;
 	label: string;
 	isOptionEqualToValue: (option: T, value: T) => boolean;
@@ -18,7 +28,7 @@ export default function BasicAuto<T>({
 	label,
 	isOptionEqualToValue,
 	required,
-}: BasicAutoProps<T>) {
+}: IBasicAutoProps<T>) {
 	return (
 		<Autocomplete
 			disablePortal

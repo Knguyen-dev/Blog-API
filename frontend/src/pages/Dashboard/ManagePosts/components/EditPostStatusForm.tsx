@@ -2,70 +2,70 @@ import { Button, Box, SelectChangeEvent } from "@mui/material";
 import { useState, FormEvent } from "react";
 
 import useSavePostStatus from "../hooks/useSavePostStatus";
-import { postStatuses } from "../../../EditorSuite/postConstants";
+import { postStatuses } from "../../../EditorSuite/data/postConstants";
 import NewBasicSelect from "../../../../components/select/NewBasicSelect";
 import { IPost, PostStatusType } from "../../../../types/Post";
 
 interface IEditPostStatusFormProps {
-	postID: string;
-	onSuccess: (newPost: IPost) => void;
+  postID: string;
+  onSuccess: (newPost: IPost) => void;
 }
 
 export default function EditPostStatusForm({
-	postID,
-	onSuccess,
+  postID,
+  onSuccess,
 }: IEditPostStatusFormProps) {
-	const [status, setStatus] = useState<PostStatusType>(postStatuses[0].value);
-	const { isLoading, error, savePostStatus } = useSavePostStatus();
+  const [status, setStatus] = useState<PostStatusType>(postStatuses[0].value);
+  const { isLoading, error, savePostStatus } = useSavePostStatus();
 
-	const onSubmit = async (e: FormEvent) => {
-		e.preventDefault();
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
 
-		const formData = {
-			status,
-		};
+    const formData = {
+      status,
+    };
 
-		const newPost = await savePostStatus(postID, formData);
+    const newPost = await savePostStatus(postID, formData);
 
-		// If !newPost (request failed), stop function execution early
-		if (!newPost) {
-			return;
-		}
+    // If !newPost (request failed), stop function execution early
+    if (!newPost) {
+      return;
+    }
 
-		// At this point successful, so close dialog and update the state of the posts
-		if (newPost && onSuccess) {
-			onSuccess(newPost);
-		}
-	};
+    // At this point successful, so close dialog and update the state of the posts
+    if (newPost && onSuccess) {
+      onSuccess(newPost);
+    }
+  };
 
-	const onStatusChange = (event: SelectChangeEvent) => {
-		setStatus(event.target.value as PostStatusType);
-	};
+  const onStatusChange = (event: SelectChangeEvent) => {
+    setStatus(event.target.value as PostStatusType);
+  };
 
-	return (
-		<form onSubmit={onSubmit}>
-			<Box sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}>
-				<NewBasicSelect
-					value={status}
-					onChange={onStatusChange}
-					label="Status"
-					placeholder="Select the post's status"
-					options={postStatuses}
-					getOptionLabel={(option) => option.label}
-					getOptionValue={(option) => option.value}
-					required
-				/>
+  return (
+    <form onSubmit={onSubmit}>
+      <Box sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}>
+        <NewBasicSelect
+          value={status}
+          onChange={onStatusChange}
+          label="Status"
+          placeholder="Select the post's status"
+          options={postStatuses}
+          getOptionLabel={(option) => option.label}
+          getOptionValue={(option) => option.value}
+          required
+        />
 
-				{error && <div className="error">{error}</div>}
+        {error && <div className="error">{error}</div>}
 
-				<Button
-					type="submit"
-					disabled={isLoading}
-					sx={{ alignSelf: "end" }}
-					variant="contained">
-					Submit
-				</Button>
-			</Box>
-		</form>
-	);
+        <Button
+          type="submit"
+          disabled={isLoading}
+          sx={{ alignSelf: "end" }}
+          variant="contained">
+          Submit
+        </Button>
+      </Box>
+    </form>
+  );
 }

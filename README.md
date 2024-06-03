@@ -1,11 +1,19 @@
 # Blog-API
 Create a blog fullstack blog application. Have a front end application for viewing and editing posts. Let people read and comment on posts. Basically the blog should make it so only you, imagine like the 'guardian' or 'the atlantic'. So I guess there should be a section that allows users. Some inspirations to take from that are similar are reddit, dogonews, ign, or something similar. It just has to involve posts, authors, comments, etcetera. Just takes things one at a time.
 
+Moving everything to 
 
-## Scripts
+
+
+### Client packages
+Set up a new project with framework 'React' and variant 'TypeScript' using `npm create vite@latest`
 ```
-npm run test:file -- path/to/your/test/file.test.js; runs individual test file
+npm i @emotion/react @emotion/styled @hookform/resolvers @mui/icons-material @mui/material @mui/x-data-grid axios dompurify react-hook-form react-router-dom yup
+
+npm i -D @testing-library/jest-dom @testing-library/react @testing-library/user-event @tinymce/tinymce-react @types/dompurify autoprefixer jsdom postcss prettier prettier-plugin-tailwindcss tailwindcss vitest
 ```
+
+
 
 
 # Models:
@@ -22,16 +30,6 @@ npm run test:file -- path/to/your/test/file.test.js; runs individual test file
 3. Additional resources: https://github.com/gitdagray/mern_stack_course/blob/main/lesson_08-backend/config/allowedOrigins.js
 
 
-# Inspiration:
-1. Site: https://dezien-blog.vercel.app/
-- This is a good site to take design inspiration off of, but it's quite complex.
-2. Site 2: https://blog-client-dovimaj.vercel.app/
-- Here's an easy site to copy off of.
-3. https://www.mohammadfaisal.dev/blog; this one would be difficult, but I think I like their simplified blog page a lot better than my youtube-esque one. I guess it's 
-probably better if I personalize my website a bit.
-
-4. Code Design AI Site: https://dev.codedesign.ai/app/builder?project=blogsphere-website-contentc32bt7aqdw#home
-5. SitesGpt AI Site: https://dev.codedesign.ai/app/builder?project=blogsphere-website-contentc32bt7aqdw#home
 
 # How can we do image storage:
 1. File system: Store images on web server file system. Downsides are 
@@ -111,7 +109,7 @@ So we created a react project using vite's react template. Now we want to be abl
 
 #### Step 1/6: Install base packages
 ```
-npm install -D typescript @types/react @types/react-dom
+npm install -D typescript @types/react @types/react-dom ts-node
 ```
 #### Step 2/6: Modify package.json
 In `package.json`, replace:
@@ -177,6 +175,15 @@ In your index.html, change the name of your script from `main.jsx` to `main.tsx`
 That should be it. Obviously this is just for the base conversion, of course if you have other packages and files, you'll have to accomodate for that.
 
 
+```
+npm create vite@latest
+```
+
+
+
+
+
+
 ### Setting up TypeScript for the backend:
 Install packages. We install typescript, a thing for running typescript, and then types for express
 ```
@@ -240,16 +247,6 @@ redis-cli.
 
 
 # Commit
-+ Front end:
-- Fixed rendering for error messages on ManageCategoriesPage, ManagePostsPage, and ManageTagsPage.
-- Updated EmployeeGrid to display a better error message when lastLogin is undefined for a row.
-
-+ Back end:
-- Implemented Redis Caching with a local redis server. At the end we'll go to a free cloud server.
-  Now we're able to efficiently cache information such as tags, categories, and employees.
-
-+ Upcoming: 
-For our last changes, I'm planning to learn about and at least add actual logging to our backend-express server since placing console.logs isn't that good. As well as this, I plan to migrate the front-end to TypeScript as well. After we'll do Redis cloud, and then deployment to render. 
 
 ## BOOK MARK:
 blue-dream-sea-city
@@ -285,6 +282,7 @@ blue-dream-sea-city
 
 
 # Credits:
+## Resources
 1. https://stackoverflow.com/questions/57650692/where-to-store-the-refresh-token-on-the-client
 2. https://medium.com/@sadnub/simple-and-secure-api-authentication-for-spas-e46bcea592ad
 3. How to create youtube layout (tailwind typescript): https://youtu.be/ymGB1lqP1CM?si=BZv6QUEFMrVKE5Qf
@@ -292,6 +290,16 @@ blue-dream-sea-city
 5. React forms and jwt: https://www.youtube.com/watch?v=brcHK3P6ChQ&list=PL0Zuz27SZ-6PRCpm9clX0WiBEMB70FWwd
 6. https://deadsimplechat.com/blog/how-to-safely-use-dangerouslysetinnerhtml-in-react/
 7. https://wix.com/blog/beautiful-contact-pages
-
 8. https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually
 9. [Jest With TypeScript](https://jestjs.io/docs/getting-started#using-babel)
+
+## Inspiration
+1. Site: https://dezien-blog.vercel.app/
+- This is a good site to take design inspiration off of, but it's quite complex.
+2. Site 2: https://blog-client-dovimaj.vercel.app/
+- Here's an easy site to copy off of.
+3. https://www.mohammadfaisal.dev/blog; this one would be difficult, but I think I like their simplified blog page a lot better than my youtube-esque one. I guess it's 
+probably better if I personalize my website a bit.
+
+4. Code Design AI Site: https://dev.codedesign.ai/app/builder?project=blogsphere-website-contentc32bt7aqdw#home
+5. SitesGpt AI Site: https://dev.codedesign.ai/app/builder?project=blogsphere-website-contentc32bt7aqdw#home

@@ -2,30 +2,30 @@
 @tailwind utilities;
 
 :root {
-	font-synthesis: none;
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .root-layout {
-	min-height: 100vh;
+  min-height: 100vh;
 }
 
 /* Not Found Page the 'Not Authorized Page'*/
 .rejection-page {
-	background-image: url("/night_background.jpg");
-	background-size: cover;
-	background-position: center;
-	background-attachment: fixed;
-	height: 100vh;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	color: white;
-	text-align: center;
+  background-image: url("/night_background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  text-align: center;
 }
 
 .error {
-	@apply tw-p-3 tw-text-center tw-text-red-700 tw-bg-slate-100 tw-rounded-md;
+  @apply tw-p-3 tw-text-center tw-text-red-700 tw-bg-slate-100 tw-rounded-md;
 }

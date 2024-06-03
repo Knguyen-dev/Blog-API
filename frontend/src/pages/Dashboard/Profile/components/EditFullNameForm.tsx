@@ -9,83 +9,86 @@ import { fullNameSchema } from "../data/userSchema";
 import { IChangeFullNameFormData } from "../../../../types/Auth";
 
 interface IEditFullNameProps {
-	fullName: string;
-	onSuccess: () => void;
+  fullName: string;
+  onSuccess: () => void;
 }
 
 const validationSchema = yup.object().shape({
-	fullName: fullNameSchema,
+  fullName: fullNameSchema,
 });
 
-export default function EditFullNameForm({ fullName, onSuccess } : IEditFullNameProps) {
-	const { control, handleSubmit, setError } = useForm({
-		resolver: yupResolver(validationSchema),
-		defaultValues: {
-			fullName: fullName,
-		},
-	});
+export default function EditFullNameForm({
+  fullName,
+  onSuccess,
+}: IEditFullNameProps) {
+  const { control, handleSubmit, setError } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      fullName: fullName,
+    },
+  });
 
-	const { error, isLoading, changeFullName } = useChangeFullName();
-	const onSubmit = async (formData: IChangeFullNameFormData) => {
-		/*
+  const { error, isLoading, changeFullName } = useChangeFullName();
+  const onSubmit = async (formData: IChangeFullNameFormData) => {
+    /*
     - If submitted name isn't different from current account's name
       then even if the changes went through, the user's name didn't really 
       change. That would be a waste of server resources, so stop execution
       early and set an error message.
 
     */
-		if (formData.fullName === fullName) {
-			setError("fullName", {
-				type: "client",
-				message: "New name must be different from the current one!",
-			});
-			return;
-		}
+    if (formData.fullName === fullName) {
+      setError("fullName", {
+        type: "client",
+        message: "New name must be different from the current one!",
+      });
+      return;
+    }
 
-		const success = await changeFullName(formData);
-		if (success && onSuccess) {
-			onSuccess();
-		}
-	};
+    const success = await changeFullName(formData);
+    if (success && onSuccess) {
+      onSuccess();
+    }
+  };
 
-	return (
-		<form onSubmit={handleSubmit(onSubmit)}>
-			{/* Form input fields */}
-			<Box
-				sx={{
-					display: "flex",
-					flexDirection: "column",
-					rowGap: 2,
-				}}>
-				<FormInputField
-					id="fullName"
-					name="fullName"
-					control={control}
-					label="Full Name"
-					variant="standard"
-				/>
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Form input fields */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          rowGap: 2,
+        }}>
+        <FormInputField
+          id="fullName"
+          name="fullName"
+          control={control}
+          label="Full Name"
+          variant="standard"
+        />
 
-				{/* Conditionally render error */}
-				{error && (
-					<Box className="error">
-						<Typography>{error}</Typography>
-					</Box>
-				)}
+        {/* Conditionally render error */}
+        {error && (
+          <Box className="error">
+            <Typography>{error}</Typography>
+          </Box>
+        )}
 
-				<Box
-					sx={{
-						display: "flex",
-						justifyContent: "end",
-					}}>
-					<Button variant="contained" type="submit" disabled={isLoading}>
-						Update
-					</Button>
-				</Box>
-			</Box>
-		</form>
-	);
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "end",
+          }}>
+          <Button variant="contained" type="submit" disabled={isLoading}>
+            Update
+          </Button>
+        </Box>
+      </Box>
+    </form>
+  );
 }
 EditFullNameForm.propTypes = {
-	onSuccess: PropTypes.func,
-	fullName: PropTypes.string,
+  onSuccess: PropTypes.func,
+  fullName: PropTypes.string,
 };

@@ -1,17 +1,17 @@
 import PasswordField from "./PasswordField";
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, FieldValues, Path } from "react-hook-form";
 
-interface FormPasswordFieldProps {
+interface FormPasswordFieldProps<T extends FieldValues> {
 	id?: string;
-	name: string;
-	control: Control<any>;
+	name: Path<T>; // Use Path<T> instead of string
+	control: Control<T>;
 	label?: string;
 	placeholder?: string;
 	className?: string;
 	autoComplete?: string;
 }
 
-export default function FormPasswordField({
+export default function FormPasswordField<T extends FieldValues>({
 	id,
 	name,
 	control,
@@ -19,7 +19,7 @@ export default function FormPasswordField({
 	placeholder,
 	className,
 	autoComplete,
-}: FormPasswordFieldProps) {
+}: FormPasswordFieldProps<T>) {
 	return (
 		<Controller
 			name={name}

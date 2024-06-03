@@ -8,35 +8,35 @@ import AlertToast from "../components/notifications/AlertToast";
 import { SnackbarOrigin, AlertColor, SnackbarCloseReason } from "@mui/material";
 
 interface Message {
-	message: string;
-	anchorOrigin?: SnackbarOrigin;
-	autoHideDuration?: number;
-	severity?: AlertColor;
-	key?: number;
+  message: string;
+  anchorOrigin?: SnackbarOrigin;
+  autoHideDuration?: number;
+  severity?: AlertColor;
+  key?: number;
 }
 
 interface ToastContextType {
-	showToast: (messageObj: Message) => void;
+  showToast: (messageObj: Message) => void;
 }
 
 interface ToastProviderProps {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export const ToastContext = createContext<ToastContextType | undefined>(
-	undefined
+  undefined
 );
 
 // Default snackbar settings if said settings aren't passed through our messageObj
 const DEFAULTS = {
-	message: "Default Snackbar Message",
-	anchorOrigin: { vertical: "bottom", horizontal: "left" },
-	autoHideDuration: 5000,
-	severity: "info",
+  message: "Default Snackbar Message",
+  anchorOrigin: { vertical: "bottom", horizontal: "left" },
+  autoHideDuration: 5000,
+  severity: "info",
 };
 
-export const ToastProvider = ({ children }: ToastProviderProps) => {
-	/*
+export default function ToastProvider({ children }: ToastProviderProps) {
+  /*
   + States:
   - snackPack: A queue of snack our snackbar messages. Each element will be a message
     object contains information on how we will show that message with the snackbar.
@@ -58,13 +58,13 @@ export const ToastProvider = ({ children }: ToastProviderProps) => {
     existed as long as the page component was still mounted, and this wasn't the tool we were looking for.
     Of course, this snackbar is able to satisfy the use-cases we needed and others if they pop up.
   */
-	const [snackPack, setSnackPack] = useState<Message[]>([]);
-	const [open, setOpen] = useState(false);
-	const [messageInfo, setMessageInfo] = useState<Message | undefined>(
-		undefined
-	);
+  const [snackPack, setSnackPack] = useState<Message[]>([]);
+  const [open, setOpen] = useState(false);
+  const [messageInfo, setMessageInfo] = useState<Message | undefined>(
+    undefined
+  );
 
-	/*
+  /*
   + Effect: Manages the Snackbar queue
   - If there are pending messages in the queue and no message is currently being displayed,
     set the current message to the first one in the queue, then remove it from the queue.
@@ -74,62 +74,62 @@ export const ToastProvider = ({ children }: ToastProviderProps) => {
     Subsequently, the effect runs again, entering the first condition and setting the new message
     from the queue to be displayed on the Snackbar.
 */
-	useEffect(() => {
-		if (snackPack.length && !messageInfo) {
-			// Display a new snack when there's no active one
-			setMessageInfo({ ...snackPack[0] });
-			setSnackPack((prev) => prev.slice(1));
-			setOpen(true);
-		} else if (snackPack.length && messageInfo && open) {
-			// Close an active snack when a new one is added
-			setOpen(false);
-		}
-	}, [snackPack, messageInfo, open]);
+  useEffect(() => {
+    if (snackPack.length && !messageInfo) {
+      // Display a new snack when there's no active one
+      setMessageInfo({ ...snackPack[0] });
+      setSnackPack((prev) => prev.slice(1));
+      setOpen(true);
+    } else if (snackPack.length && messageInfo && open) {
+      // Close an active snack when a new one is added
+      setOpen(false);
+    }
+  }, [snackPack, messageInfo, open]);
 
-	// Enqueues a new message object on the end of our snackbar queue state
-	const showToast = (messageObj: Message) => {
-		setSnackPack((prev) => [
-			...prev,
-			{ ...messageObj, key: new Date().getTime() },
-		]);
-	};
+  // Enqueues a new message object on the end of our snackbar queue state
+  const showToast = (messageObj: Message) => {
+    setSnackPack((prev) => [
+      ...prev,
+      { ...messageObj, key: new Date().getTime() },
+    ]);
+  };
 
-	// Hides the snackbar, so it hides the current message
-	const handleClose = (
-		event?: SyntheticEvent | Event,
-		reason?: SnackbarCloseReason
-	) => {
-		if (reason === "clickaway") {
-			// if we click the background, it doesn't close snackbar.
-			return;
-		}
-		setOpen(false);
-	};
+  // Hides the snackbar, so it hides the current message
+  const handleClose = (
+    _event?: SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      // if we click the background, it doesn't close snackbar.
+      return;
+    }
+    setOpen(false);
+  };
 
-	// Clears current message on the snackbar; runs when snackbar component unmounts
-	const handleExited = () => {
-		setMessageInfo(undefined);
-	};
+  // Clears current message on the snackbar; runs when snackbar component unmounts
+  const handleExited = () => {
+    setMessageInfo(undefined);
+  };
 
-	if (!messageInfo) {
-		return;
-	}
+  if (!messageInfo) {
+    return;
+  }
 
-	return (
-		<ToastContext.Provider value={{ showToast }}>
-			{children}
-			<AlertToast
-				key={messageInfo?.key}
-				open={open}
-				message={messageInfo.message}
-				severity={messageInfo?.severity}
-				handleClose={handleClose}
-				handleExited={handleExited}
-				anchorOrigin={messageInfo?.anchorOrigin}
-				autoHideDuration={
-					messageInfo?.autoHideDuration || DEFAULTS.autoHideDuration
-				}
-			/>
-		</ToastContext.Provider>
-	);
-};
+  return (
+    <ToastContext.Provider value={{ showToast }}>
+      {children}
+      <AlertToast
+        key={messageInfo?.key}
+        open={open}
+        message={messageInfo.message}
+        severity={messageInfo?.severity}
+        handleClose={handleClose}
+        handleExited={handleExited}
+        anchorOrigin={messageInfo?.anchorOrigin}
+        autoHideDuration={
+          messageInfo?.autoHideDuration || DEFAULTS.autoHideDuration
+        }
+      />
+    </ToastContext.Provider>
+  );
+}

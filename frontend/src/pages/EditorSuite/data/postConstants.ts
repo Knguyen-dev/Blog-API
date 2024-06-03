@@ -1,4 +1,4 @@
-import getCurrentDateStr from "../../utils/getCurrentDateStr";
+import getCurrentDateStr from "../../../../client/src/utils/getCurrentDateStr";
 import { IPostState, PostStatusType } from "../../types/Post";
 
 // The various 'status' a post can be in.

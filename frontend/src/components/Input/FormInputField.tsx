@@ -23,18 +23,18 @@
   ,then use TextField or some other component instead of this.
 */
 
-import { Controller, Control } from "react-hook-form";
-import { TextField } from "@mui/material";
+import { Controller, Control, FieldValues, Path } from "react-hook-form";
+import { TextField, TextFieldVariants } from "@mui/material";
 
-interface FormInputFieldProps {
+interface FormInputFieldProps<T extends FieldValues> {
+	name: Path<T>; // Use Path<T> instead of string
+	control: Control<T>; // Assuming Control is from react-hook-form
 	id?: string;
-	name: string;
-	control: Control<any>; // Assuming Control is from react-hook-form
 	label?: string;
 	placeholder?: string;
 	className?: string;
 	fullWidth?: boolean;
-	variant?: "standard" | "outlined" | "filled";
+	variant?: TextFieldVariants;
 	autoComplete?: string;
 	defaultValue?: string | number;
 	multiline?: boolean;
@@ -42,7 +42,7 @@ interface FormInputFieldProps {
 	required?: boolean;
 }
 
-export default function FormInputField({
+export default function FormInputField<T extends FieldValues>({
 	id,
 	name,
 	control,
@@ -56,7 +56,7 @@ export default function FormInputField({
 	multiline = false,
 	rows,
 	required,
-}: FormInputFieldProps) {
+}: FormInputFieldProps<T>) {
 	return (
 		<Controller
 			name={name}

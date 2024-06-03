@@ -4,9 +4,9 @@ import useRemoveEmployee from "../hooks/useRemoveEmployee";
 import { IUser } from "../../../../types/Post";
 
 interface IRemoveEmployeeDialogProps {
-	open: boolean;
-	handleClose: () => void;
-	targetUser: IUser;
+  open: boolean;
+  handleClose: () => void;
+  targetUser: IUser;
 }
 
 /*
@@ -14,64 +14,64 @@ interface IRemoveEmployeeDialogProps {
   a user as an employee.
 */
 export default function RemoveEmployeeDialog({
-	open,
-	handleClose,
-	targetUser,
+  open,
+  handleClose,
+  targetUser,
 }: IRemoveEmployeeDialogProps) {
-	const { error, isLoading, removeEmployee } = useRemoveEmployee();
+  const { error, isLoading, removeEmployee } = useRemoveEmployee();
 
-	// The onSubmit function basically
-	const onConfirm = async () => {
-		const success = await removeEmployee(targetUser._id);
+  // The onSubmit function basically
+  const onConfirm = async () => {
+    const success = await removeEmployee(targetUser._id);
 
-		// If successful close dialog, else there were errors so leave dialog open
-		// so that the error can see them.
-		if (success) {
-			handleClose();
-		}
-	};
+    // If successful close dialog, else there were errors so leave dialog open
+    // so that the error can see them.
+    if (success) {
+      handleClose();
+    }
+  };
 
-	const actions = (
-		<DialogActions sx={{ display: "flex", flexDirection: "column" }}>
-			<Box sx={{ alignSelf: "end", marginTop: 2 }}>
-				<Button
-					variant="outlined"
-					onClick={handleClose}
-					sx={{ marginRight: 2 }}>
-					Close
-				</Button>
-				<Button
-					variant="contained"
-					color="warning"
-					disabled={isLoading}
-					onClick={onConfirm}>
-					Confirm Deletion
-				</Button>
-			</Box>
+  const actions = (
+    <DialogActions sx={{ display: "flex", flexDirection: "column" }}>
+      <Box sx={{ alignSelf: "end", marginTop: 2 }}>
+        <Button
+          variant="outlined"
+          onClick={handleClose}
+          sx={{ marginRight: 2 }}>
+          Close
+        </Button>
+        <Button
+          variant="contained"
+          color="warning"
+          disabled={isLoading}
+          onClick={onConfirm}>
+          Confirm Deletion
+        </Button>
+      </Box>
 
-			{error && (
-				<Box sx={{ marginTop: 2 }} className="error">
-					{error}
-				</Box>
-			)}
-		</DialogActions>
-	);
+      {error && (
+        <Box sx={{ marginTop: 2 }} className="error">
+          {error}
+        </Box>
+      )}
+    </DialogActions>
+  );
 
-	const dialogText = (
-		<Typography>
-			Do you want to confirm removing user &apos;{targetUser.username}&apos; AKA
-			&apos;{targetUser.fullName}&apos; as an employee? Removing this user as an
-			employee will delete their account and all posts associated with it.
-		</Typography>
-	);
+  const dialogText = (
+    <Typography>
+      Do you want to confirm removing user &apos;{targetUser.username}&apos; AKA
+      &apos;{targetUser.fullName}&apos; as an employee? Removing this user as an
+      employee will delete their account and all posts associated with it.
+    </Typography>
+  );
 
-	return (
-		<AlertDialog
-			open={open}
-			title="Remove Employee?"
-			handleClose={handleClose}
-			dialogActions={actions}
-			dialogText={dialogText}
-		/>
-	);
+  return (
+    <AlertDialog
+      open={open}
+      title="Remove Employee?"
+      handleClose={handleClose}
+      dialogActions={actions}
+      dialogText={dialogText}
+    />
+  );
 }

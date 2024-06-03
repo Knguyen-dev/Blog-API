@@ -12,25 +12,25 @@ import { IUser } from "../../../../types/Post";
   using from 7 to one, but it doesn't look as clean or organized.
 */
 interface IEditAvatarDialogProps {
-	user: IUser;
+  user: IUser;
 }
 
-export default function EditAvatarDialog({ user } : IEditAvatarDialogProps) {
-	const [open, setOpen] = useState(false);
-	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
+export default function EditAvatarDialog({ user }: IEditAvatarDialogProps) {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-	return (
-		<Box>
-			<Button variant="outlined" onClick={handleOpen}>
-				Edit Avatar
-			</Button>
-			<CustomDialog
-				modalTitle="Edit Your Avatar"
-				CustomForm={<AvatarForm user={user} />}
-				open={open}
-				handleClose={handleClose}
-			/>
-		</Box>
-	);
+  return (
+    <Box>
+      <Button variant="outlined" onClick={handleOpen}>
+        Edit Avatar
+      </Button>
+      <CustomDialog
+        modalTitle="Edit Your Avatar"
+        CustomForm={<AvatarForm user={user} />}
+        open={open}
+        handleClose={handleClose}
+      />
+    </Box>
+  );
 }

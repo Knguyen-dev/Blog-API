@@ -16,41 +16,41 @@ the CreatePostPage and EditPostPage.
 import { ReactNode, createContext } from "react";
 import useGetCategories from "./hooks/useGetCategories";
 import useGetTags from "./hooks/useGetTags";
-import { minWordCount } from "./postConstants";
+import { minWordCount } from "./data/postConstants";
 import useSavePost from "./hooks/useSavePost";
 import { Box, Typography } from "@mui/material";
 import { ICategory, IPostState, ITag, IPostFormData } from "../../types/Post";
 
 interface INewEditorProviderProps {
-	children: ReactNode;
+  children: ReactNode;
 }
 interface INewEditorContextType {
-	categories: ICategory[];
-	categoriesError: string | null;
-	tags: ITag[];
-	tagsError: string | null;
-	submitLoading: boolean;
-	submitError: string | null;
-	onSubmitPost: (state: IPostState) => Promise<boolean>;
+  categories: ICategory[];
+  categoriesError: string | null;
+  tags: ITag[];
+  tagsError: string | null;
+  submitLoading: boolean;
+  submitError: string | null;
+  onSubmitPost: (state: IPostState) => Promise<boolean>;
 }
 export const NewEditorContext = createContext<
-	INewEditorContextType | undefined
+  INewEditorContextType | undefined
 >(undefined);
 
 export default function NewEditorProvider({
-	children,
+  children,
 }: INewEditorProviderProps) {
-	const { categories, error: categoriesError } = useGetCategories();
-	const { tags, error: tagsError } = useGetTags();
-	const {
-		error: submitError,
-		setError: setSubmitError,
-		isLoading: submitLoading,
-		savePost,
-	} = useSavePost();
+  const { categories, error: categoriesError } = useGetCategories();
+  const { tags, error: tagsError } = useGetTags();
+  const {
+    error: submitError,
+    setError: setSubmitError,
+    isLoading: submitLoading,
+    savePost,
+  } = useSavePost();
 
-	const onSubmitPost = async (state: IPostState) => {
-		/*
+  const onSubmitPost = async (state: IPostState) => {
+    /*
 		+ General function submission function that handles the client-side
 			validation, and also calls the savePost function from our hook to 
 			make the api call. Here you can get 'IPostData' which is the object 
@@ -63,95 +63,95 @@ export default function NewEditorProvider({
 		3. status: Needs to be filled, with 'publish', 'unpublished', or 'private'.
 		*/
 
-		if (state.title.length < 1 || state.title.length > 100) {
-			setSubmitError("Post title needs to be between 1 and 100 characters!");
-			return false;
-		}
+    if (state.title.length < 1 || state.title.length > 100) {
+      setSubmitError("Post title needs to be between 1 and 100 characters!");
+      return false;
+    }
 
-		if (!state.category) {
-			setSubmitError("Please pick a category for the post!");
-			return false;
-		}
+    if (!state.category) {
+      setSubmitError("Please pick a category for the post!");
+      return false;
+    }
 
-		if (!state.imgSrc) {
-			setSubmitError("Please have an image for the post!");
-			return false;
-		}
+    if (!state.imgSrc) {
+      setSubmitError("Please have an image for the post!");
+      return false;
+    }
 
-		// If true, that means a status simply wasn't selected.
-		if (!state.status) {
-			setSubmitError("Please pick a status for the post!");
-			return false;
-		}
+    // If true, that means a status simply wasn't selected.
+    if (!state.status) {
+      setSubmitError("Please pick a status for the post!");
+      return false;
+    }
 
-		// Front end validation on the wordCount of the post
-		if (state.wordCount < minWordCount) {
-			setSubmitError(`Posts need to have at least ${minWordCount} words!`);
-			return false;
-		}
+    // Front end validation on the wordCount of the post
+    if (state.wordCount < minWordCount) {
+      setSubmitError(`Posts need to have at least ${minWordCount} words!`);
+      return false;
+    }
 
-		if (!state.imgCredits) {
-			setSubmitError(
-				"Posts need to include image credits before you can submit them!"
-			);
-			return false;
-		}
+    if (!state.imgCredits) {
+      setSubmitError(
+        "Posts need to include image credits before you can submit them!"
+      );
+      return false;
+    }
 
-		// Format data so that it's ready for api call
-		const postData: IPostFormData = {
-			title: state.title,
-			body: state.body,
-			wordCount: state.wordCount,
-			category: state.category._id,
-			tags: state.tags.map((tag: ITag) => tag._id),
-			imgSrc: state.imgSrc,
-			imgCredits: state.imgCredits,
-			status: state.status,
-		};
+    // Format data so that it's ready for api call
+    const postData: IPostFormData = {
+      title: state.title,
+      body: state.body,
+      wordCount: state.wordCount,
+      category: state.category._id,
+      tags: state.tags.map((tag: ITag) => tag._id),
+      imgSrc: state.imgSrc,
+      imgCredits: state.imgCredits,
+      status: state.status,
+    };
 
-		return await savePost(postData);
-	};
+    return await savePost(postData);
+  };
 
-	// Error handling for getting categories and tags
-	if (categoriesError) {
-		return (
-			<Box>
-				{categoriesError && (
-					<Typography>Error getting categories: {categoriesError}</Typography>
-				)}
-			</Box>
-		);
-	}
+  // Error handling for getting categories and tags
+  if (categoriesError) {
+    return (
+      <Box>
+        {categoriesError && (
+          <Typography>Error getting categories: {categoriesError}</Typography>
+        )}
+      </Box>
+    );
+  }
 
-	// Do same error catching process for tags Error
-	if (tagsError) {
-		return (
-			<Box>
-				{tagsError && <Typography>Error getting tags: {tagsError}</Typography>}
-			</Box>
-		);
-	}
+  // Do same error catching process for tags Error
+  if (tagsError) {
+    return (
+      <Box>
+        {tagsError && <Typography>Error getting tags: {tagsError}</Typography>}
+      </Box>
+    );
+  }
 
-	/*
+  /*
   - Don't render if we still don't have or categories or tags
   NOTE: Prevents errors from trying to access null as an array/defined value
   */
-	if (!categories || !tags) {
-		return;
-	}
+  if (!categories || !tags) {
+    return;
+  }
 
-	return (
-		<NewEditorContext.Provider
-			value={{
-				categories,
-				categoriesError,
-				tags,
-				tagsError,
-				submitLoading,
-				submitError,
-				onSubmitPost,
-			}}>
-			{children}
-		</NewEditorContext.Provider>
-	);
+  return (
+    <NewEditorContext.Provider
+      value={{
+        categories,
+        categoriesError,
+        tags,
+        tagsError,
+        submitLoading,
+        submitError,
+        onSubmitPost,
+      }}>
+      {children}
+    </NewEditorContext.Provider>
+  );
 }

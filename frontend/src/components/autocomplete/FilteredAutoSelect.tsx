@@ -1,5 +1,10 @@
-import { Autocomplete, TextField } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
+import {
+	Autocomplete,
+	AutocompleteChangeReason,
+	AutocompleteChangeDetails,
+	TextField,
+} from "@mui/material";
+import { SyntheticEvent } from "react";
 /*
 + FilteredAutoSelect: A multi-select autocomplete for mui. It shows available optiosn
   and forces the user to pick one of those options. As well as this it creates chips
@@ -10,13 +15,18 @@ import { Dispatch, SetStateAction } from "react";
   give you the value of your 'option', that was never in the question, but rather the 
   index position of that option which is located as a data-attribute.
 */
-interface FilteredAutoSelectProps<T> {
+interface IFilteredAutoSelectProps<T> {
 	id?: string;
 	label?: string;
 	placeholder?: string;
 	options: T[];
 	selectedValues: T[] | undefined;
-	onChange: (event: React.ChangeEvent<{}>, newValues: T[] | undefined) => void;
+	onChange: (
+		event: SyntheticEvent<Element, Event>,
+		value: T[] | null,
+		reason: AutocompleteChangeReason,
+		details?: AutocompleteChangeDetails<T> | undefined
+	) => void;
 	getOptionLabel: (option: T) => string;
 	isOptionEqualToValue: (option: T, value: T) => boolean;
 	limitTags?: number;
@@ -32,7 +42,7 @@ export default function FilteredAutoSelect<T>({
 	getOptionLabel,
 	isOptionEqualToValue,
 	limitTags,
-}: FilteredAutoSelectProps<T>) {
+}: IFilteredAutoSelectProps<T>) {
 	return (
 		<Autocomplete
 			multiple

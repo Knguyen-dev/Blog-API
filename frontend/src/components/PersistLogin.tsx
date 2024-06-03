@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
-import useRefreshToken from "../hooks/useRefreshToken";
-import useAuthContext from "../hooks/useAuthContext";
+import useRefreshToken from "../../../frontend/src/hooks/useRefreshToken";
+import useAuthContext from "../../../frontend/src/hooks/useAuthContext";
 
 /*
 - We'd wrap this around the routes that need authentication. 

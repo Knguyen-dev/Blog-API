@@ -1,7 +1,7 @@
 import { InputBase, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { styled } from "@mui/material/styles";
-import { Dispatch, SetStateAction, ChangeEvent } from "react";
+import { ChangeEvent } from "react";
 
 // Contains the input element and button
 const Search = styled("div")(() => ({

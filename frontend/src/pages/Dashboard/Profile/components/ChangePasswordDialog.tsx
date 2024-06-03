@@ -4,28 +4,28 @@ import ChangePasswordForm from "./ChangePasswordForm";
 import { useState } from "react";
 
 export default function ChangePasswordDialog() {
-	const [open, setOpen] = useState(false);
-	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-	const dialogText = (
-		<Typography component="span">
-			Changing your password will log you out of your account.
-		</Typography>
-	);
+  const dialogText = (
+    <Typography component="span">
+      Changing your password will log you out of your account.
+    </Typography>
+  );
 
-	return (
-		<Box>
-			<Button variant="outlined" onClick={handleOpen}>
-				Change Password
-			</Button>
-			<CustomDialog
-				modalTitle="Change Your Password"
-				CustomForm={<ChangePasswordForm />}
-				open={open}
-				dialogText={dialogText}
-				handleClose={handleClose}
-			/>
-		</Box>
-	);
+  return (
+    <Box>
+      <Button variant="outlined" onClick={handleOpen}>
+        Change Password
+      </Button>
+      <CustomDialog
+        modalTitle="Change Your Password"
+        CustomForm={<ChangePasswordForm />}
+        open={open}
+        dialogText={dialogText}
+        handleClose={handleClose}
+      />
+    </Box>
+  );
 }

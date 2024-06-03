@@ -1,14 +1,15 @@
-const roleMap: {[key: string]: string} = {
-	user: import.meta.env.VITE_ROLE_USER,
-	editor: import.meta.env.VITE_ROLE_EDITOR,
-	admin: import.meta.env.VITE_ROLE_ADMIN,
+import { RoleKey } from "../types/Auth";
+const roleMap: Record<RoleKey, string> = {
+  user: import.meta.env.VITE_ROLE_USER,
+  editor: import.meta.env.VITE_ROLE_EDITOR,
+  admin: import.meta.env.VITE_ROLE_ADMIN,
 };
 
 // Remember our environment variables are strings
-const reverseRoleMap: {[key: string]: string} = {
-	[import.meta.env.VITE_ROLE_USER]: "User",
-	[import.meta.env.VITE_ROLE_EDITOR]: "Editor",
-	[import.meta.env.VITE_ROLE_ADMIN]: "Admin",
+const reverseRoleMap: { [key: string]: string } = {
+  [import.meta.env.VITE_ROLE_USER]: "User",
+  [import.meta.env.VITE_ROLE_EDITOR]: "Editor",
+  [import.meta.env.VITE_ROLE_ADMIN]: "Admin",
 };
 
 /**
@@ -19,16 +20,14 @@ const reverseRoleMap: {[key: string]: string} = {
  *
  * NOTE: It's fine to work with strings for the role number. We're only using this when we
  * want to convert a role string to a number, and then pass it to the backend. Then at that point
- * the backend will sanitize and parse it. But since the function name is 'getRoleNumber' then 
+ * the backend will sanitize and parse it. But since the function name is 'getRoleNumber' then
  * we'll parse it back into an integer.
  */
-function getRoleNumber(roleName: string): string | undefined {
-	roleName = roleName.toLowerCase();
+function getRoleNumber(roleName: RoleKey): string | undefined {
+  const roleNumber = roleMap[roleName];
 
-	const roleNumber = roleMap[roleName];
-
-	// Return value associated with role, or undefined if it wasn't in the thing
-	return roleNumber;
+  // Return value associated with role, or undefined if it wasn't in the thing
+  return roleNumber;
 }
 
 /**
@@ -39,31 +38,43 @@ function getRoleNumber(roleName: string): string | undefined {
  *
  *
  */
-function getRoleString(roleNumber: string | number ): string | undefined {
-	if (typeof roleNumber !== "string") {
-		roleNumber = String(roleNumber);
-	}
-	return reverseRoleMap[roleNumber];
+function getRoleString(roleNumber: string | number): string | undefined {
+  if (typeof roleNumber !== "string") {
+    roleNumber = String(roleNumber);
+  }
+  return reverseRoleMap[roleNumber];
 }
 
 /**
  * Returns true if the user is an admin, else false.
- * 
+ *
  * @param role - Role of a user (numerical representation)
  */
 const verifyAdmin = (role: number): boolean => {
-	const adminRole = parseInt(import.meta.env.VITE_ROLE_ADMIN);
-	return role === adminRole;
+  const adminRole = parseInt(import.meta.env.VITE_ROLE_ADMIN);
+  return role === adminRole;
 };
 
 /**
  * Returns true if the user is an editor, else false.
- * 
+ *
  * @param role - Role of a user (numerical representation)
  */
 const verifyEditor = (role: number): boolean => {
-	const editorRole = parseInt(import.meta.env.VITE_ROLE_EDITOR);
-	return role === editorRole;
+  const editorRole = parseInt(import.meta.env.VITE_ROLE_EDITOR);
+  return role === editorRole;
 };
 
-export { getRoleNumber, getRoleString, verifyAdmin, verifyEditor };
+const verifyUser = (role: number): boolean => {
+  const userRole = parseInt(import.meta.env.VITE_ROLE_USER);
+  return role === userRole;
+};
+
+export {
+  getRoleNumber,
+  getRoleString,
+  verifyAdmin,
+  verifyEditor,
+  verifyUser,
+  roleMap,
+};

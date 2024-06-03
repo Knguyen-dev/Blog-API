@@ -65,7 +65,7 @@ export default function ResponsiveDrawer<T extends DrawerTab>({
 		setMobileOpen(!mobileOpen);
 	};
 
-	let drawer = (
+	const drawer = (
 		<div>
 			{drawerArr.map((sectionObj, sectionIndex) => (
 				<Fragment key={sectionIndex}>

@@ -1,5 +1,5 @@
-import { Fragment, ReactNode } from "react";
-import { styled, Theme } from "@mui/material/styles";
+import { Fragment } from "react";
+import { CSSObject, styled, Theme } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -11,7 +11,7 @@ import Divider from "@mui/material/Divider";
 
 import { DrawerTab, DrawerSection } from "./ResponsiveDrawer";
 
-const openedMixin = (theme: Theme, drawerWidth: number) => ({
+const openedMixin = (theme: Theme, drawerWidth: number): CSSObject => ({
 	width: drawerWidth,
 	transition: theme.transitions.create("width", {
 		easing: theme.transitions.easing.sharp,
@@ -20,7 +20,7 @@ const openedMixin = (theme: Theme, drawerWidth: number) => ({
 	overflowX: "hidden",
 });
 
-const closedMixin = (theme: Theme) => ({
+const closedMixin = (theme: Theme): CSSObject => ({
 	transition: theme.transitions.create("width", {
 		easing: theme.transitions.easing.sharp,
 		duration: theme.transitions.duration.leavingScreen,
@@ -37,7 +37,7 @@ interface DrawerProps {
 	drawerWidth: number;
 }
 
-const Drawer = styled(MuiDrawer as any, {
+const Drawer = styled(MuiDrawer, {
 	shouldForwardProp: (prop) => prop !== "open" && prop !== "drawerWidth",
 })<DrawerProps>(({ theme, open, drawerWidth }) => ({
 	width: drawerWidth,
@@ -56,8 +56,6 @@ const Drawer = styled(MuiDrawer as any, {
 		"& .MuiDrawer-paper": closedMixin(theme),
 	}),
 }));
-
-
 
 interface MiniDrawerProps<T extends DrawerTab> {
 	open: boolean;

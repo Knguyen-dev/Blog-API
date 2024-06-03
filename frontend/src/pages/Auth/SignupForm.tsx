@@ -20,27 +20,27 @@ import useToast from "../../hooks/useToast";
 import { ISignupFormData } from "../../types/Auth";
 
 export default function SignupForm() {
-	const { control, handleSubmit } = useForm({
-		resolver: yupResolver(signupSchema),
-		defaultValues: {
-			email: "",
-			username: "",
-			fullName: "",
-			password: "",
-			confirmPassword: "",
-		},
-	});
+  const { control, handleSubmit } = useForm<ISignupFormData>({
+    resolver: yupResolver(signupSchema),
+    defaultValues: {
+      email: "",
+      username: "",
+      fullName: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-	const { showToast } = useToast();
+  const { showToast } = useToast();
 
-	// function for opening the snackbar, which we'll display on successful registration
-	const navigate = useNavigate();
+  // function for opening the snackbar, which we'll display on successful registration
+  const navigate = useNavigate();
 
-	const { error, isLoading, signup } = useSignup();
+  const { error, isLoading, signup } = useSignup();
 
-	const onSubmit = async (formData: ISignupFormData) => {
-		const success = await signup(formData);
-		/*
+  const onSubmit = async (formData: ISignupFormData) => {
+    const success = await signup(formData);
+    /*
     - Conditionals:
     1. On success redirect the user to the login page and open the snackbar.
       Here 'data' would be the object with the success message created by the server, so 
@@ -51,73 +51,73 @@ export default function SignupForm() {
     3. Else, it wasn't a success and it didn't fail due to the user's input, 
       so there was a server error. This error is updated in our error state.
     */
-		if (success) {
-			showToast({
-				message: "User registration successful!",
-				severity: "success",
-			});
-			return navigate("/auth/login");
-		}
-	};
+    if (success) {
+      showToast({
+        message: "User registration successful!",
+        severity: "success",
+      });
+      return navigate("/auth/login");
+    }
+  };
 
-	return (
-		<form onSubmit={handleSubmit(onSubmit)}>
-			<div className="tw-text-center tw-mb-4">
-				<Typography variant="h3">Sign Up</Typography>
-			</div>
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="tw-text-center tw-mb-4">
+        <Typography variant="h3">Sign Up</Typography>
+      </div>
 
-			{/* Form input fields */}
-			<div className="tw-flex tw-flex-col tw-gap-y-2 tw-mb-2">
-				<FormInputField
-					id="email"
-					name="email"
-					control={control}
-					label="Email"
-				/>
-				<FormInputField
-					id="username"
-					name="username"
-					control={control}
-					label="Username"
-				/>
-				<FormInputField
-					id="fullName"
-					name="fullName"
-					control={control}
-					label="Full Name"
-				/>
-				<FormPasswordField
-					id="password"
-					name="password"
-					control={control}
-					label="Password"
-				/>
-				<FormPasswordField
-					id="confirmPassword"
-					name="confirmPassword"
-					control={control}
-					label="Confirm Password"
-				/>
+      {/* Form input fields */}
+      <div className="tw-flex tw-flex-col tw-gap-y-2 tw-mb-2">
+        <FormInputField<ISignupFormData>
+          id="email"
+          name="email"
+          control={control}
+          label="Email"
+        />
+        <FormInputField<ISignupFormData>
+          id="username"
+          name="username"
+          control={control}
+          label="Username"
+        />
+        <FormInputField<ISignupFormData>
+          id="fullName"
+          name="fullName"
+          control={control}
+          label="Full Name"
+        />
+        <FormPasswordField<ISignupFormData>
+          id="password"
+          name="password"
+          control={control}
+          label="Password"
+        />
+        <FormPasswordField<ISignupFormData>
+          id="confirmPassword"
+          name="confirmPassword"
+          control={control}
+          label="Confirm Password"
+        />
 
-				<Button variant="contained" disabled={isLoading} type="submit">
-					Sign Up
-				</Button>
-			</div>
+        <Button variant="contained" disabled={isLoading} type="submit">
+          Sign Up
+        </Button>
+      </div>
 
-			{/* Rendering a potential server error */}
-			{error && <div className="error">{error}</div>}
+      {/* Rendering a potential server error */}
+      {error && <div className="error">{error}</div>}
 
-			<Divider className="tw-my-4" />
+      <Divider className="tw-my-4" />
 
-			{/* Container for extra stuff in the form such as 'or' login */}
-			<div>
-				<Typography className="tw-text-center">
-					Already a user?{" "}
-					<Link to="/auth/login" aria-label="Go to login page">
-						Login
-					</Link>
-				</Typography>
-			</div>
-		</form>
-	);
+      {/* Container for extra stuff in the form such as 'or' login */}
+      <div>
+        <Typography className="tw-text-center">
+          Already a user?{" "}
+          <Link to="/auth/login" aria-label="Go to login page">
+            Login
+          </Link>
+        </Typography>
+      </div>
+    </form>
+  );
 }

@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { ReactNode } from "react";
 
-interface AlertDialogProps {
+interface IAlertDialogProps {
 	open: boolean;
 	title: string;
 	handleClose: () => void;
@@ -21,7 +21,7 @@ export default function AlertDialog({
 	handleClose,
 	dialogText,
 	dialogActions,
-}: AlertDialogProps) {
+}: IAlertDialogProps) {
 	return (
 		<Dialog
 			open={open}
