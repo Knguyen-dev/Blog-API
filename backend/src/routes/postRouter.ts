@@ -41,7 +41,7 @@ router.delete("/:id", verifyEditorOrAdmin, deletePost);
 router.patch("/:id/status", verifyAdmin, updatePostStatus);
 
 // Updating a post in its entirety (users can only update their own posts)
-router.patch("/:id", verifyEditorOrAdmin, updatePost);
+router.put("/:id", verifyEditorOrAdmin, updatePost);
 
 
 export default router;

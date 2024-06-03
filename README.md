@@ -1,11 +1,19 @@
 # Blog-API
 Create a blog fullstack blog application. Have a front end application for viewing and editing posts. Let people read and comment on posts. Basically the blog should make it so only you, imagine like the 'guardian' or 'the atlantic'. So I guess there should be a section that allows users. Some inspirations to take from that are similar are reddit, dogonews, ign, or something similar. It just has to involve posts, authors, comments, etcetera. Just takes things one at a time.
 
+Moving everything to 
 
-## Scripts
+
+
+### Client packages
+Set up a new project with framework 'React' and variant 'TypeScript' using `npm create vite@latest`
 ```
-npm run test:file -- path/to/your/test/file.test.js; runs individual test file
+npm i @emotion/react @emotion/styled @hookform/resolvers @mui/icons-material @mui/material @mui/x-data-grid axios dompurify react-hook-form react-router-dom yup
+
+npm i -D @testing-library/jest-dom @testing-library/react @testing-library/user-event @tinymce/tinymce-react @types/dompurify autoprefixer jsdom postcss prettier prettier-plugin-tailwindcss tailwindcss vitest
 ```
+
+
 
 
 # Models:
@@ -22,16 +30,6 @@ npm run test:file -- path/to/your/test/file.test.js; runs individual test file
 3. Additional resources: https://github.com/gitdagray/mern_stack_course/blob/main/lesson_08-backend/config/allowedOrigins.js
 
 
-# Inspiration:
-1. Site: https://dezien-blog.vercel.app/
-- This is a good site to take design inspiration off of, but it's quite complex.
-2. Site 2: https://blog-client-dovimaj.vercel.app/
-- Here's an easy site to copy off of.
-3. https://www.mohammadfaisal.dev/blog; this one would be difficult, but I think I like their simplified blog page a lot better than my youtube-esque one. I guess it's 
-probably better if I personalize my website a bit.
-
-4. Code Design AI Site: https://dev.codedesign.ai/app/builder?project=blogsphere-website-contentc32bt7aqdw#home
-5. SitesGpt AI Site: https://dev.codedesign.ai/app/builder?project=blogsphere-website-contentc32bt7aqdw#home
 
 # How can we do image storage:
 1. File system: Store images on web server file system. Downsides are 
@@ -47,11 +45,46 @@ probably better if I personalize my website a bit.
 - NOTE: Though a popular and useful library, you can also use flowbite 
   which is a lot more easy to integrate since that is based on tailwind styles.
 
+# TypeScript and Jest
+Install your packages:
+```
+npm i -D jest typescript
+npm i -D ts-jest @types/test
+```
+Create a 'jest.config.js' in the same directory as package.json. Then run this command:
+```
+npx ts-jest config:init
+```
+Which should populate your jest.config.js file with this:
+```
+module.exports = {
+  preset: "ts-jest",
+  testEnvironment: "node"
+};
+```
+Create a folder named 'tests' at the same level as package.json and place your test files in this folder. The file naming should be file_name.test.ts
+
+### Jest Globals
+These are variables or functions such as 'describe', 'expect', 'test', etc. that jest provides. Now there are two ways to use these.
+```
+<!-- Install jest globals and then import them into each testing file. -->
+npm i -D @jest/globals
+
+
+<!-- 2. Install the @types/jest package and include this in your tsconfig.json for types. Now you don't have to import those globals every time -->
+npm i -D @types/jest
+```
+
+
+
 # Rate Limiting:
 - For personal projects, express-rate-limiter gets the job done and can is a good 
   fit for your application. However, for larger scale applications it's common practice
   to have an nginx server running in front of your node server. This nginx server 
   acts as a 'reverse proxy'
+
+
+
 
 
 
@@ -71,11 +104,89 @@ probably better if I personalize my website a bit.
 - Editor: Allowed to create posts and modify any existing posts that they've created. 
 - Admin: Allowed to create posts and modify their own posts. They should be able to delete anyone's post. However, admins are limited when it comes to editing another user's post, as they're only allowed to edit the status of another user's post.
 
+### Setting up TypeScript for frontend
+So we created a react project using vite's react template. Now we want to be able to use typescript. Here are the steps you need to take to convert your vite react-javascript project to a typescript one.
+
+#### Step 1/6: Install base packages
+```
+npm install -D typescript @types/react @types/react-dom ts-node
+```
+#### Step 2/6: Modify package.json
+In `package.json`, replace:
+```
+"build": "vite build"
+```
+with this:
+```
+"build": "tsc && vite build"
+```
+#### Step 3/6: 
+Rename `vite.config.js` and `main.jsx` to `vite.config.ts` and `main.tsx`
+
+#### Step 4/6:
+Configure TypeScript by creating these two files in the root of your project.
+`tsconfig.json`
+```
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+```
+`tsconfig.node.json`
+```
+{
+  "compilerOptions": {
+    "composite": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["vite.config.ts"]
+}
+```
+#### Step 5/6
+Create a file named `vite-env.d.ts` inside the `src` folder and give it these contents (include 3 slashes in the beginning):
+```
+/// <reference types="vite/client" />
+```
+
+#### Step 6/6
+In your index.html, change the name of your script from `main.jsx` to `main.tsx` like this:
+```
+<script type="module" src="/src/main.tsx"></script>
+```
+That should be it. Obviously this is just for the base conversion, of course if you have other packages and files, you'll have to accomodate for that.
+
+
+```
+npm create vite@latest
+```
+
+
+
+
+
 
 ### Setting up TypeScript for the backend:
 Install packages. We install typescript, a thing for running typescript, and then types for express
 ```
-
 npm i -D typescript ts-node @types/express 
 ```
 Then create a tsconfig.json file
@@ -103,24 +214,43 @@ Now we need to update our script commands. So we expect our script commands to b
 
 You would do `npm run build` to convert/compile your TypeScript code into valid JavaScript, and this valid JavaScript is what's used in production. Remember for improvement use strict type checking, setting up configurations to your needs, improve performance with code splitting if needed, shrink file sizes with tools like server, and streamline the workflow from development to production with CI/CD pipelines!
 
-### Running typescript project 
-1. Check tsconfig.json. Ensure it has outDir, rootDir, module, target, strict, and esModuleInterop. You may exclude files from the build as well
-2. 
+
+
+
+# Setting up Redis
+1. [Install Redis on your local machine](https://replit.com/@knguyensky/redis-tutorial#README.md)
+2. Install npm packages
+```
+<!-- Install redis package: So this is also known as a 'client' library. It just gives us the redis  -->
+npm i redis; no need to instal @types/redis, since redis provides its own type definitions
+
+<!-- Install popular Redis client for Node.js -->
+npm i ioredis 
+npm i -D @types/ioredis
+```
+Both redis and ioredis are 'client' libraries for using redis in node. They expose functions and classes that allow us to do caching and important things with redis. The former is the basic package, it's easy to use, and is good for most use cass. However it may lack support for advanced features. The latter 
+is a more feature-rich and robust Redis client. Does everything the original does, but has support for more advanced cases. Here are some of the extra things it has
+1. Cluster Support: Has built in support for Redis Cluster, whic his the idea where data in your redis caches are separating horizontally. Some rows belonging in one cache whilst others belong in another cache, in hopes for better horizontal scaling.
+2. Sentinel Support: Supports 'Redis Sentinal'
+3. Better Performance: Optimized for high performance and can handle a larger number of concurrent connections.
+4. Advanced Features: Such as Lua scripting, transaction support, and more.
+
+Now let's start redis our redis server via ubuntu
+```
+sudo service redis-server start
+redis-cli.
+```
+
+
 
 
 
 
 # Commit
 
-
-
 ## BOOK MARK:
-- Feel like the structure of the updateAvatar function can be improved. Also we updated it to use createError(), so I wnat to test if that works as expected. I'll use postman to test when there isn't a file to be sent. Maybe the fileFilter function is where we need to check if they really sent a file or not?
-- Replaced luxon with built-in logic for username changes and login tracking. Definitely need to see if that works.
-- For category controller and tag controller, when passing in 
-  information like the title of the category or tag, we changed
-  from req.query.title to req.body.title, so pass in the stuff through title now I guess?
-- We added slugs to tags, and removed the condition for titles to be unique. Honestly the slugs themselves are the other  only thing that needs uniqueness.
+blue-dream-sea-city
+
 
 
 
@@ -131,7 +261,7 @@ You would do `npm run build` to convert/compile your TypeScript code into valid 
 
 12. Api Pagination? Of course we don't want to fetch everything from the database. And then update the front-end accordingly?
 
-13. Have a redis cache? Well in order for this to happen, it needs to work, even if the redis cache doesn't exist. So in case we don't use the website for awhile and the redis cache has been disabled, then our website still needs to work as normal
+13. Have a redis cache? Well in order for this to happen, it needs to work, even if the redis cache doesn't exist. So in case we don't use the website for awhile and the redis cache has been disabled, then our website still needs to work as normal.
 
 ### Additional stuff you'd put in another branch
 14. Start a conversion over to typescript since we want to practice typescript.
@@ -149,9 +279,10 @@ You would do `npm run build` to convert/compile your TypeScript code into valid 
 - Definitely not hosting on Netlify considering that you can get 
   charged even if you're a free tier user. Probably best if we deploy 
   on render or cloudflare pages
-- 
+
 
 # Credits:
+## Resources
 1. https://stackoverflow.com/questions/57650692/where-to-store-the-refresh-token-on-the-client
 2. https://medium.com/@sadnub/simple-and-secure-api-authentication-for-spas-e46bcea592ad
 3. How to create youtube layout (tailwind typescript): https://youtu.be/ymGB1lqP1CM?si=BZv6QUEFMrVKE5Qf
@@ -159,6 +290,16 @@ You would do `npm run build` to convert/compile your TypeScript code into valid 
 5. React forms and jwt: https://www.youtube.com/watch?v=brcHK3P6ChQ&list=PL0Zuz27SZ-6PRCpm9clX0WiBEMB70FWwd
 6. https://deadsimplechat.com/blog/how-to-safely-use-dangerouslysetinnerhtml-in-react/
 7. https://wix.com/blog/beautiful-contact-pages
-
 8. https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually
 9. [Jest With TypeScript](https://jestjs.io/docs/getting-started#using-babel)
+
+## Inspiration
+1. Site: https://dezien-blog.vercel.app/
+- This is a good site to take design inspiration off of, but it's quite complex.
+2. Site 2: https://blog-client-dovimaj.vercel.app/
+- Here's an easy site to copy off of.
+3. https://www.mohammadfaisal.dev/blog; this one would be difficult, but I think I like their simplified blog page a lot better than my youtube-esque one. I guess it's 
+probably better if I personalize my website a bit.
+
+4. Code Design AI Site: https://dev.codedesign.ai/app/builder?project=blogsphere-website-contentc32bt7aqdw#home
+5. SitesGpt AI Site: https://dev.codedesign.ai/app/builder?project=blogsphere-website-contentc32bt7aqdw#home

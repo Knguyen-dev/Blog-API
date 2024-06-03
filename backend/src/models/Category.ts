@@ -42,5 +42,15 @@ const categorySchema = new mongoose.Schema<ICategory, ICategoryModel>({
   }
 })
 
+categorySchema.methods.toJSON = function() {
+  const categoryObj = this.toObject();
+  delete categoryObj.__v;
+  delete categoryObj.lastUpdatedBy;
+  return categoryObj;
+}
+
 const Category = mongoose.model<ICategory, ICategoryModel>("Category", categorySchema, "Categories");
+
+
+
 export default Category;
