@@ -42,6 +42,11 @@ export default function EditPostPage() {
   won't be used and will be overwritten as soon as 'postData' is loaded. The reason 
   that we populate postState with this unused initial in the first place is so that the 
   when we pass 'setPostState' into 'setPostData', it's of type Dispatch<SetActionState<IPostState>>.
+
+  So the end goal is to leave category as ICategory. So we could probably do something 
+  fancy with NewBasicSelect, so that our handleCategoryChange still gets our original
+  category object, but indirectly. Well need to pass in our current categories to 
+  EditPostAccordion, but this should still work, not perfect but gets the job done.
   */
   const [postState, setPostState] = useState<IPostState>(initialPostState);
 

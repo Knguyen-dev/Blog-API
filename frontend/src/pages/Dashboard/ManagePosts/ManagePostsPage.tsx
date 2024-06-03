@@ -1,21 +1,15 @@
 import { Typography, Box, Button } from "@mui/material";
 import { useState } from "react";
 import BlogPostCard from "./components/BlogPostCard";
-import BlogPostCardSkeleton from "./components/BlgoPostCardSkeleton";
 
 import DeletePostDialog from "./components/DeletePostDialog";
 import EditPostStatusDialog from "./components/EditPostStatusDialog";
 import usePostNavigation from "../../Browse/hooks/usePostNavigation";
 import usePrivateFetchData from "../../../hooks/usePrivateFetchData";
 import useAuthContext from "../../../hooks/useAuthContext";
-import { verifyAdmin } from "../../../../../client/src/utils/roleUtils";
-import { IPost } from "../../../types/Post";
+import { verifyAdmin } from "../../../utils/roleUtils";
 
-// Prepare the array of skeletons to be rendered
-const numSkeletons = 8;
-const cardSkeletons = Array.from({ length: numSkeletons }, (_, index) => (
-  <BlogPostCardSkeleton key={index} />
-));
+import { IPost } from "../../../types/Post";
 
 export default function ManagePostsPage() {
   const { auth } = useAuthContext();
@@ -134,12 +128,9 @@ export default function ManagePostsPage() {
                 <BlogPostCard
                   key={index}
                   post={post}
-                  onCardClick={() => {
-                    // If post is published, then allow us to be redirected to the post page
-                    if (post.isPublished) {
-                      goToPostPage(post.slug);
-                    }
-                  }}
+                  // Don't allow user (editors/admins in this case) to be able to click/view published post
+                  disabled={!post.isPublished}
+                  onCardClick={() => goToPostPage(post.slug)}
                   // Change the label depending on if the post is published
                   ariaLabel={
                     post.isPublished
@@ -158,7 +149,7 @@ export default function ManagePostsPage() {
         ) : error ? (
           <Typography>{error}</Typography>
         ) : (
-          <Typography variant="h4">{cardSkeletons}</Typography>
+          <Typography variant="h4">Loading Posts...</Typography>
         )}
       </Box>
     </Box>

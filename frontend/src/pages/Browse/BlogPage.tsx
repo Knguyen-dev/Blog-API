@@ -49,7 +49,7 @@ export default function BlogPage() {
   };
 
   return (
-    <div className="tw-flex tw-flex-col tw-flex-1">
+    <div className="tw-flex tw-flex-col tw-flex-1 tw-pt-4">
       {/* Actually maybe this can be called the header; what would we normally call this */}
       <Box component="header" className="tw-mb-4 tw-text-center">
         <Box className="tw-mb-4">
@@ -119,7 +119,10 @@ export default function BlogPage() {
           posts.length > 0 ? (
             posts.map((post, index) => <PostCard key={index} postObj={post} />)
           ) : (
-            <Typography>No posts found! Maybe try another title?</Typography>
+            <Typography>
+              No posts found! Try another category, different tags, or a
+              different title?
+            </Typography>
           )
         ) : error ? (
           <Typography>{error}</Typography>

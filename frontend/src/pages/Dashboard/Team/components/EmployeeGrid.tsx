@@ -11,6 +11,7 @@ import { getRoleString } from "../../../../utils/roleUtils";
 import useToast from "../../../../hooks/useToast";
 import getErrorData from "../../../../utils/getErrorData";
 import { IUser } from "../../../../types/Post";
+import { roleMap } from "../../../../utils/roleUtils";
 
 export default function EmployeeGrid() {
   const { state, dispatch } = useEmployeeContext();
@@ -59,6 +60,8 @@ export default function EmployeeGrid() {
   // Handles updating a row in our employee grid
   const processRowUpdate = useCallback(
     async (newRow: IUser): Promise<IUser> => {
+      console.log("New Row: ", newRow);
+
       const response = await axiosPrivate.patch(
         `/employees/${newRow._id}`,
         newRow
@@ -176,19 +179,23 @@ const columns = [
     type: "singleSelect", // by the way this is how we do a select drop down. as a field.
 
     /*
-    - The 'Team' grid will only show users that have role 'editor' or 'admin'. As well 
-    as this, once you are an editor or admin, you cannot go back to having role 'user'. 
-    Of course you can switch around being an editor or admin, but you simply can't go 
-    back to being role 'user'. This helps keep strict separation on things.
+      These are the options in the select. So we'll visually render a 'Admin' option. If you click it 
+      then processRowUpdate is passed in newRow, where newRow.role = roleMap.admin
     */
-    valueOptions: ["Admin", "Editor"],
+    valueOptions: [
+      {
+        value: parseInt(roleMap.admin),
+        label: "Admin",
+      },
+      {
+        value: parseInt(roleMap.editor),
+        label: "Editor",
+      },
+    ],
 
-    // Convert numerical roles to human readable roles for the data grid.
-    valueGetter: ({ row }: { row: IUser }) => row.role,
-
-    // Display the corresponding human-readable role string for each role number
-    valueFormatter: ({ roleNumber }: { roleNumber: number }) => {
-      const roleString = getRoleString(roleNumber);
+    // Receives the role number field of a given row, and renders it as a role string
+    valueFormatter: (role: number) => {
+      const roleString = getRoleString(role);
       return roleString;
     },
   },
@@ -204,20 +211,11 @@ const columns = [
     headerName: "Last Login",
     type: "dateTime",
     width: 180,
-    valueGetter: ({ row }: { row: IUser }) => {
-      if (!row.lastLogin) {
-        return null;
-      }
-
-      return new Date(row.lastLogin);
-    },
-
-    // Manipulate/render the date object created from lastLogin
-    valueFormatter: ({ lastLogin }: { lastLogin: Date }) => {
+    valueFormatter: (lastLogin: Date | null) => {
       if (!lastLogin) {
         return "User hasn't logged in yet!";
       }
-      return lastLogin;
+      return new Date(lastLogin);
     },
   },
 ];

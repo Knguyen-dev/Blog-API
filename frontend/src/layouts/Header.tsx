@@ -7,6 +7,7 @@ import {
   Divider,
   Box,
   Link,
+  useTheme,
 } from "@mui/material";
 import ContrastIcon from "@mui/icons-material/Contrast";
 import AccountMenu from "./AccountMenu";
@@ -20,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { companyInfo } from "../constants/companyInfo";
 
 export default function Header() {
+  const theme = useTheme();
   const { auth } = useAuthContext();
   const { preferences, toggleColorMode } = useColorContext();
   const navigate = useNavigate();
@@ -31,17 +33,22 @@ export default function Header() {
   return (
     <Box
       component="header"
-      className="tw-pt-2 tw-px-5 tw-sticky tw-top-0 tw-z-10"
-      // style={{ background: theme.palette.headerBg }}
-    >
+      sx={{
+        backgroundColor: theme.palette.background.neutral,
+        color:
+          theme.palette.mode === "dark"
+            ? theme.palette.common.white
+            : theme.palette.common.black,
+      }}
+      className="tw-pt-2 tw-px-5 tw-sticky tw-top-0 tw-z-10">
       <Grid component="nav" container className="tw-items-center">
         <Grid item xs={12} md={3} className="xs:max-md:tw-mb-4">
           <Box className="xs:max-md:tw-text-center">
             <Typography variant="h4">
               <Link
                 component="button"
-                // style={{ color: theme.palette.brandColor }}
                 underline="none"
+                color="inherit"
                 onClick={goToHomePage}>
                 {companyInfo.name}
               </Link>
@@ -56,6 +63,7 @@ export default function Header() {
                 component="button"
                 // style={{ color: theme.palette.brandColor }}
                 underline="none"
+                color="inherit"
                 onClick={goToHomePage}>
                 Home
               </Link>
@@ -63,7 +71,7 @@ export default function Header() {
             <li>
               <Link
                 component="button"
-                // style={{ color: theme.palette.brandColor }}
+                color="inherit"
                 underline="none"
                 onClick={goToAboutPage}>
                 About
@@ -72,7 +80,7 @@ export default function Header() {
             <li>
               <Link
                 component="button"
-                // style={{ color: theme.palette.brandColor }}
+                color="inherit"
                 underline="none"
                 onClick={goToBlogPage}>
                 Blog
@@ -81,7 +89,7 @@ export default function Header() {
             <li>
               <Link
                 component="button"
-                // style={{ color: theme.palette.brandColor }}
+                color="inherit"
                 underline="none"
                 onClick={goToContactPage}>
                 Contact

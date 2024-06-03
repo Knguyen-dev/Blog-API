@@ -7,15 +7,15 @@ import NewBasicSelect from "../../../../components/select/NewBasicSelect";
 import { IPost, PostStatusType } from "../../../../types/Post";
 
 interface IEditPostStatusFormProps {
-  postID: string;
+  post: IPost;
   onSuccess: (newPost: IPost) => void;
 }
 
 export default function EditPostStatusForm({
-  postID,
+  post,
   onSuccess,
 }: IEditPostStatusFormProps) {
-  const [status, setStatus] = useState<PostStatusType>(postStatuses[0].value);
+  const [status, setStatus] = useState<PostStatusType>(post.status);
   const { isLoading, error, savePostStatus } = useSavePostStatus();
 
   const onSubmit = async (e: FormEvent) => {
@@ -25,7 +25,7 @@ export default function EditPostStatusForm({
       status,
     };
 
-    const newPost = await savePostStatus(postID, formData);
+    const newPost = await savePostStatus(post._id, formData);
 
     // If !newPost (request failed), stop function execution early
     if (!newPost) {

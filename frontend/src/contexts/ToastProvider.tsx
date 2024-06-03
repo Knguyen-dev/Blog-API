@@ -111,17 +111,13 @@ export default function ToastProvider({ children }: ToastProviderProps) {
     setMessageInfo(undefined);
   };
 
-  if (!messageInfo) {
-    return;
-  }
-
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
       <AlertToast
         key={messageInfo?.key}
         open={open}
-        message={messageInfo.message}
+        message={messageInfo?.message || DEFAULTS.message}
         severity={messageInfo?.severity}
         handleClose={handleClose}
         handleExited={handleExited}

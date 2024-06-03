@@ -21,6 +21,7 @@ interface SettingsProviderProps {
 export const SettingsContext = createContext<
   | {
       toggleColorMode: () => void;
+      toggleAnimations: () => void;
       preferences: IPreferences;
     }
   | undefined
@@ -66,11 +67,24 @@ export default function SettingsProvider({ children }: SettingsProviderProps) {
           };
           return newPreferences;
         }),
+
+      toggleAnimations: () =>
+        setPreferences((prev: IPreferences) => {
+          const newPreferences = {
+            ...prev,
+            animations: !prev.animations,
+          };
+          return newPreferences;
+        }),
     }),
     [setPreferences]
   );
 
-  const theme = useMemo(() => getTheme(preferences), [preferences]);
+  const theme = useMemo(() => {
+    console.log("Recomputing theme since things changed!");
+
+    return getTheme(preferences);
+  }, [preferences]);
 
   return (
     <SettingsContext.Provider value={{ ...themeControl, preferences }}>

@@ -46,7 +46,7 @@ export default function EditPostStatusDialog({
       modalTitle="Update the status of a post"
       dialogText={dialogText}
       CustomForm={
-        <EditPostStatusForm postID={selectedPost._id} onSuccess={onSuccess} />
+        <EditPostStatusForm post={selectedPost} onSuccess={onSuccess} />
       }
       open={open}
       handleClose={handleClose}

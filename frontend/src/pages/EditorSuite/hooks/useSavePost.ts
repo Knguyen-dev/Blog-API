@@ -2,7 +2,7 @@ import { useState } from "react";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import DOMPurify from "dompurify";
 import { AxiosError } from "axios";
-import handleRequestError from "../../../../../client/src/utils/handleRequestError";
+import handleRequestError from "../../../utils/handleRequestError";
 import { IPostFormData } from "../../../types/Post";
 
 export default function useSavePost() {
@@ -11,7 +11,7 @@ export default function useSavePost() {
   const axiosPrivate = useAxiosPrivate();
 
   const saveExistingPost = (postData: IPostFormData) => {
-    return axiosPrivate.patch(`/posts/${postData._id}`, postData);
+    return axiosPrivate.put(`/posts/${postData._id}`, postData);
   };
 
   const createNewPost = (postData: IPostFormData) => {

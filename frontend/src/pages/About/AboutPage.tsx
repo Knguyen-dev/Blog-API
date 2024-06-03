@@ -2,11 +2,17 @@ import Diversity3Icon from "@mui/icons-material/Diversity3";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
 import SelfImprovementIcon from "@mui/icons-material/SelfImprovement";
-import { Button, Box, Typography, Stack, Container, Grid } from "@mui/material";
+import {
+  Button,
+  Box,
+  Typography,
+  Stack,
+  Container,
+  Grid,
+  useTheme,
+} from "@mui/material";
 import SocialMediaStack from "../../components/SocialMediaStack";
-
 import ResponsiveImg from "../../components/img/ResponsiveImg";
-
 import { companyInfo } from "../../constants/companyInfo";
 
 const companyValues = [
@@ -37,6 +43,8 @@ const companyValues = [
 ];
 
 export default function AboutPage() {
+  const theme = useTheme();
+
   return (
     <Box className="tw-p-8 tw-flex tw-flex-col tw-gap-y-8">
       <Container component="header" className="tw-text-center">
@@ -49,15 +57,17 @@ export default function AboutPage() {
       </Container>
 
       {/* What does the site do, what is it? */}
-      <Container component="section" className="tw-text-center">
-        <Box component="header">
-          <Typography variant="h4" component="h2" gutterBottom>
-            What is {companyInfo.name}?
-          </Typography>
-        </Box>
-
+      <Container
+        component="section"
+        className="tw-text-center tw-py-4 tw-rounded-md tw-shadow-lg"
+        sx={{
+          background: theme.palette.background.paper,
+        }}>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6}>
+            <Typography variant="h4" component="h2" gutterBottom>
+              What is {companyInfo.name}?
+            </Typography>
             <Typography className="tw-text-start" paragraph>
               {companyInfo.name} is a community of gamers, creators, and
               enthusiasts who share their knowledge and experiences. Our site is
@@ -84,14 +94,12 @@ export default function AboutPage() {
       </Container>
 
       {/* Mission and Vision */}
-      <Container component="section">
-        <Typography
-          variant="h4"
-          component="h2"
-          className="tw-mb-8 tw-text-center">
-          Mission and Vision
-        </Typography>
-
+      <Container
+        component="section"
+        className="tw-text-center tw-py-4 tw-rounded-md tw-shadow-lg"
+        sx={{
+          background: theme.palette.background.paper,
+        }}>
         <Grid container spacing={4} className="tw-justify-center">
           <Grid item xs={12} sm={7}>
             <ResponsiveImg
@@ -101,6 +109,9 @@ export default function AboutPage() {
             />
           </Grid>
           <Grid item xs={12} sm={5}>
+            <Typography variant="h4" component="h2" gutterBottom>
+              Mission and Vision
+            </Typography>
             <Typography className="tw-text-start" paragraph>
               Our mission at {companyInfo.name} is to foster a vibrant community
               where gamers and enthusiasts can freely exchange ideas, insights,
@@ -119,8 +130,9 @@ export default function AboutPage() {
       <Container
         component="section"
         className="tw-py-4 tw-rounded-md tw-shadow-lg"
-        // sx={{ background: theme.palette.sectionBg }}
-      >
+        sx={{
+          background: theme.palette.background.paper,
+        }}>
         <Box component="header">
           <Typography
             variant="h4"
@@ -165,8 +177,9 @@ export default function AboutPage() {
       <Container
         component="section"
         className="tw-py-4 tw-rounded-md tw-shadow-lg"
-        // sx={{ background: theme.palette.sectionBg }}
-      >
+        sx={{
+          background: theme.palette.background.paper,
+        }}>
         <Box component="header" className="tw-text-center tw-mb-4">
           <Typography variant="h4" component="h2" gutterBottom>
             Our Values
@@ -197,7 +210,12 @@ export default function AboutPage() {
       </Container>
 
       {/* Join Our Team */}
-      <Container component="section">
+      <Container
+        component="section"
+        className="tw-text-center tw-py-4 tw-rounded-md tw-shadow-lg"
+        sx={{
+          background: theme.palette.background.paper,
+        }}>
         <Box>
           <Typography
             variant="h4"
@@ -226,7 +244,7 @@ export default function AboutPage() {
                 something more.
               </Typography>
 
-              <Button variant="outlined" className="tw-mt-3 tw-self-start">
+              <Button variant="contained" className="tw-mt-3 tw-self-start">
                 Join Team
               </Button>
             </Stack>
@@ -241,9 +259,10 @@ export default function AboutPage() {
       {/* Connect with Us */}
       <Container
         component="section"
-        className="tw-py-4 tw-rounded-md tw-shadow-lg"
-        // sx={{ background: theme.palette.sectionBg }}
-      >
+        className="tw-text-center tw-py-4 tw-rounded-md tw-shadow-lg"
+        sx={{
+          background: theme.palette.background.paper,
+        }}>
         <Box component="header" className="tw-text-center">
           <Typography variant="h4" component="h2" gutterBottom>
             Connect with Us

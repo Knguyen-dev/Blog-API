@@ -7,6 +7,7 @@ import {
   Box,
   Divider,
   IconButton,
+  useTheme,
 } from "@mui/material";
 
 import ResponsiveImg from "../../components/img/ResponsiveImg.js";
@@ -76,6 +77,7 @@ const sampleTestimonies = [
 export default function HomePage() {
   const goToAboutPage = useAboutNavigation();
   const goToBlogPage = useBlogNavigation();
+  const theme = useTheme();
 
   return (
     <div className="tw-flex tw-flex-col tw-gap-y-20">
@@ -113,8 +115,7 @@ export default function HomePage() {
 
       {/* Services section */}
       <Box
-        // sx={{ background: theme.palette.sectionBg }}
-
+        sx={{ background: theme.palette.background.neutral }}
         className="tw-py-4">
         <Container maxWidth="xl" id="services">
           {/* Header  */}

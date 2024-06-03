@@ -1,4 +1,6 @@
 import { RoleKey } from "../types/Auth";
+
+// Returns the role numbers as strings
 const roleMap: Record<RoleKey, string> = {
   user: import.meta.env.VITE_ROLE_USER,
   editor: import.meta.env.VITE_ROLE_EDITOR,
@@ -65,16 +67,4 @@ const verifyEditor = (role: number): boolean => {
   return role === editorRole;
 };
 
-const verifyUser = (role: number): boolean => {
-  const userRole = parseInt(import.meta.env.VITE_ROLE_USER);
-  return role === userRole;
-};
-
-export {
-  getRoleNumber,
-  getRoleString,
-  verifyAdmin,
-  verifyEditor,
-  verifyUser,
-  roleMap,
-};
+export { getRoleNumber, getRoleString, verifyAdmin, verifyEditor, roleMap };

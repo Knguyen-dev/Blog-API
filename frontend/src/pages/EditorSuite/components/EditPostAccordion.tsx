@@ -13,10 +13,9 @@ import {
 } from "react";
 import { SelectChangeEvent } from "@mui/material";
 import { Editor as TinyMCEEditor } from "tinymce";
-import NewBasicSelect from "../../../../../client/src/components/select/NewBasicSelect";
-import BasicAuto from "../../../../../client/src/components/autocomplete/BasicAuto";
-import FilteredAutoSelect from "../../../../../client/src/components/autocomplete/FilteredAutoSelect";
-import BasicAccordion from "../../../../../client/src/components/accordion/BasicAccordion";
+import NewBasicSelect from "../../../components/select/NewBasicSelect";
+import FilteredAutoSelect from "../../../components/autocomplete/FilteredAutoSelect";
+import BasicAccordion from "../../../components/accordion/BasicAccordion";
 import { Box, TextField, Button } from "@mui/material";
 import { postStatuses } from "../data/postConstants";
 import PostEditor from "./PostEditor";
@@ -80,13 +79,14 @@ export default function EditPostAccordion({
     setPostData(newPostData);
   };
 
-  const handleCategoryChange = (
-    _event: SyntheticEvent<Element, Event>,
-    newValue: ICategory | null
-  ) => {
+
+  const handleCategoryChange = (e: SelectChangeEvent) => {
+    // Should be defined since they can't pick none by default
+    const categoryID: string = e.target.value;
+    const category = categories.find((c) => c._id === categoryID);
     const newPostData: IPostState = {
       ...postData,
-      category: newValue ? newValue : undefined,
+      category: category,
     };
     setPostData(newPostData);
   };
@@ -149,15 +149,25 @@ export default function EditPostAccordion({
             onChange={handleTitleChange}
             required
           />
-          <BasicAuto
+          <NewBasicSelect
+            value={postData.category?._id || ""}
+            onChange={handleCategoryChange}
+            label="Post Category"
+            options={categories}
+            getOptionLabel={(option) => option.title}
+            getOptionValue={(option) => option._id}
+            placeholder="Select a category for the post"
+            required
+          />
+          {/* <BasicAuto
             value={postData.category}
             onChange={handleCategoryChange}
             options={categories}
-            getOptionLabel={(option) => option?.title || "Select a category!"}
+            getOptionLabel={(option) => option.title || "Select a category!"}
             label="Post Category"
-            isOptionEqualToValue={(option, value) => option?._id === value?._id}
+            isOptionEqualToValue={(option, value) => option._id === value._id}
             required
-          />
+          /> */}
 
           <PostEditor value={postData.body} onChange={handleBodyChange} />
         </Box>

@@ -114,8 +114,14 @@ export default function AvatarForm({ user }: IAvatarFormProps) {
 
   const avatarDialogActions = (
     <Box>
-      <Button onClick={() => setOpen(false)}>Cancel</Button>
       <Button
+        variant="contained"
+        onClick={() => setOpen(false)}
+        sx={{ marginRight: 2 }}>
+        Cancel
+      </Button>
+      <Button
+        variant="contained"
         onClick={handleDeleteAvatar}
         color="warning"
         type="submit"
@@ -176,12 +182,12 @@ export default function AvatarForm({ user }: IAvatarFormProps) {
         </Box>
       </Box>
 
-      {/* Avatar for confirming the deletion of the user's current avatar */}
+      {/* Dialog for confirming the deletion of the user's current avatar */}
       <AlertDialog
         open={open}
         title="Delete Your Avatar?"
         dialogText={
-          <Typography>
+          <Typography color="text.primary">
             By agreeing, you confirm the permanent deletion of your avatar from
             your account. Please note that once deleted, your avatar cannot be
             recovered.

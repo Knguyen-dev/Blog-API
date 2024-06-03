@@ -2,7 +2,7 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
-import { Stack, Box, Typography, Link } from "@mui/material";
+import { Stack, Box, Typography, Link, useTheme } from "@mui/material";
 import EmailSubscriptionForm from "../pages/Home/EmailSubscriptionForm";
 import useHomeNavigation from "../pages/Home/useHomeNavigation";
 import useAboutNavigation from "../pages/About/useAboutNavigation";
@@ -37,12 +37,12 @@ export default function Footer({ className }: FooterProps) {
   const goToBlogPage = useBlogNavigation();
   const goToContactPage = useContactNavigation();
 
-  // const theme = useTheme();
+  const theme = useTheme();
 
   return (
     <Box
       component="footer"
-      // sx={{ background: theme.palette.footerBg }}
+      sx={{ background: theme.palette.background.neutral }}
       className={className}>
       {/* Main footer content */}
       <Box className="tw-flex tw-justify-between tw-flex-wrap tw-gap-8">
@@ -50,7 +50,7 @@ export default function Footer({ className }: FooterProps) {
           <Typography fontSize={sectionTitleFontSize} gutterBottom>
             {companyInfo.name}
           </Typography>
-          <Typography color="text.secondary" className="tw-mb-2">
+          <Typography color="text.primary" className="tw-mb-2">
             Your ultimate guide to understanding and enjoying a wide range of
             topics, from gaming to science. Brought to you by enthusiasts who
             loving sharing knowledge.
@@ -63,14 +63,14 @@ export default function Footer({ className }: FooterProps) {
           </Typography>
           <Stack spacing={1}>
             <Link
-              color="text.secondary"
+              color="text.primary"
               className="tw-no-underline hover:tw-underline"
               href="#">
               Faq
             </Link>
 
             <Link
-              color="text.secondary"
+              color="text.primary"
               component="button"
               className="tw-text-start tw-no-underline hover:tw-underline"
               onClick={goToContactPage}
@@ -78,13 +78,13 @@ export default function Footer({ className }: FooterProps) {
               Contact us
             </Link>
             <Link
-              color="text.secondary"
+              color="text.primary"
               className="tw-no-underline hover:tw-underline"
               href="#">
               Support Center
             </Link>
             <Link
-              color="text.secondary"
+              color="text.primary"
               className="tw-no-underline hover:tw-underline"
               href="#">
               Security
@@ -97,7 +97,7 @@ export default function Footer({ className }: FooterProps) {
           </Typography>
           <Stack spacing={1}>
             <Link
-              color="text.secondary"
+              color="text.primary"
               className="tw-text-start tw-no-underline hover:tw-underline"
               component="button"
               aria-label="Go to home page"
@@ -105,7 +105,7 @@ export default function Footer({ className }: FooterProps) {
               Home
             </Link>
             <Link
-              color="text.secondary"
+              color="text.primary"
               className="tw-text-start tw-no-underline hover:tw-underline"
               component="button"
               aria-label="Go to about page"
@@ -113,7 +113,7 @@ export default function Footer({ className }: FooterProps) {
               About Us
             </Link>
             <Link
-              color="text.secondary"
+              color="text.primary"
               className="tw-text-start tw-no-underline hover:tw-underline"
               component="button"
               aria-label="Go to blog page"
@@ -121,7 +121,7 @@ export default function Footer({ className }: FooterProps) {
               Blog
             </Link>
             <Link
-              color="text.secondary"
+              color="text.primary"
               className="tw-no-underline hover:tw-underline"
               href="#">
               Our Services
@@ -133,7 +133,7 @@ export default function Footer({ className }: FooterProps) {
           <Typography fontSize={sectionTitleFontSize} gutterBottom>
             Contact Us
           </Typography>
-          <Stack color="text.secondary" spacing={1}>
+          <Stack color="text.primary" spacing={1}>
             <Typography>{companyInfo.address}</Typography>
             <Stack direction="row" spacing={1}>
               <EmailIcon />

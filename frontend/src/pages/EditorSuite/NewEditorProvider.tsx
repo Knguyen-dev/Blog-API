@@ -107,6 +107,8 @@ export default function NewEditorProvider({
       imgSrc: state.imgSrc,
       imgCredits: state.imgCredits,
       status: state.status,
+
+      _id: state._id,
     };
 
     return await savePost(postData);

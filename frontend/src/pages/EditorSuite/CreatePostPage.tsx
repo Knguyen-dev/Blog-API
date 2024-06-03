@@ -74,9 +74,9 @@ export default function CreatePostPage() {
           />
         </Grid>
         <Grid item xs={12} sm={7} className="tw-h-full tw-overflow-y-auto">
-          {/* auth.user should be defined since this is an authenticated route, but we're of course
-            doing this to prevent typescript errors */}
-          {auth.user && (
+          {/* Wait to render the preview until the post is defined; this also avoids the error of passing an invalid time value 
+            to our NewPostPreview, whicch in turn would cause an error. */}
+          {postData && (
             <NewPostPreview
               title={postData.title}
               category={postData.category}

@@ -24,6 +24,7 @@ interface IBlogPostCardProps {
   cardActions: MenuItemProps[];
   onCardClick: () => void;
   ariaLabel?: string;
+  disabled?: boolean;
 }
 
 const minCardWidth = 300;
@@ -33,6 +34,7 @@ export default function BlogPostCard({
   onCardClick,
   cardActions,
   ariaLabel,
+  disabled = false,
 }: IBlogPostCardProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -71,7 +73,10 @@ export default function BlogPostCard({
         }
         subheader={formatBlogPostDate(post.createdAt)}
       />
-      <CardActionArea onClick={onCardClick} aria-label={ariaLabel}>
+      <CardActionArea
+        onClick={onCardClick}
+        disabled={disabled}
+        aria-label={ariaLabel}>
         <CardMedia
           sx={{
             height: 200,
