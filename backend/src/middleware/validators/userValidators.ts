@@ -2,7 +2,10 @@ import {body} from "express-validator";
 import {roles_map} from "../../config/roles_map";
 const userValidators = {
   /**
-   * Validates the email of the user.
+   * Validates the email of the user, and also sanitizes it so that it's lowercased.
+   * 
+   * NOTE: Makes sure that duplicate emails are found correctly as 'some@example.com'
+   * would be the same as 'SoMe@example.Com'.
    * 
    * @params {string} email - Email that the user wants to sign up with
    */
@@ -14,11 +17,14 @@ const userValidators = {
 		.isLength({
 			max: 64,
 		})
-		.withMessage("Maximum email length is 64 characters"),
+		.withMessage("Maximum email length is 64 characters")
+    .customSanitizer(email => email.toLowerCase()),
 
   /**
    * Validates the username that the user wants to sign up with.
    * 
+   * NOTE: Makes sure that duplicate usernames are found correctly as 'JohnPierre102'
+   * would be the same as 'johnpierre102'.
    * @params {string} username - Username that the user wants to create an account with
    */
   username: body("username")
@@ -27,7 +33,8 @@ const userValidators = {
 		.custom(username => {
       const usernameRegex = /^(?=.*[a-zA-Z])[a-zA-Z0-9_]{6,32}$/
       return usernameRegex.test(username)
-    }).withMessage("Username has to be between 6-32 characters. Can have letters, numbers, and underscores. Has to have at least one letter!"),
+    }).withMessage("Username has to be between 6-32 characters. Can have letters, numbers, and underscores. Has to have at least one letter!")
+    .customSanitizer(email => email.toLowerCase()),
 
   /**
    * Validates the password of the user.

@@ -286,6 +286,13 @@ const updatePassword = async (id: string, password: string, newPassword: string)
   // Attempt to find the user by their ID
   const user = await findUserByID(id);
 
+
+  // If user's email isn't verified, then prevent password change
+  if (!user.isVerified) {
+    throw createError(400, `You need to verify your email (${user.email}) before changing your password!`);
+  }
+
+
   // Check if the password the user entered matches their curernt password
   const isMatch = await verifyPassword(password, user.password);
   if (!isMatch) {

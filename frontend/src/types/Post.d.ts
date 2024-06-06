@@ -7,6 +7,7 @@ interface IUser {
 	lastLogin: string;
 	avatarSrc?: string;
 	avatarInitials: string;
+  isVerified: boolean;
 }
 
 interface ICategory {

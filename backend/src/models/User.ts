@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema<IUser, IUserModel>(
 			type: String,
 			required: true,
 			lowercase: true,
+      unique: true,
 			maxLength: 64,
 		},
 		username: {
@@ -64,6 +65,13 @@ const userSchema = new mongoose.Schema<IUser, IUserModel>(
 
     // User's profile picture
     avatar: String,
+
+    isVerified: {
+      type: Boolean,
+      default: false
+    }
+
+
 	},
 	{
     /*

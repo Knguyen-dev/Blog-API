@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import { createError } from "./errorUtils";
 import { IUserDoc } from "../types/User";
-import { RequestUser } from "../types/Request";
+import { RequestUser, EmailTokenPayload } from "../types/Request";
 import {Request, Response, NextFunction} from "express";
 
 
@@ -31,6 +31,50 @@ function generateAccessToken(user: IUserDoc): string {
 function generateRefreshToken(user: IUserDoc): string {
 	return jwt.sign({id: user.id}, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: "1d" });
 }
+
+
+/**
+ * Creates a jwt token with the email that we're trying to make the 
+ * user verify.
+ * 
+ * NOTE: 
+ * 1. Expiration should match the token database's expiration time. 
+ * 2. You may see that we don't have a userId associated with the token. This is because
+ * we're using a database, so we'll store the token string with the userId in the database, 
+ * which is how we're able to link the user who wanted to verify an email, to the email that 
+ * they want to verify.
+ * 
+ * 3. You may also be thinking 'collision rates' could be a concern if email is the only thing 
+ * going into the payload. Collisions will not happen. Let's say you have an email 'IceCream43@gmail.com'.
+ * The only times email tokens are created are when a user signs up and a verification email is sent, a user 
+ * with an unverified email requests to be resent a verification link, and when a user wants to update to a 
+ * new email.
+ *    Case 1: User signup will be prevented when they signup with an already registered email
+ *    Case 2: If you already have 'IceCream43@gmail.com', no other users will have that email, so no
+ *            other users will be able to request to be resent a verification link for that email.
+ *    Case 3: The update operation will be stopped to tell the user an account already exists with 
+ *            the new email they specified. This stops the operation before the creation of the email token.
+ */
+function generateEmailToken(email: string): string {
+  const payload: EmailTokenPayload = {
+    email: email
+  }
+
+  return jwt.sign(payload, process.env.EMAIL_TOKEN_SECRET!, { expiresIn: "1h" });  
+}
+
+/**
+ * Generates an email verification link
+ * 
+ * @param token - The unique string or property .token on every EmailToken
+ * @returns Returns a link to the front-end's email-verification page. When the user loads up the 
+ * page, the page will use the 'token' string and make a GET 'verify-email/:token' request to our 
+ * backend.
+ */
+function generateVerifyEmailURL(token: string) {
+  return `${process.env.CLIENT_URL}/verify-email/${token}`;
+}
+
 
 /**
  * Function to create the refresh token for a user.
@@ -112,6 +156,8 @@ const verifyJWT = asyncHandler(async (req: Request, res: Response, next: NextFun
 
 
 export {
+  generateEmailToken,
+  generateVerifyEmailURL,
   generateAccessToken,
   generateRefreshToken,
   setRefreshTokenCookie,

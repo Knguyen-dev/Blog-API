@@ -20,6 +20,7 @@ import {editUserLimiter} from "../middleware/limiters/userLimiter";
 
 const router = Router();
 
+
 // Routes only accessible for authenticated users
 router.use(verifyJWT);
 

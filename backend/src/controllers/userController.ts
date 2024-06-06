@@ -1,11 +1,15 @@
 import User from "../models/User";
+import EmailToken from "../models/EmailToken";
 import asyncHandler from "express-async-handler";
 import userValidators from "../middleware/validators/userValidators";
 import { saveFileToDisk} from "../middleware/fileUpload";
 import { body } from "express-validator";
-import { handleValidationErrors } from "../middleware/errorUtils";
+import { handleValidationErrors, createError } from "../middleware/errorUtils";
 import userServices from "../services/user.services";
 import employeeCache from "../services/caches/EmployeeCache";
+import sendVerifyEmail from "../services/email/sendVerifyEmail";
+import {generateEmailToken, generateVerifyEmailURL} from "../middleware/tokenUtils";
+
 
 /**
  * Gets all users in the database
@@ -142,7 +146,10 @@ const updateUsername = [
 ]
 
 /**
- * Middleware for updating a user's email
+ * Route handler handles checking an email's availbility and then emailing the
+ * verification link to said email!
+ * 
+ * ROUTE: '/update-email'
  * 
  */
 const updateEmail = [
@@ -150,15 +157,45 @@ const updateEmail = [
   handleValidationErrors,
   asyncHandler(async (req, res) => {
    
-    // Attempt to update the username
-    const user = await userServices.updateEmail(req.params.id, req.body.email);
+    const {email} = req.body;
 
-    if (user.isEmployee()) {
-      await employeeCache.deleteCachedEmployees();
+    /*
+    - Attempt to find the user via the ID in the jwt (throws an error if not found).
+
+    Check if the emails haven't changed. If the emails haven't changed then we aren't 
+    going to go through the work sending emails and doing additional database operations.
+
+    - NOTE: req.user!.id should exist as this controller will be behind a protected route.
+    */
+    const user = await userServices.findUserByID(req.user!.id);
+    if (user.email === email) {
+      throw createError(400, "Current email and new email are the same! Ensure that your new email is different!");
     }
+    
+    // Check if any other users are using this new email
+    const existingUser = await User.findOne({email});
+    if (existingUser) {
+      throw createError(400, "Email is linked to another account!");
+    }
+    
+    // Clear existing email tokens for this user
+    await EmailToken.deleteMany({ userId: user._id });
+
+    /*
+    - New email is not a duplicate as of right now, so we'll create an email verification token with 
+      the new email that they want to change to as the payload.
+    */
+    const emailToken = await EmailToken.create({
+      userId: user._id,
+      token: generateEmailToken(email)
+    })
+
+    // Create the verification link, and send it to the new email
+    const verifyEmailLink = generateVerifyEmailURL(emailToken.token);
+    await sendVerifyEmail(email, user.fullName, verifyEmailLink);
 
     // Return the updated user after success
-    res.status(200).json(user);
+    res.status(200).json({message: "A email verification link was sent to your new email. Verify your new email to update the email on your current account!"});
   })
 ]
 

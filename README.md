@@ -94,6 +94,60 @@ npm i -D @types/jest
 - JWT authentication, with access and refresh tokens. Refresh tokens should be handled securely, using an https secure cookie. As well as this, we won't allow a way to refresh a refresh token. As a result after the refresh token expires, the user needs to enter their credentials again.
 - If the user logged in, they should be able to refresh their page, and still be logged in. If the user closes the site, and launches it again, if they still have a valid refresh token cookie, they should be logged in again. 
 
+### Account/Email Verification
+1. Your User model should have an 'active' or 'isVerified' boolean attribute that's false by default. This attribute indicates whether or not a user's email has been verified.
+2. You should have a 'Token' model that contains the userId, unique string, createdAt and expiration. So when the user registers a user successfully, create a new user and ensure 
+isVerified is false, because they haven't verified their emails yet.
+3. You should create a long random string with osme kind of cryptography library, create your token instance, and put it in the database.
+4. Send an email to the supplied email address with a link that would somehow point back to your server, at an endpoint for verifying emails.
+5. If the string (unique value) exists in the database, attempt to get the related user ,adn set their isVerified property t0 true. Then delete the used token from the database to ensure it can't be used again, a one time use token.
+
+You could also use JWT tokens, for a stateless approach, but it's recommended you have a way to invalidate the tokens after they're used to activate the account. Even if the user hasn't verified their email yet, we should stil allow them to log in. Though the common thing is to restrict some higher level functionalities such as creating and editing content such as comments, posts, etc. The importance of a verified email definitely depends on the website. Sometimes it's for just company newsletter or subscription purposes, which may not be as important. 
+
+However, most importantly, telling the user to verify the email, for their sake, helps avoid the 'forgot password' scenario. If you forgot your password, and you entered an email you don't have access to, you don't have access to that account anymore. However, if you remind the user that 'hey, verify your email so that you're protected in case you forget your password', then that would be good for their sake. Things such as preventing the user from changing their password until they verify their email is a good choice, in case they forget their new password.
+
+For the routes, an important one would be a GET '/resend-verify-email' that accepts 'email' in the request body, so that you can send an email to a particular user with that account. So ideally a user should be able to ask to verify their email, regardless of whether or not they're logged in which is a common practice. So we won't put this behind a jwt wall. For a route like '/send-verify-email/:id', you'd have to watch out for users abusing this and sending spam emails to other users, and the solution for that would be checking who sent the request. However this also requires jwt, that doesn't work. As a result our best, or optimal solution would be the initial one as it allows for logged in users to simply click a button to resend the link, and unauthenticated users to enter in an email associated with their account. Of course unauthenticated users can potentially spam another person, but that requires knowing the email of another person on the site, which is a tall order, and also many websites already know this is a possibility and put things such as 'Hey if you didn't initiate this change, ignore this email'.
+
+ So maybe for a logged in user, they'll see on their account page a 'resend email' button that will probably handle inserting the currently authenticated user's email into the request. For a non-logged in user, the site doesn't know their email, so instead, they'll probably just need to enter their email in a form, and submit it for sending.
+
+Let's talk about handling updating a user's email. Let's talk about a common process and best practices that many websites use:
+1. User input: Allow the user to enter the new email, optionally let them confirm it. Remember that a user has to be logged in to make this request.
+
+2. Check for differences, ensure the new email is different from the current one. If it's the same you can send back an error saying so. Here you'd do a check to see if the email is available in the database as we wouldn't want to send an email and give the user a bunch of work if the email is already taken.
+
+3. Now before updating the user's email address in the database, we'll send a verification link to that email. This is to ensure the user has access to the new email address. The token in this case would need to contain data, so store the id of the user and the new email they want to switch to. Since we're creating a new email verification token here, any previous email verification tokens (created for verifying the current email, or verifying an email update) will be eliminated. This prevents the situation described below:
+
+
+#### Unexpected email changes
+Scenario Description
+- Current Email: <current-email>
+- New Email Change Request: <new-email>
+- Verification Tokens:
+- Token1 to verify <new-email>
+- Token2 (old token) to verify <current-email> or another email
+Potential Issue: If a user has both tokens and uses them out of order, it could lead to confusion
+
+1. User requests to change <current-email> to <new-email> and receives Token1.
+2. User then uses Token1, changing their email to <new-email>.
+3. If the user still has Token2 (which was issued for <current-email> or another email), using Token2 could revert their email to <current-email> or cause other issues.
+
+Solution: Clear Existing Tokens. To avoid such confusion and potential security issues, it's a good practice to clear all existing email verification tokens whenever a new email change request is initiated. This ensures that only the most recent token is valid, and any old tokens are invalidated.
+
+
+
+
+4. If the user successfully verifies the new email by clicking the link, we'd attempt find the user via their ID. Then update the email address in the database using the email in the token, which is again the email we sent the link to and so the email they want to switch to. Of course in this final step, you want to ensure that the email isn't a duplicate, I mean during the time it took the user verify their email, it could have already be taken by someone else! Finally you'd update the isVerified to true, if it isn't already. 
+
+- NOTE: Notice that with this implementation, isVerified would never reset to false, it is only false when account is first created. This is because when the user wants to update their email, we don't immediately switch to the new email, we stick with our current one (which could be verified or not), and only switch to the new one when its been verified. Also this implementation would need a jwt token as we need it to carry data. 
+
+In our application, we will create email verification tokens in two situations:
+1. Verify the initial email: When the user signs up, they sign up with an initial email address that they may verify. The user can send ask for new links in order to verify their current email address. 
+2. Updating an email: When the user wants to update an email, we ask them to verify that updated email first, before we actually make any changes to their account. As a result, they are stuck with their current email. 
+
+This creates a situation where, initially, when you create an account, it's going to be marked as unverified. But once you verify your email once, your account will always be verified. Because if let's say you have a verified email, and you want to update it, you need to verify that new email before any changes are applied. If you don't, then you're stuck with your old email, which is still a verified email.
+
+
+
 ### Posts
 - Posts should be visible to users that aren't even logged in. Allowing for unauthenticated users to read posts on the website. Users should only be able to see the posts where isPublished is true. This should stay true for people with role "user" and "editor", meaning others can only see published posts. Administrators should be able to get all posts regardless of whether they are published or not, however this should be done in a different area, such as a dashboard rather than the BlogPage.
 - When creating a brand new post, the post's data should be saved even if the user refreshes their page. 
@@ -103,116 +157,6 @@ npm i -D @types/jest
 - User: Isn't allowed to create or modify posts.
 - Editor: Allowed to create posts and modify any existing posts that they've created. 
 - Admin: Allowed to create posts and modify their own posts. They should be able to delete anyone's post. However, admins are limited when it comes to editing another user's post, as they're only allowed to edit the status of another user's post.
-
-### Setting up TypeScript for frontend
-So we created a react project using vite's react template. Now we want to be able to use typescript. Here are the steps you need to take to convert your vite react-javascript project to a typescript one.
-
-#### Step 1/6: Install base packages
-```
-npm install -D typescript @types/react @types/react-dom ts-node
-```
-#### Step 2/6: Modify package.json
-In `package.json`, replace:
-```
-"build": "vite build"
-```
-with this:
-```
-"build": "tsc && vite build"
-```
-#### Step 3/6: 
-Rename `vite.config.js` and `main.jsx` to `vite.config.ts` and `main.tsx`
-
-#### Step 4/6:
-Configure TypeScript by creating these two files in the root of your project.
-`tsconfig.json`
-```
-{
-  "compilerOptions": {
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
-  },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
-}
-```
-`tsconfig.node.json`
-```
-{
-  "compilerOptions": {
-    "composite": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true
-  },
-  "include": ["vite.config.ts"]
-}
-```
-#### Step 5/6
-Create a file named `vite-env.d.ts` inside the `src` folder and give it these contents (include 3 slashes in the beginning):
-```
-/// <reference types="vite/client" />
-```
-
-#### Step 6/6
-In your index.html, change the name of your script from `main.jsx` to `main.tsx` like this:
-```
-<script type="module" src="/src/main.tsx"></script>
-```
-That should be it. Obviously this is just for the base conversion, of course if you have other packages and files, you'll have to accomodate for that.
-
-
-```
-npm create vite@latest
-```
-
-
-
-
-
-
-### Setting up TypeScript for the backend:
-Install packages. We install typescript, a thing for running typescript, and then types for express
-```
-npm i -D typescript ts-node @types/express 
-```
-Then create a tsconfig.json file
-```
-npx tsc --init
-```
-I'll explain some of the configurations and rules:
-1. target: The target JavaScript version that hte compiler will output.
-2. module: The module manager being used. Usually stick to CommonJS
-3. strict: Toggles strict type checking rules.
-4. esModuleInterop: Enables compilation of ES6 modules to CommonJS modules, so this let's you use ES6 syntax.
-5. skipLibCheck: Skips TypeScript for libraries nad third party packages I believe.
-6. outDir: Determines the destination directory for your compiled output. You'll need to uncomment this rule and change it to ./dist'.
-
-Now we need to update our script commands. So we expect our script commands to be running TypeScript files:
-```
-{
-  "scripts": {
-    "build": "npx tsc",
-    "start": "node dist/index.js",
-    "dev": "nodemon index.ts"
-  }
-}
-```
-
-You would do `npm run build` to convert/compile your TypeScript code into valid JavaScript, and this valid JavaScript is what's used in production. Remember for improvement use strict type checking, setting up configurations to your needs, improve performance with code splitting if needed, shrink file sizes with tools like server, and streamline the workflow from development to production with CI/CD pipelines!
 
 
 
@@ -247,8 +191,26 @@ redis-cli.
 
 
 # Commit
++ Front end: 
+- Improved theming and our color system
+- Created 'App settings' section in profile page, where user could toggle theme and animations on and off.
+- Removed card skeletons from ManagePostsPage. Also, when a post is unpublished, the user now won't be able to click to view it and it doesn't have any visual indicators of it being clickable anymore.
+- Edit post status form will have its status value match the selected post's status value, instead of just defaulting to 'draft' everytime.
+- Improved and simplified the picking and rendering of roles in the employee grid. 
+- Fixed issue in EditorProvider, as when we tried to update a post, we made a request to create one. Updated the EditPostAccordion, so now we're able to have category as a category object, and the logic is still simple.
+- Added our public images to version history.
+
++ Back end: 
+- Changed update post from a patch to a put request, becasue that endpoint is essentially updating the entire resource.
+
 
 ## BOOK MARK:
+- Work on restricting password change until email is verified.
+- Work on resendVerifyLink route;
+
+- Work on logic and flow for updating an email.  eed to reset isVerified when user updates their email.
+
+
 blue-dream-sea-city
 
 

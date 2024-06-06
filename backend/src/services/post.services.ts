@@ -108,6 +108,11 @@ const updatePost = async (id: string, title: string, body: string, categoryID: s
   need to check if the new slug is unique.
   */
   const slug = createSlug(title);
+
+  
+  console.log("post slug: ", post.slug);
+  console.log("Slug: ", slug);
+
   if (post.slug !== slug) {
     const existingPost = await Post.findOne({slug: slug});
     if (existingPost) {

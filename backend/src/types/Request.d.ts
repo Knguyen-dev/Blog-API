@@ -20,6 +20,11 @@ export interface RequestUser {
   role: number
 }
 
+export interface EmailTokenPayload {
+  email: string; // the email being verified
+}
+
+
 /*
 + What is declare module:
 Used to augment/extend existing modules. So wehn you do this, you're telling TypeScript that 

@@ -18,6 +18,7 @@ export interface IUser {
   // Properties created by timestamp configuration
   createdAt: Date;
   updatedAt: Date;
+  isVerified: Boolean;
 }
 
 // The UserDoc, but it also contains virtuals and instance methods; teh representation of what's going to be returned from mongoose

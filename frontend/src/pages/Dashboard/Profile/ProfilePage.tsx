@@ -59,9 +59,9 @@ export default function ProfilePage() {
       <Divider className="tw-my-5" />
       {/* My Account Section: Username, email, and full name  */}
       <Box component="section">
-        <header className="tw-mb-3">
+        <Box component="header" className="tw-mb-3">
           <Typography variant="h4">My account</Typography>
-        </header>
+        </Box>
 
         <Box className="tw-flex tw-flex-col tw-gap-y-4">
           <Box>
@@ -79,6 +79,22 @@ export default function ProfilePage() {
             </Box>
             <Typography> {auth.user.email} </Typography>
           </Box>
+
+          {auth.user.isVerified === false && (
+            <Box>
+              <Typography className="tw-font-bold">
+                Email Verification!
+              </Typography>
+              <Typography>
+                Please verify your email to protect your account when you forget
+                your password! Click the button to resend an email verification
+                link to your current email.
+              </Typography>
+              <Button variant="contained" className="tw-ml-auto tw-block">
+                Send Verification Email
+              </Button>
+            </Box>
+          )}
 
           <Box>
             <Box className="tw-flex tw-justify-between tw-items-center">
@@ -128,7 +144,14 @@ export default function ProfilePage() {
           <Typography variant="h4">Authentication & Security</Typography>
         </Box>
         <Box>
-          <ChangePasswordDialog />
+          {/* Functionality and dialog to change password is disabled when user isn't verified */}
+          <ChangePasswordDialog disabled={!auth.user.isVerified} />
+          {auth.user.isVerified === false && (
+            <Typography className="tw-my-2">
+              Password changes are disabled until you've verified your email!
+            </Typography>
+          )}
+
           <Button
             variant="outlined"
             color="info"
