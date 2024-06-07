@@ -13,6 +13,7 @@ import {
 import useAuthContext from "../../../hooks/useAuthContext";
 import useSettingsContext from "../../../hooks/useSettingsContext";
 import useLogout from "../../../hooks/useLogout";
+import useRequestEmailVerification from "./hooks/useRequestEmailVerification";
 
 // Import dialogs for editing various aspects of a user profile
 import EditAvatarDialog from "./components/EditAvatarDialog";
@@ -27,6 +28,7 @@ export default function ProfilePage() {
   const { preferences, toggleColorMode, toggleAnimations } =
     useSettingsContext();
   const logout = useLogout();
+  const { isLoading, requestEmailVerification } = useRequestEmailVerification();
 
   /*
 	- NOTE: auth.user should be defined since this is behind a ProtectedRoute, but if not 
@@ -77,7 +79,36 @@ export default function ProfilePage() {
               <Typography className="tw-font-bold">Email</Typography>
               <EditEmailDialog email={auth.user.email} />
             </Box>
-            <Typography> {auth.user.email} </Typography>
+
+            <Box className="tw-flex">
+              <Typography className="tw-mr-2">{auth.user.email}</Typography>
+
+              <Typography
+                color={auth.user.isVerified ? "success.main" : "grey.500"}>
+                {auth.user.isVerified ? "(Verified)" : "(Unverified)"}
+              </Typography>
+            </Box>
+
+            {!auth.user.isVerified && (
+              <Box>
+                <Typography color="text.secondary">
+                  Please verify your current email for account recovery reasons.
+                  Verifying your email will allow you to reset your password if
+                  you forget it. If you can't verify your current email, you can
+                  choose to update your email to one that you can access and
+                  verify that one instead.
+                </Typography>
+
+                <Button
+                  variant="contained"
+                  className="tw-block tw-ml-auto"
+                  disabled={isLoading}
+                  // auth.user.id guaranteed to be defined since this is behind a protected route
+                  onClick={() => requestEmailVerification(auth.user!._id)}>
+                  Send Verification Email
+                </Button>
+              </Box>
+            )}
           </Box>
 
           <Box>
@@ -128,7 +159,19 @@ export default function ProfilePage() {
           <Typography variant="h4">Authentication & Security</Typography>
         </Box>
         <Box>
-          <ChangePasswordDialog />
+          {/* Password change dialog is disabled when user isn't verified */}
+          <ChangePasswordDialog disabled={!auth.user.isVerified} />
+
+          {!auth.user.isVerified && (
+            <Typography className="tw-mt-1 tw-mb-2" color="text.secondary">
+              Changing your password is currently disabled because your email
+              address has not been verified. Verifying your email helps us
+              ensure we can securely send you a password reset link if you
+              forget your new password. Please verify your email to enable this
+              feature.
+            </Typography>
+          )}
+
           <Button
             variant="outlined"
             color="info"

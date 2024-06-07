@@ -94,6 +94,16 @@ npm i -D @types/jest
 - JWT authentication, with access and refresh tokens. Refresh tokens should be handled securely, using an https secure cookie. As well as this, we won't allow a way to refresh a refresh token. As a result after the refresh token expires, the user needs to enter their credentials again.
 - If the user logged in, they should be able to refresh their page, and still be logged in. If the user closes the site, and launches it again, if they still have a valid refresh token cookie, they should be logged in again. 
 
+### Email Verification
+When a user signs up, and logs in their account is by unverified because they haven't verified their email yet `isVerified = false`. An email can only be associated with a single account. To verify their email they can either send a verification link to the current email they have (the initial email they signed up with), or they can request to update their email. As a result a verification link would be sent to the new email, and once that new email is verified then the new email will become the email set on teh account.
+
+Here's the algorithm/flow for updating verifying a user's email:
+
+
+
+
+
+
 ### Posts
 - Posts should be visible to users that aren't even logged in. Allowing for unauthenticated users to read posts on the website. Users should only be able to see the posts where isPublished is true. This should stay true for people with role "user" and "editor", meaning others can only see published posts. Administrators should be able to get all posts regardless of whether they are published or not, however this should be done in a different area, such as a dashboard rather than the BlogPage.
 - When creating a brand new post, the post's data should be saved even if the user refreshes their page. 
@@ -249,14 +259,14 @@ redis-cli.
 # Commit
 
 ## BOOK MARK:
-It seems password reset logic is working good. We've just added the validation, so make sure the passwords follow the validation.
+- Added email verification logic for verifying a user's current email, and for when the user is updating their email.
+- Added feature that prevents users from changing their password as long as their account had an unverified email
 
-It seems when the client fetches images we got stuff like 'Request not allowed by CORS'. Look for a potential fix? Or maybe get
-images online? 
 
-1. Email verification, and handle email changing, if we want to allow that.
 
-  [Email verifictaion flow forum](https://security.stackexchange.com/questions/234060/what-is-the-suggested-best-practice-for-changing-a-users-email-address)
+1. Check email verification with current email. And then with email updates
+2. Unverified accounts
+
 
 2. Finally switch over stuff to SendGrid since we want to be a professional app.
 

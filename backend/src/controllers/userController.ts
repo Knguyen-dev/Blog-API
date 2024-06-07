@@ -142,25 +142,43 @@ const updateUsername = [
 ]
 
 /**
- * Middleware for updating a user's email
- * 
+ * Handles initializing a request to change a user's email,
+ *  and sending that email verification link to the new email
  */
-const updateEmail = [
-  userValidators.email,
+const sendUpdateEmail = [
+  // Validate the user's new email to against validation constraints
+  userValidators.email, 
+  // Current password should only be a requirement; no constraints here
+  body("password").isString().withMessage("Password must be string").isLength({min: 1}).withMessage("Please enter your current password!"),
   handleValidationErrors,
   asyncHandler(async (req, res) => {
-   
-    // Attempt to update the username
-    const user = await userServices.updateEmail(req.params.id, req.body.email);
 
-    if (user.isEmployee()) {
-      await employeeCache.deleteCachedEmployees();
-    }
-
-    // Return the updated user after success
-    res.status(200).json(user);
+    // Attempt to make a request to update the user's email and send verification link to new email
+    await userServices.requestUpdateEmail(req.params.id, req.body.email, req.body.password);
+    
+    /*
+    - NOTE: Rather than return the user, just return this message. The user instance was modified, but only private information
+      was changed, so there wouldn't be a need to send back the user to synchronize React state on the front-end with our database.
+    */
+    res.status(200).json({message: `Success, check the email '${req.body.email}' for an email verification link. Link is valid for 15 minutes!`});
   })
 ]
+
+
+/**
+ * Resends a verification link to the user's current email address.
+ * 
+ * NOTE: This would be used for when isVerified = false for users, which only happens
+ * when users haven't verified the initial email address they created their account with
+ */
+const sendVerifyCurrentEmail = asyncHandler(async(req, res) => {
+
+  const user = await userServices.requestVerifyCurrentEmail(req.params.id);
+
+  res.status(200).json({message: `Email verification link sent account's current email '${user.email}'. Link expires in 15 minutes!`});
+})
+
+
 
 /**
  * Middleware for updating the full name of a user
@@ -211,7 +229,8 @@ export {
   updateAvatar,
   deleteAvatar,
   updateUsername,
-  updateEmail,
+  sendUpdateEmail,
+  sendVerifyCurrentEmail,
   updateFullName,
   changePassword,
 }

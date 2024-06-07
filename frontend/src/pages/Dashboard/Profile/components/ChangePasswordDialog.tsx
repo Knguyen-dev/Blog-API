@@ -3,7 +3,13 @@ import CustomDialog from "../../../../components/dialog/CustomDialog";
 import ChangePasswordForm from "./ChangePasswordForm";
 import { useState } from "react";
 
-export default function ChangePasswordDialog() {
+interface IChangePasswordDialogProps {
+  disabled: boolean;
+}
+
+export default function ChangePasswordDialog({
+  disabled,
+}: IChangePasswordDialogProps) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -16,7 +22,7 @@ export default function ChangePasswordDialog() {
 
   return (
     <Box>
-      <Button variant="outlined" onClick={handleOpen}>
+      <Button variant="outlined" onClick={handleOpen} disabled={disabled}>
         Change Password
       </Button>
       <CustomDialog

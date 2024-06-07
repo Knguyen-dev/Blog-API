@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import asyncHandler from "express-async-handler";
 import { createError } from "./errorUtils";
 import { IUserDoc } from "../types/User";
@@ -108,12 +109,59 @@ const verifyJWT = asyncHandler(async (req: Request, res: Response, next: NextFun
     req.user = user as RequestUser;
     next();
   })
-})
+});
+
+/**
+ * Generates a plain-text token for password reset.
+ * This token is intended to be sent to the user.
+ *
+ * @returns {string} - A randomly generated 32-byte token in hexadecimal format.
+ */
+const generatePasswordResetToken = () => {
+  return crypto.randomBytes(32).toString('hex');
+};
+
+/**
+ * Hashes the password reset token for secure storage in the database.
+ * This hashed token is used to verify the token provided by the user.
+ *
+ * @param {string} passwordResetToken - The plain-text password reset token.
+ * @returns {string} - The SHA-256 hash of the password reset token in hexadecimal format.
+ */
+const generatePasswordResetTokenHash = (passwordResetToken: string) => {
+  return crypto.createHash('sha256').update(passwordResetToken).digest('hex');
+};
+
+/**
+ * Generates a plain-text token for email verification.
+ * This token is intended to be sent to the user.
+ *
+ * @returns {string} - A randomly generated 32-byte token in hexadecimal format.
+ */
+const generateVerifyEmailToken = () => {
+  return crypto.randomBytes(32).toString('hex');
+};
+
+/**
+ * Hashes the email verification token for secure storage in the database.
+ * This hashed token is used to verify the token provided by the user.
+ *
+ * @param {string} verifyEmailToken - The plain-text email verification token.
+ * @returns {string} - The SHA-256 hash of the email verification token in hexadecimal format.
+ */
+const generateVerifyEmailTokenHash = (verifyEmailToken: string) => {
+  return crypto.createHash('sha256').update(verifyEmailToken).digest('hex');
+};
+
 
 
 export {
   generateAccessToken,
   generateRefreshToken,
   setRefreshTokenCookie,
-  verifyJWT
+  verifyJWT,
+  generatePasswordResetToken,
+  generatePasswordResetTokenHash,
+  generateVerifyEmailToken,
+  generateVerifyEmailTokenHash
 }

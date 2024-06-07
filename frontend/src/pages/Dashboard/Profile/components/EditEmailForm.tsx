@@ -1,31 +1,28 @@
-import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Box } from "@mui/material";
 import FormInputField from "../../../../components/Input/FormInputField";
-import { emailSchema } from "../data/userSchema";
+import FormPasswordField from "../../../../components/Input/FormPasswordField";
+import { changeEmailSchema } from "../data/userSchema";
 import useChangeEmail from "../hooks/useChangeEmail";
 import { IChangeEmailFormData } from "../../../../types/Auth";
 import FormError from "../../../../components/Input/FormError";
 
 interface IEditEmailForm {
   email: string;
-  onSuccess: () => void;
+  onSuccess: (successMessage: string) => void;
 }
 
-const validationSchema = yup.object().shape({
-  email: emailSchema,
-});
-
 export default function EditEmailForm({ email, onSuccess }: IEditEmailForm) {
-  const { control, handleSubmit, setError } = useForm({
-    resolver: yupResolver(validationSchema),
+  const { control, handleSubmit } = useForm({
+    resolver: yupResolver(changeEmailSchema),
     defaultValues: {
-      email: email, // represents current user's email
+      email: "", // new email that user is changing to
+      password: "",
     },
   });
 
-  const { error, isLoading, changeEmail } = useChangeEmail();
+  const { error, setError, isLoading, changeEmail } = useChangeEmail();
 
   const onSubmit = async (formData: IChangeEmailFormData) => {
     /*
@@ -33,19 +30,16 @@ export default function EditEmailForm({ email, onSuccess }: IEditEmailForm) {
 		no changes will be made, so stop the request early.
     */
     if (formData.email === email) {
-      setError("email", {
-        type: "client",
-        message: "New email must be different from current one!",
-      });
+      setError("New email must be different from current one!");
       return;
     }
 
-    // Attempt to change the email
-    const success = await changeEmail(formData);
+    // Attempt to change the email and get the success message
+    const successMessage = await changeEmail(formData);
 
-    // If successful, close the form
-    if (success && onSuccess) {
-      onSuccess();
+    // If successful, close the form and run onSuccess
+    if (successMessage) {
+      onSuccess(successMessage);
     }
   };
 
@@ -62,8 +56,13 @@ export default function EditEmailForm({ email, onSuccess }: IEditEmailForm) {
           id="email"
           name="email"
           control={control}
-          label="Email"
-          variant="standard"
+          label="New Email"
+        />
+        <FormPasswordField
+          id="password"
+          name="password"
+          control={control}
+          label="Password"
         />
 
         {/* Conditionally render error */}

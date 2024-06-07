@@ -55,6 +55,7 @@ export interface IDeleteAccountFormData {
 
 export interface IChangeEmailFormData {
   email: string;
+  password: string;
 }
 
 export interface IChangeFullNameFormData {

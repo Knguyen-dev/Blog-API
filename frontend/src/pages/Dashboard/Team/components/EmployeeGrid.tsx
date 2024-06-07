@@ -95,14 +95,7 @@ export default function EmployeeGrid() {
   // Handles catching/showing potential errors for processRowUpdate
   const handleRowUpdateError = useCallback(
     (err: unknown) => {
-      let errMessage = "";
-      if ((err as AxiosError).response) {
-        errMessage = getErrorData(err as AxiosError);
-      } else if ((err as AxiosError).request) {
-        errMessage = "Network error occurred!";
-      } else {
-        errMessage = "Something unexpected happened!";
-      }
+      const errMessage = getErrorData(err as AxiosError);
       showToast({ message: errMessage, severity: "error" });
     },
     [showToast]
@@ -169,7 +162,7 @@ const columns = [
     ),
   },
   { field: "username", headerName: "Username", width: 125, editable: true },
-  { field: "email", headerName: "Email", width: 180, editable: true },
+  { field: "email", headerName: "Email", width: 180, editable: false },
   { field: "fullName", headerName: "Name", width: 180, editable: true },
   {
     field: "role",

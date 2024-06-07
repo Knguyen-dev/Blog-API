@@ -3,13 +3,12 @@ import { useState } from "react";
 import useAuthContext from "../../../../hooks/useAuthContext";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 import handleRequestError from "../../../../utils/handleRequestError";
-import authActions from "../../../../constants/authActions";
 import { IChangeEmailFormData } from "../../../../types/Auth";
 
 export default function useChangeEmail() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { auth, dispatch } = useAuthContext();
+  const { auth } = useAuthContext();
 
   if (!auth.user) {
     throw new Error(
@@ -23,21 +22,20 @@ export default function useChangeEmail() {
   const changeEmail = async (formData: IChangeEmailFormData) => {
     setIsLoading(true);
     setError(null);
-    let success = false;
+    let successMessage: string | undefined = undefined;
+
     try {
       const response = await axiosPrivate.patch(endpoint, formData);
-      success = true;
-      // On success, API should send back the updated user object
-      dispatch({ type: authActions.updateUser, payload: response.data });
+      successMessage = response.data.message;
     } catch (err: unknown) {
       handleRequestError(err as AxiosError, setError);
     } finally {
       setIsLoading(false);
     }
 
-    // Return the success state
-    return success;
+    // Return the success message
+    return successMessage;
   };
 
-  return { error, isLoading, changeEmail };
+  return { error, setError, isLoading, changeEmail };
 }

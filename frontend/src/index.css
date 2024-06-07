@@ -13,7 +13,7 @@
 }
 
 /* Not Found Page the 'Not Authorized Page'*/
-.rejection-page {
+.full-background-page {
   background-image: url("/night_background.jpg");
   background-size: cover;
   background-position: center;

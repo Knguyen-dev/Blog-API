@@ -1,12 +1,11 @@
 import User from "../models/User";
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
 import userValidators from "../middleware/validators/userValidators";
 import {body} from "express-validator";
 import { createError, handleValidationErrors } from "../middleware/errorUtils";
-import {generateAccessToken, setRefreshTokenCookie} from "../middleware/tokenUtils";
-import { generatePasswordResetUrl, generatePasswordHash } from "../middleware/passwordUtils";
+import {generateAccessToken, setRefreshTokenCookie, generateVerifyEmailTokenHash, generatePasswordResetTokenHash} from "../middleware/tokenUtils";
+import { generatePasswordResetUrl, generatePasswordHash, generateVerifyEmailUrl } from "../middleware/passwordUtils";
 import sendForgotPasswordEmail from "../services/email/sendForgotPassword";
 import {Request, Response, NextFunction} from "express";
 import authServices from "../services/auth.services";
@@ -189,6 +188,9 @@ const forgotPassword = asyncHandler(async (req: Request, res: Response, next: Ne
   res.status(200).json({message: `Password reset link sent to email '${user.email}'! Link will be valid for 15 minutes!`});
 })
 
+/**
+ * Handles verifying the password reset token given by the user and updating the user's password
+ */
 const resetPassword = [
   userValidators.password,
   userValidators.confirmPassword,
@@ -197,7 +199,7 @@ const resetPassword = [
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 
     // Create the reset token hash from a plain-text token route parameter
-    const resetTokenHash = crypto.createHash("sha256").update(req.params.passwordResetToken).digest("hex");
+    const resetTokenHash = generatePasswordResetTokenHash(req.params.passwordResetToken);
     /*
     - Find a user with that token hash, and the passwordResetTokenExpires field must have a 
     value greater than now (token isn't expired). 
@@ -221,14 +223,80 @@ const resetPassword = [
     user.passwordResetTokenExpires = undefined;
     user.refreshToken = undefined;
 
-
     await user.save();
 
     res.status(200).json({message: "Password reset was successful. Please log in!"})
   })
 ]
 
+const verifyEmail = asyncHandler(async(req: Request, res: Response, next: NextFunction) => {
 
+  // With the token provided by the user, compute the hash for said token
+  const verifyEmailTokenHash = generateVerifyEmailTokenHash(req.params.verifyEmailToken);
+
+  /*
+  - Attempt to find user with that token hash, and the date value needs to be greater than now, which means 
+    it hasn't expired yet.
+  
+  - NOTE: If no user was found that means the email verification token was invalid, or the token expired.
+  */
+  const user = await User.findOne({
+    verifyEmailToken: verifyEmailTokenHash,
+    verifyEmailTokenExpires: { $gt: Date.now()}
+  })
+  if (!user) {
+    throw createError(404, "Email verification link was invalid or expired!");
+  }
+
+  
+
+  /*
+  - If the user's email is the same as the email being verified, that just means the user is verifying 
+    the current email on their account. As a result, we know the email is unique and there wasn't the 
+    potential another user would have registered with that email during our verification process.
+
+  - Else, if the user's email doesn't match the email being verified, that means the user is migrating to
+    a new email and they're verifying that new email. So we have to do a final check that this new email
+    hasn't been taken by another user.
+  - NOTE: The scenario described in the 'else' clause has a low probability of happening and it occurs when a new user signs up with the 
+    same email our current user is trying to verify-to. 
+  */
+  if (user.email !== user.emailToVerify) {
+    const existingUser = await User.findOne({
+      email: user.emailToVerify,
+    });
+    if (existingUser) {
+      throw createError(400, `The email '${user.emailToVerify}' has been taken by another account while you were verifying!`);
+    }
+  }
+  
+  
+  /*
+  - Email verification link was successful so update the user.
+
+  1. Update the user's email with the email they verified. Then clear emailToVerify to indicate that there is no
+    email the user is going to verify.
+  2. Clear the verifyEmailToken and verifyEmailTokenExpires to ensure that it can't be used again. A one time use token 
+    for account verification.
+  3. Set isVerified to true, for the user. 
+
+  - NOTE:
+  1. user.emailToVerify is should be defined. This is because the route updateEmail
+    or the resendVerifyLink will have defined it to the user's document. And since 
+    a user was found with verifyEmailToken, it just means those operations were successful.
+    Also user.EmailToVerify could equal user.email if the user is verifying their current email, which 
+    only happens with the user's initial email. The more common case will be user.emailToVerify is the email
+    that they're migrating to.
+  */
+  user.email = user.emailToVerify as string;
+  user.emailToVerify = undefined;
+  user.verifyEmailToken = undefined;
+  user.verifyEmailTokenExpires = undefined;
+  user.isVerified = true;
+  await user.save();
+
+  res.status(200).json({message: `Email '${user.email}' was successfully verified! Please log in!`});
+})
 
 export {
   refresh,
@@ -236,5 +304,6 @@ export {
   loginUser,
   logoutUser,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  verifyEmail, 
 }

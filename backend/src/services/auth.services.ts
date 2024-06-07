@@ -40,7 +40,7 @@ const signupUser = async (email: string, username: string, password: string, ful
     username,
     password: hash,
     fullName,
-    role
+    role,
   });
 
   // Then return the user
