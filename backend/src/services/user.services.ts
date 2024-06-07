@@ -19,8 +19,6 @@ import { generatePasswordHash, verifyPassword, generateVerifyEmailUrl } from "..
 import { deleteFromDisk, imageDirectory } from "../middleware/fileUpload";
 import { roles_map } from "../config/roles_map"
 import { IUserDoc } from "../types/User"
-import sendVerifyEmail from "./email/sendVerifyEmail"
-
 
 // Finds user by ID. Either throws an error or returns a user
 const findUserByID = async (id: string, populateOptions: string = "") => {
@@ -226,7 +224,6 @@ const updateUsername = async (id: string, username: string) => {
  * @param email - New email that the user wants to change to
  * @param password - The inputted password for the current password of the user. Users need to provide their current password to 
  *                   be able to request to updaet their email
-
  */
 const requestUpdateEmail = async (id: string, email: string, password: string) => {
   
@@ -250,34 +247,41 @@ const requestUpdateEmail = async (id: string, email: string, password: string) =
     throw createError(400, `New email '${email}' is already associated with another account!`);
   }
 
-  /*
-  - Create email verification token. Store the token hash, expiration, and the email we 
-    want to verify on the document.
-  */
-  const verifyEmailToken = user.createVerifyEmailToken();
-  user.emailToVerify = email;
-  await user.save();
-
-  // Create url to verify token
-  const verifyEmailUrl = generateVerifyEmailUrl(verifyEmailToken);
-
-  // We want to verify the new email, so email the verification link to the new email address
-  try {
-    await sendVerifyEmail(email, user.fullName, verifyEmailUrl);
-  } catch(err) {
-    // If email failed to send, clear email verification token and related fields
-    user.verifyEmailToken = undefined;
-    user.verifyEmailTokenExpires = undefined;
-    user.emailToVerify = undefined;
-    await user.save();
-    
-    // Throw an error, which'll send back a 500 error
-    throw err;
-  }
+  // The email isn't taken, so send a link to the new email for the user to verify it
+  await user.sendEmailVerification(email);
 
   // Return the user
   return user;
 }
+
+
+/**
+ * Sends an email verification link to the user's current email, if their current email
+ * is not verified.
+ * 
+ * @param id - Id of the user whose's email we want to verify
+ * 
+ * NOTE: User's current email is not verified when the email they signed up 
+ * with is still unverified. This is because if the user updated their email, they 
+ * would have had to verify it before the update could take place.
+ */
+const requestVerifyCurrentEmail = async (id: string) => {
+  // Attempt to find the user by ID
+  const user = await findUserByID(id);
+
+  // If they're already verified, the user's current email is already verified, so no need to continue
+  if (user.isVerified) {
+    throw createError(400, `Email associated with account is already verified!`);
+  }
+
+  // User's current email isn't verified, so send a verification link to that email
+  await user.sendEmailVerification(user.email);
+
+  // Return the user
+  return user;
+}
+
+
 
 /**
  * Update the full name of the user
@@ -315,7 +319,6 @@ const updateFullName = async (id: string, fullName: string) => {
  * 
  */
 const updatePassword = async (id: string, password: string, newPassword: string) => {
-
   /*
   - Checks if the new password is the same as the current password and throws an error if they match.
     This avoids unnecessary database operations for updating the password.
@@ -324,8 +327,12 @@ const updatePassword = async (id: string, password: string, newPassword: string)
     throw createError(400, "New password cannot be the same as the current password!");
   }
 
-  // Attempt to find the user by their ID
   const user = await findUserByID(id);
+
+  // If user isn't verified, stop password update
+  if (!user.isVerified) {
+    throw createError(400, "The ability to update your password is disabled until you verify your email.");
+  }
 
   // Check if the password the user entered matches their curernt password
   const isMatch = await verifyPassword(password, user.password);
@@ -349,6 +356,7 @@ const userServices = {
   deleteAvatar,
   updateUsername,
   requestUpdateEmail,
+  requestVerifyCurrentEmail,
   updateFullName,
   updatePassword
 }

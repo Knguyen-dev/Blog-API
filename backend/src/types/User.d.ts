@@ -36,6 +36,7 @@ export interface IUserDoc extends IUser, Document {
   isEmployee(): boolean;
   createPasswordResetToken(): string;
   createVerifyEmailToken(): string;
+  sendEmailVerification(emailToVerify: string): Promise<void>;
   toJSON(): any;
 }
 

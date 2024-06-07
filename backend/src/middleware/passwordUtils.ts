@@ -36,7 +36,7 @@ const generatePasswordResetUrl = (resetToken: string) => {
  * @param verifyEmailToken - A plain-text version an email verification toekn
  */
 const generateVerifyEmailUrl = (verifyEmailToken: string) => {
-  return `${process.env.CLIENT_URL}/auth/verifyEmail/${verifyEmailToken}`
+  return `${process.env.CLIENT_URL}/verifyEmail/${verifyEmailToken}`
 }
 
 export {

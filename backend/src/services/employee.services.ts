@@ -29,7 +29,7 @@ const getAllEmployees = async () => {
  * @param fullName - new full name
  * @param role - new role
  */
-const updateEmployee = async (id: string, userId: string, username: string, email: string, fullName: string, role: number) => {
+const updateEmployee = async (id: string, userId: string, username: string, fullName: string, role: number) => {
    /*
     + Admins should be the only ones interacting with this service function. As well, we don't allow 
       admins to change their own roles. 
@@ -65,7 +65,6 @@ const updateEmployee = async (id: string, userId: string, username: string, emai
     await user.updateUsername(username);
     
     // Update other attributes
-    user.email = email;
     user.fullName = fullName;
     user.role = role;    
 

@@ -10,7 +10,8 @@ import {
   updateAvatar,
   deleteAvatar,
   updateUsername,
-  updateEmail,
+  sendUpdateEmail,
+  sendVerifyCurrentEmail,
   updateFullName,
   changePassword
 }  from "../controllers/userController";
@@ -47,10 +48,9 @@ router.delete("/:id", deleteUser);
 router.patch("/:id/avatar", updateAvatar);
 router.delete("/:id/avatar", deleteAvatar);
 router.patch("/:id/username", updateUsername);
-router.patch("/:id/email", updateEmail);
+router.patch("/:id/email", sendUpdateEmail);
+router.patch("/:id/email/verify", sendVerifyCurrentEmail);
 router.patch("/:id/fullName", updateFullName);
-
-// Update a password of a specific user
 router.patch("/:id/password", changePassword);
 
 export default router;

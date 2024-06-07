@@ -10,9 +10,11 @@ import { lazy } from "react";
 // Layouts
 import RootLayout from "./layouts/RootLayout";
 import AppLayout from "./layouts/AppLayout";
+
 // Misc Pages
 import NotFoundPage from "./pages/NotFoundPage";
 import NotAuthorizedPage from "./pages/NotAuthorizedPage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
 
 // Other pages
 import HomePage from "./pages/Home/HomePage";
@@ -41,7 +43,8 @@ const ManageCategoriesPage = lazy(
 const EditorLayout = lazy(() => import("./pages/EditorSuite/EditorLayout"));
 const CreatePostPage = lazy(() => import("./pages/EditorSuite/CreatePostPage"));
 const EditPostPage = lazy(() => import("./pages/EditorSuite/EditPostPage"));
-// Login and Signup
+
+// Auth section
 import AuthLayout from "./pages/Auth/AuthLayout";
 import LoginForm from "./pages/Auth/LoginForm";
 import SignupForm from "./pages/Auth/SignupForm";
@@ -171,6 +174,10 @@ function App() {
           </Route>
         </Route>
 
+        <Route
+          path="verifyEmail/:verifyEmailToken"
+          element={<VerifyEmailPage />}
+        />
         <Route path="unauthorized" element={<NotAuthorizedPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

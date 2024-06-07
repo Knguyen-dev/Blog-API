@@ -7,7 +7,6 @@ import { createError, handleValidationErrors } from "../middleware/errorUtils";
 import {generateAccessToken, setRefreshTokenCookie, generateVerifyEmailTokenHash, generatePasswordResetTokenHash} from "../middleware/tokenUtils";
 import { generatePasswordResetUrl, generatePasswordHash, generateVerifyEmailUrl } from "../middleware/passwordUtils";
 import sendForgotPasswordEmail from "../services/email/sendForgotPassword";
-import sendVerifyEmail from "../services/email/sendVerifyEmail";
 import {Request, Response, NextFunction} from "express";
 import authServices from "../services/auth.services";
 import employeeCache from "../services/caches/EmployeeCache";
@@ -230,46 +229,6 @@ const resetPassword = [
   })
 ]
 
-/**
- * Resends a verification link to the user's current email address.
- * 
- * NOTE: This would be used for when isVerified = false for users. So this is for verifying the user's initial
- * email address really.
- */
-const resendVerifyLink = [
-  body("email").isEmail().withMessage("Email entered is not valid! Please enter a valid email."),
-  handleValidationErrors,
-  
-  asyncHandler(async(req: Request, res: Response, next: NextFunction) => {
-
-  // Attempt to find a user corresponding with that email
-  const user = await User.findOne({email: req.body.email});
-  if (!user) {
-    throw createError(404, "No account found with that email address!");
-  }
-
-  // Create email tokens and update emailToVerify (they are trying to verify their current email)
-  const verifyEmailToken = user.createVerifyEmailToken();
-  user.emailToVerify = req.body.email;
-  await user.save();
-
-  const verifyEmailUrl = generateVerifyEmailUrl(verifyEmailToken);
-  try {
-    await sendVerifyEmail(user.emailToVerify as string, user.fullName, verifyEmailUrl);
-  } catch(err) {
-    // If email failed to send, clear email verification token and related fields
-    user.verifyEmailToken = undefined;
-    user.verifyEmailTokenExpires = undefined;
-    user.emailToVerify = undefined;
-    await user.save();
-    // Throw an error, which'll send back a 500 error
-    throw err;
-  }
-
-  res.status(200).json({message: `Email verification code resent to '${user.emailToVerify}'!`})
-})]
-
-
 const verifyEmail = asyncHandler(async(req: Request, res: Response, next: NextFunction) => {
 
   // With the token provided by the user, compute the hash for said token
@@ -289,16 +248,28 @@ const verifyEmail = asyncHandler(async(req: Request, res: Response, next: NextFu
     throw createError(404, "Email verification link was invalid or expired!");
   }
 
-  /*
-  -  Do one last check to ensure that the email the user is migrating to, hasn't been taken by another.
+  
 
-  - NOTE: This only has a small chance of happening, and only happens when a new user signs up with the 
-    email our current user was trying to verify-to. 
+  /*
+  - If the user's email is the same as the email being verified, that just means the user is verifying 
+    the current email on their account. As a result, we know the email is unique and there wasn't the 
+    potential another user would have registered with that email during our verification process.
+
+  - Else, if the user's email doesn't match the email being verified, that means the user is migrating to
+    a new email and they're verifying that new email. So we have to do a final check that this new email
+    hasn't been taken by another user.
+  - NOTE: The scenario described in the 'else' clause has a low probability of happening and it occurs when a new user signs up with the 
+    same email our current user is trying to verify-to. 
   */
-  const existingUser = await User.findOne({email: user.emailToVerify});
-  if (existingUser) {
-    throw createError(400, `The email '${user.emailToVerify}' has been taken by another account while you were verifying!`);
+  if (user.email !== user.emailToVerify) {
+    const existingUser = await User.findOne({
+      email: user.emailToVerify,
+    });
+    if (existingUser) {
+      throw createError(400, `The email '${user.emailToVerify}' has been taken by another account while you were verifying!`);
+    }
   }
+  
   
   /*
   - Email verification link was successful so update the user.
@@ -324,7 +295,7 @@ const verifyEmail = asyncHandler(async(req: Request, res: Response, next: NextFu
   user.isVerified = true;
   await user.save();
 
-  res.status(200).json({message: `Email '${user.email}' was successfully verified!`});
+  res.status(200).json({message: `Email '${user.email}' was successfully verified! Please log in!`});
 })
 
 export {
@@ -334,6 +305,5 @@ export {
   logoutUser,
   forgotPassword,
   resetPassword,
-  verifyEmail,
-  resendVerifyLink
+  verifyEmail, 
 }

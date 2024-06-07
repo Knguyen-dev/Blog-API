@@ -50,6 +50,11 @@ const loginSchema = yup.object().shape({
   password: yup.string().required("Password is required"),
 });
 
+const changeEmailSchema = yup.object().shape({
+  email: emailSchema,
+  password: yup.string().required("Please enter your current password!"),
+});
+
 const changePasswordSchema = yup.object().shape({
   // Old/Current Password
   oldPassword: yup.string().required("Please enter your current password"),
@@ -84,6 +89,7 @@ export {
   confirmPasswordSchema,
   signupSchema,
   loginSchema,
+  changeEmailSchema,
   changePasswordSchema,
   deleteAccountSchema,
   forgotPasswordSchema,

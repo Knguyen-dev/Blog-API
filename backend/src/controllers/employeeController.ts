@@ -29,18 +29,16 @@ const getEmployees = asyncHandler(async(req: Request, res: Response) => {
 
 /**
  * Updates an employee; specifically used for update operation on the data-grid
- *  
  */
 const updateEmployee = [
   userValidators.username,
-  userValidators.email,
   userValidators.fullName,
   userValidators.role,
   handleValidationErrors,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => { 
     
     // Update an employee; req.user will be defined due to verifyJWT middleware
-    const user = await employeeServices.updateEmployee(req.params.id, req.user!.id, req.body.username, req.body.email, req.body.fullName, req.body.role);
+    const user = await employeeServices.updateEmployee(req.params.id, req.user!.id, req.body.username, req.body.fullName, req.body.role);
 
     await employeeCache.deleteCachedEmployees();
 
