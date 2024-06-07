@@ -45,6 +45,9 @@ const EditPostPage = lazy(() => import("./pages/EditorSuite/EditPostPage"));
 import AuthLayout from "./pages/Auth/AuthLayout";
 import LoginForm from "./pages/Auth/LoginForm";
 import SignupForm from "./pages/Auth/SignupForm";
+import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
+import ResetPasswordForm from "./pages/Auth/ResetPasswordForm";
+
 import PersistLogin from "./components/PersistLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 // Contexts
@@ -66,6 +69,11 @@ function App() {
             <Route index element={<Navigate to="login" />} />
             <Route path="signup" element={<SignupForm />} />
             <Route path="login" element={<LoginForm />} />
+            <Route path="forgotPassword" element={<ForgotPasswordForm />} />
+            <Route
+              path="resetPassword/:passwordResetToken"
+              element={<ResetPasswordForm />}
+            />
           </Route>
 
           <Route path="/" element={<AppLayout />}>

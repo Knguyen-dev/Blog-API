@@ -2,7 +2,6 @@ import { useState } from "react";
 import { axiosPublic } from "../../../api/axios";
 import { AxiosError } from "axios";
 import handleRequestError from "../../../utils/handleRequestError";
-
 import { ISignupFormData } from "../../../types/Auth";
 const endpoint = "/auth/signup";
 

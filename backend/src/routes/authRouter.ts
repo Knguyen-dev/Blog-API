@@ -1,6 +1,6 @@
 
 import {Router} from "express";
-import {loginUser, logoutUser, signupUser, refresh} from "../controllers/authController";
+import {loginUser, logoutUser, signupUser, refresh, forgotPassword, resetPassword} from "../controllers/authController";
 import { loginLimiter, signupLimiter } from "../middleware/limiters/authLimiter";
 
 
@@ -17,5 +17,8 @@ router.post("/signup", signupLimiter, signupUser);
 
 // Refresh access tokens route
 router.get("/refresh", refresh);
+
+router.post("/forgotPassword", forgotPassword);
+router.post("/resetPassword/:passwordResetToken", resetPassword);
 
 export default router;

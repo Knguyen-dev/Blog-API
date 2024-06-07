@@ -6,6 +6,7 @@ import categorySchema from "../data/categorySchema";
 import useSaveCategory from "../hooks/useSaveCategory";
 import { ICategory, ICategoryFormData } from "../../../../types/Post";
 import { Dispatch, SetStateAction } from "react";
+import FormError from "../../../../components/Input/FormError";
 
 /* 
 + CategoryForm: Form for creating or editing an existing category. It accepts 
@@ -118,9 +119,10 @@ export default function CategoryForm({
         required
       />
 
-      {error && <div className="error">{error}</div>}
+      <FormError message="Sample Category Form" />
+      {error && <FormError message={error} />}
 
-      <Button type="submit" variant="outlined" disabled={isLoading}>
+      <Button type="submit" variant="contained" disabled={isLoading}>
         Submit
       </Button>
     </Box>

@@ -249,6 +249,18 @@ redis-cli.
 # Commit
 
 ## BOOK MARK:
+It seems password reset logic is working good. We've just added the validation, so make sure the passwords follow the validation.
+
+It seems when the client fetches images we got stuff like 'Request not allowed by CORS'. Look for a potential fix? Or maybe get
+images online? 
+
+1. Email verification, and handle email changing, if we want to allow that.
+
+  [Email verifictaion flow forum](https://security.stackexchange.com/questions/234060/what-is-the-suggested-best-practice-for-changing-a-users-email-address)
+
+2. Finally switch over stuff to SendGrid since we want to be a professional app.
+
+
 blue-dream-sea-city
 
 

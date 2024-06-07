@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import {roles_map} from "../config/roles_map";
 import { IUser, IUserModel } from "../types/User";
 import { createError } from "../middleware/errorUtils";
+import crypto from "crypto";
 
 const userSchema = new mongoose.Schema<IUser, IUserModel>(
 	{
@@ -10,6 +11,7 @@ const userSchema = new mongoose.Schema<IUser, IUserModel>(
 			required: true,
 			lowercase: true,
 			maxLength: 64,
+      unique: true
 		},
 		username: {
 			type: String,
@@ -57,13 +59,15 @@ const userSchema = new mongoose.Schema<IUser, IUserModel>(
       invalidate tokens before their natural expiration time. Useful in scenarios 
       where the user wants to logout or delete their account.
     */
-    refreshToken: {
-      type: String,
-      default: "",
-    },
+    refreshToken: String,
 
     // User's profile picture
     avatar: String,
+
+    passwordResetToken: String,
+    passwordResetTokenExpires: Date,
+
+
 	},
 	{
     /*
@@ -169,6 +173,20 @@ userSchema.methods.isEmployee = function() {
   return this.role === roles_map.editor || this.role === roles_map.admin;
 }
 
+/**
+ * Creates the password reset token and the token hash. Stores token hash in the database 
+ * whilst returning the plain-text token
+ * 
+ * NOTE: Overwriting the fields like this instead of creating a separate collection also makes it 
+ * a lot simpler to invalidate any previous password reset tokens.
+ */
+userSchema.methods.createPasswordResetToken = function() {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
+  this.passwordResetToken = resetTokenHash;
+  this.passwordResetTokenExpires = Date.now() + 15 * 60 * 1000;
+  return resetToken;
+}
 
 
 
@@ -226,6 +244,10 @@ userSchema.methods.toJSON = function() {
   delete userObj.__v; // not needed on frontend
   delete userObj.initialUsernameChangeDate; // The rest of these are just used on the backend
   delete userObj.usernameChangeCount;
+
+  delete userObj.passwordResetToken;
+  delete userObj.passwordResetTokenExpires;
+
   delete userObj.createdAt;
   delete userObj.updatedAt;
   

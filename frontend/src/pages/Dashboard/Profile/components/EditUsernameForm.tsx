@@ -1,12 +1,13 @@
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import FormInputField from "../../../../components/Input/FormInputField";
 import PropTypes from "prop-types";
 import useChangeUsername from "../hooks/useChangeUsername";
 import { usernameSchema } from "../data/userSchema";
 import { IChangeUsernameFormData } from "../../../../types/Auth";
+import FormError from "../../../../components/Input/FormError";
 
 interface IEditUsernameFormProps {
   username: string;
@@ -70,11 +71,7 @@ export default function EditUsernameForm({
         />
 
         {/* Conditionally render error */}
-        {error && (
-          <Box className="error">
-            <Typography>{error}</Typography>
-          </Box>
-        )}
+        {error && <FormError message={error} sx={{ marginTop: 2 }} />}
 
         {/* Form action buttons */}
         <Box

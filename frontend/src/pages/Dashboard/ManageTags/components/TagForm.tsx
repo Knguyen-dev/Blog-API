@@ -7,6 +7,7 @@ import tagSchema from "../data/tagSchema";
 import useSaveTag from "../hooks/useSaveTag";
 import { ITag, ITagFormData } from "../../../../types/Post";
 import { Dispatch, SetStateAction } from "react";
+import FormError from "../../../../components/Input/FormError";
 
 interface ITagFormProps {
   selectedTag?: ITag;
@@ -93,7 +94,7 @@ export default function TagForm({
         required
       />
 
-      {error && <div className="error">{error}</div>}
+      {error && <FormError message={error} />}
 
       <Button type="submit" variant="outlined" disabled={isLoading}>
         Submit

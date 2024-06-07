@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FormInputField from "../../components/Input/FormInputField";
 import FormPasswordField from "../../components/Input/FormPasswordField";
+import FormError from "../../components/Input/FormError";
 import { ILoginFormData } from "../../types/Auth";
 import { loginSchema } from "../Dashboard/Profile/data/userSchema";
 
@@ -64,7 +65,7 @@ export default function LoginForm() {
       </div>
 
       {/* Rendering a potential server error */}
-      {error && <div className="error">{error}</div>}
+      {error && <FormError message={error} />}
 
       <Divider className="tw-my-4" />
 

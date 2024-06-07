@@ -15,6 +15,11 @@ export interface IUser {
   refreshToken?: string;
   avatar?: string;
 
+  // 
+  passwordResetToken?: string;
+  passwordResetTokenExpires?: string;
+
+
   // Properties created by timestamp configuration
   createdAt: Date;
   updatedAt: Date;
@@ -26,6 +31,7 @@ export interface IUserDoc extends IUser, Document {
   avatarInitials: string;
   updateUsername(username: string): Promise<void>;
   isEmployee(): boolean;
+  createPasswordResetToken(): string;
   toJSON(): any;
 }
 

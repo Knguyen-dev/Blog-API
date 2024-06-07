@@ -5,7 +5,7 @@ import useSavePostStatus from "../hooks/useSavePostStatus";
 import { postStatuses } from "../../../EditorSuite/data/postConstants";
 import NewBasicSelect from "../../../../components/select/NewBasicSelect";
 import { IPost, PostStatusType } from "../../../../types/Post";
-
+import FormError from "../../../../components/Input/FormError";
 interface IEditPostStatusFormProps {
   post: IPost;
   onSuccess: (newPost: IPost) => void;
@@ -56,7 +56,7 @@ export default function EditPostStatusForm({
           required
         />
 
-        {error && <div className="error">{error}</div>}
+        {error && <FormError message={error} />}
 
         <Button
           type="submit"

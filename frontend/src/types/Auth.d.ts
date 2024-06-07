@@ -66,3 +66,12 @@ export interface IChangeUsernameFormData {
 }
 
 export type RoleKey = "user" | "editor" | "admin";
+
+export interface IForgotPasswordFormData {
+  email: string;
+}
+
+export interface IResetPasswordFormData {
+  password: string;
+  confirmPassword: string;
+}

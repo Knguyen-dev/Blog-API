@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, ChangeEvent, FormEvent } from "react";
 import useChangeAvatar from "../hooks/useChangeAvatar";
 import AlertDialog from "../../../../components/dialog/AlertDialog";
 import { IUser } from "../../../../types/Post";
+import FormError from "../../../../components/Input/FormError";
 
 /*
 + Handling an image form:
@@ -197,11 +198,7 @@ export default function AvatarForm({ user }: IAvatarFormProps) {
         dialogActions={avatarDialogActions}
       />
 
-      {error && (
-        <Box className="error" sx={{ marginTop: 2 }}>
-          {error}
-        </Box>
-      )}
+      {error && <FormError message={error} sx={{ marginTop: 2 }} />}
     </form>
   );
 }
