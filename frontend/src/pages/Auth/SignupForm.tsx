@@ -18,6 +18,7 @@ import FormPasswordField from "../../components/Input/FormPasswordField";
 import { signupSchema } from "../Dashboard/Profile/data/userSchema";
 import useToast from "../../hooks/useToast";
 import { ISignupFormData } from "../../types/Auth";
+import FormError from "../../components/Input/FormError";
 
 export default function SignupForm() {
   const { control, handleSubmit } = useForm<ISignupFormData>({
@@ -105,7 +106,7 @@ export default function SignupForm() {
       </div>
 
       {/* Rendering a potential server error */}
-      {error && <div className="error">{error}</div>}
+      {error && <FormError message={error} />}
 
       <Divider className="tw-my-4" />
 

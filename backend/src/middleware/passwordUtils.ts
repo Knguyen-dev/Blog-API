@@ -21,7 +21,18 @@ const verifyPassword = (password: string, passwordHash: string): Promise<boolean
   return bcrypt.compare(password, passwordHash); 
 }
 
+/**
+ * Generates a url to the frontend's password reset page.
+ * 
+ * @param resetToken - The password reset token, in plain text,
+ */
+const generatePasswordResetUrl = (resetToken: string) => {
+  return `${process.env.CLIENT_URL}/auth/resetPassword/${resetToken}`
+}
+
+
 export {
   generatePasswordHash,
   verifyPassword,
+  generatePasswordResetUrl
 }

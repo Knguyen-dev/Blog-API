@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import useToast from "../../../../hooks/useToast";
 import { changePasswordSchema } from "../data/userSchema";
 import { IChangePasswordFormData } from "../../../../types/Auth";
+import FormError from "../../../../components/Input/FormError";
 
 export default function ChangePasswordForm() {
   const { control, handleSubmit } = useForm({
@@ -58,7 +59,7 @@ export default function ChangePasswordForm() {
         />
 
         {/* Render general errors*/}
-        {error && <Box className="error">{error}</Box>}
+        {error && <FormError message={error} sx={{ marginTop: 2 }} />}
 
         <Box
           sx={{

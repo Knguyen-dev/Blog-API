@@ -1,10 +1,13 @@
 import User from "../models/User";
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import userValidators from "../middleware/validators/userValidators";
 import {body} from "express-validator";
 import { createError, handleValidationErrors } from "../middleware/errorUtils";
 import {generateAccessToken, setRefreshTokenCookie} from "../middleware/tokenUtils";
+import { generatePasswordResetUrl, generatePasswordHash } from "../middleware/passwordUtils";
+import sendForgotPasswordEmail from "../services/email/sendForgotPassword";
 import {Request, Response, NextFunction} from "express";
 import authServices from "../services/auth.services";
 import employeeCache from "../services/caches/EmployeeCache";
@@ -158,9 +161,80 @@ const logoutUser = async (req: Request, res: Response) => {
   res.status(200).json({message: "Refresh token cleared and user was logged out"});
 }
 
+/**
+ * Sends a password reset email to the user
+ */
+const forgotPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const user = await User.findOne({email: req.body.email});
+  if (!user) {
+    throw createError(404, "An account wasn't found with the given email!");
+  }
+
+  // Save password reset token in the database, and return plain-text version here
+  const resetToken = user.createPasswordResetToken();
+  await user.save();
+  
+  const resetUrl = generatePasswordResetUrl(resetToken);
+
+  try {
+    await sendForgotPasswordEmail(user.email, user.fullName, resetUrl);
+  } catch (err) {
+    // If there was an error sending the email, clear the password reset token 
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpires = undefined;
+    await user.save();
+    throw err;
+  }
+
+  res.status(200).json({message: `Password reset link sent to email '${user.email}'! Link will be valid for 15 minutes!`});
+})
+
+const resetPassword = [
+  userValidators.password,
+  userValidators.confirmPassword,
+  handleValidationErrors,
+  
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+
+    // Create the reset token hash from a plain-text token route parameter
+    const resetTokenHash = crypto.createHash("sha256").update(req.params.passwordResetToken).digest("hex");
+    /*
+    - Find a user with that token hash, and the passwordResetTokenExpires field must have a 
+    value greater than now (token isn't expired). 
+    */
+    const user = await User.findOne({
+      passwordResetToken: resetTokenHash,
+      passwordResetTokenExpires: {$gt: Date.now()}
+    })
+    if (!user) {
+      throw createError(404, "Password reset link is invalid or has expired!");
+    }
+
+    // User was found and token is valid, update the password with the hashed version of it 
+    user.password = await generatePasswordHash(req.body.password);
+
+    /*
+    - Delete the password reset token, but delete any refresh token that the user has. This is the idea of 
+      logging the user out and ensuring that any refrehs token owned by maliicous actors can't be used anymore.
+    */
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpires = undefined;
+    user.refreshToken = undefined;
+
+
+    await user.save();
+
+    res.status(200).json({message: "Password reset was successful. Please log in!"})
+  })
+]
+
+
+
 export {
   refresh,
   signupUser,
   loginUser,
-  logoutUser  
+  logoutUser,
+  forgotPassword,
+  resetPassword
 }

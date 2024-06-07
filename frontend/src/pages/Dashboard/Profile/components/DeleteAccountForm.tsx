@@ -1,11 +1,12 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import FormPasswordField from "../../../../components/Input/FormPasswordField";
 import useDeleteAccount from "../hooks/useDeleteAccount";
 import useToast from "../../../../hooks/useToast";
 import { deleteAccountSchema } from "../data/userSchema";
 import { IDeleteAccountFormData } from "../../../../types/Auth";
+import FormError from "../../../../components/Input/FormError";
 
 export default function DeleteAccountForm() {
   const { control, handleSubmit } = useForm({
@@ -53,11 +54,7 @@ export default function DeleteAccountForm() {
         />
 
         {/* Conditionally render other errors (server, unexpected, etc.)*/}
-        {error && (
-          <Box className="error">
-            <Typography>{error}</Typography>
-          </Box>
-        )}
+        {error && <FormError message={error} sx={{ marginTop: 2 }} />}
 
         <Box
           sx={{

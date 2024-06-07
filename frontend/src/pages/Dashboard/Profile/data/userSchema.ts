@@ -63,6 +63,19 @@ const deleteAccountSchema = yup.object().shape({
   password: yup.string().required("Please enter your current password"),
   confirmPassword: confirmPasswordSchema,
 });
+
+const forgotPasswordSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Not a valid email format!")
+    .required("Please enter the email of your account!"),
+});
+
+const resetPasswordSchema = yup.object().shape({
+  password: passwordSchema,
+  confirmPassword: confirmPasswordSchema,
+});
+
 export {
   emailSchema,
   usernameSchema,
@@ -73,4 +86,6 @@ export {
   loginSchema,
   changePasswordSchema,
   deleteAccountSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
 };

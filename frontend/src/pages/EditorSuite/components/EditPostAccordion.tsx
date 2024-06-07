@@ -19,6 +19,8 @@ import BasicAccordion from "../../../components/accordion/BasicAccordion";
 import { Box, TextField, Button } from "@mui/material";
 import { postStatuses } from "../data/postConstants";
 import PostEditor from "./PostEditor";
+import FormError from "../../../components/Input/FormError";
+
 import {
   ICategory,
   ITag,
@@ -78,7 +80,6 @@ export default function EditPostAccordion({
     };
     setPostData(newPostData);
   };
-
 
   const handleCategoryChange = (e: SelectChangeEvent) => {
     // Should be defined since they can't pick none by default
@@ -159,16 +160,6 @@ export default function EditPostAccordion({
             placeholder="Select a category for the post"
             required
           />
-          {/* <BasicAuto
-            value={postData.category}
-            onChange={handleCategoryChange}
-            options={categories}
-            getOptionLabel={(option) => option.title || "Select a category!"}
-            label="Post Category"
-            isOptionEqualToValue={(option, value) => option._id === value._id}
-            required
-          /> */}
-
           <PostEditor value={postData.body} onChange={handleBodyChange} />
         </Box>
       ),
@@ -226,7 +217,7 @@ export default function EditPostAccordion({
             required
           />
 
-          {submitError && <div className="error">{submitError}</div>}
+          {submitError && <FormError message={submitError} />}
           {/* Action Buttons for the form */}
           <Box className="tw-flex tw-justify-end tw-gap-x-4">
             <Button

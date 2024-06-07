@@ -1,11 +1,12 @@
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import FormInputField from "../../../../components/Input/FormInputField";
 import { emailSchema } from "../data/userSchema";
 import useChangeEmail from "../hooks/useChangeEmail";
 import { IChangeEmailFormData } from "../../../../types/Auth";
+import FormError from "../../../../components/Input/FormError";
 
 interface IEditEmailForm {
   email: string;
@@ -66,11 +67,7 @@ export default function EditEmailForm({ email, onSuccess }: IEditEmailForm) {
         />
 
         {/* Conditionally render error */}
-        {error && (
-          <Box className="error">
-            <Typography>{error}</Typography>
-          </Box>
-        )}
+        {error && <FormError message={error} sx={{ marginTop: 2 }} />}
 
         <Box
           sx={{

@@ -4,13 +4,29 @@ import { generatePasswordHash, verifyPassword } from "../middleware/passwordUtil
 import { generateRefreshToken } from "../middleware/tokenUtils";
 import { roles_map } from "../config/roles_map";
 
+/**
+ * Attempts to sign up a user given some user information
+ * 
+ * NOTE: Information such as email and username are assumed to be lowercased before-hand.
+ */
 const signupUser = async (email: string, username: string, password: string, fullName: string) => {
 
-  // Check if the username is available
-  const isAvailable = await User.isUsernameAvailable(username);
-  if (!isAvailable) {
-    throw createError(400, "Username already taken!");
-  }  
+  // Attempt to find a user with the given username or email
+  const existingUser = await User.findOne({
+    $or: [
+      {username: username},
+      {email: email}
+    ]
+  });
+
+  // A user exists with the inputted usernmae or email, so the input is invalid
+  if (existingUser) {
+    if (existingUser.email === email) {
+      throw createError(400, "Email is already associated with another account!")
+    } else {
+      throw createError(400, "Username already taken!");
+    } 
+  }
 
   // Defaults; users have role user, and they aren't marked as an employee
   const role = roles_map.user;

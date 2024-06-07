@@ -51,6 +51,7 @@ export default function DeletePostDialog({
         Are you sure you want to delete the post titled &apos;{post?.title}
         &apos;?
       </Typography>
+
       {error && (
         <Typography
           component="span"

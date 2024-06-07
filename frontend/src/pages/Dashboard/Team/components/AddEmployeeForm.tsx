@@ -4,6 +4,7 @@ import useAddEmployee from "../hooks/useAddEmployee";
 import { roleSelectOptions } from "../data/employeeConstants";
 import NewBasicSelect from "../../../../components/select/NewBasicSelect";
 import { roleMap } from "../../../../utils/roleUtils";
+import FormError from "../../../../components/Input/FormError";
 
 // Defines our default state values
 const defaultValues = {
@@ -61,7 +62,7 @@ export default function AddEmployeeForm() {
           getOptionValue={(option) => option.value}
         />
 
-        {error && <div className="error">{error}</div>}
+        {error && <FormError message={error} />}
 
         <Button
           type="submit"

@@ -14,7 +14,8 @@ const userValidators = {
 		.isLength({
 			max: 64,
 		})
-		.withMessage("Maximum email length is 64 characters"),
+		.withMessage("Maximum email length is 64 characters")
+    .customSanitizer(email => email.toLowerCase()),
 
   /**
    * Validates the username that the user wants to sign up with.
@@ -27,7 +28,8 @@ const userValidators = {
 		.custom(username => {
       const usernameRegex = /^(?=.*[a-zA-Z])[a-zA-Z0-9_]{6,32}$/
       return usernameRegex.test(username)
-    }).withMessage("Username has to be between 6-32 characters. Can have letters, numbers, and underscores. Has to have at least one letter!"),
+    }).withMessage("Username has to be between 6-32 characters. Can have letters, numbers, and underscores. Has to have at least one letter!")
+    .customSanitizer(username => username.toLowerCase()),
 
   /**
    * Validates the password of the user.
