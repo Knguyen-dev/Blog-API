@@ -15,10 +15,11 @@ import Post from "../models/Post"
 import mongoose from "mongoose"
 import { createError } from "../middleware/errorUtils"
 import { isValidObjectId } from "mongoose"
-import { generatePasswordHash, verifyPassword } from "../middleware/passwordUtils"
+import { generatePasswordHash, verifyPassword, generateVerifyEmailUrl } from "../middleware/passwordUtils"
 import { deleteFromDisk, imageDirectory } from "../middleware/fileUpload";
 import { roles_map } from "../config/roles_map"
 import { IUserDoc } from "../types/User"
+import sendVerifyEmail from "./email/sendVerifyEmail"
 
 
 // Finds user by ID. Either throws an error or returns a user
@@ -204,7 +205,7 @@ const deleteAvatar = async(id: string) => {
  * @param username - The new username that they want to change to.
  */
 const updateUsername = async (id: string, username: string) => {
-  // Find user from database
+  // Attempt to find user from database
   const user = await findUserByID(id);
 
   // Call instance method which goes through the complex logic for updating username on the 
@@ -219,22 +220,62 @@ const updateUsername = async (id: string, username: string) => {
 }
 
 /**
- * Update the email of a user
+ * Handles creating a email verification link and then the email to the user.
  * 
  * @param id - Id of the user being updated
  * @param email - New email that the user wants to change to
+ * @param password - The inputted password for the current password of the user. Users need to provide their current password to 
+ *                   be able to request to updaet their email
+
  */
-const updateEmail = async (id: string, email: string) => {
+const requestUpdateEmail = async (id: string, email: string, password: string) => {
+  
+  // Attempt to find the user by Id
   const user = await findUserByID(id);
 
-  // If emails are the same then it's not necessary to do db operation
-  // stop execution early and return the user.
-  if (user.email === email) {
-    return user;
+  // Check whether the user's password is correct; if not then they can't verify their email
+  const isMatch = await verifyPassword(password, user.password);
+  if (!isMatch) {
+    throw createError(400, "Password is incorrect");
   }
 
-  user.email = email;
+  // If current and new emails match, throw an error and stop function
+  if (user.email === email) {
+    throw createError(400, "Current and new email aren't different! Please choose a different email to update to!");
+  }
+
+  // A new email so check it's uniqueness
+  const existingUser = await User.findOne({email: email});
+  if (existingUser) {
+    throw createError(400, `New email '${email}' is already associated with another account!`);
+  }
+
+  /*
+  - Create email verification token. Store the token hash, expiration, and the email we 
+    want to verify on the document.
+  */
+  const verifyEmailToken = user.createVerifyEmailToken();
+  user.emailToVerify = email;
   await user.save();
+
+  // Create url to verify token
+  const verifyEmailUrl = generateVerifyEmailUrl(verifyEmailToken);
+
+  // We want to verify the new email, so email the verification link to the new email address
+  try {
+    await sendVerifyEmail(email, user.fullName, verifyEmailUrl);
+  } catch(err) {
+    // If email failed to send, clear email verification token and related fields
+    user.verifyEmailToken = undefined;
+    user.verifyEmailTokenExpires = undefined;
+    user.emailToVerify = undefined;
+    await user.save();
+    
+    // Throw an error, which'll send back a 500 error
+    throw err;
+  }
+
+  // Return the user
   return user;
 }
 
@@ -307,7 +348,7 @@ const userServices = {
   updateAvatar,
   deleteAvatar,
   updateUsername,
-  updateEmail,
+  requestUpdateEmail,
   updateFullName,
   updatePassword
 }

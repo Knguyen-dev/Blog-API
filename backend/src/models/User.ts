@@ -3,6 +3,12 @@ import {roles_map} from "../config/roles_map";
 import { IUser, IUserModel } from "../types/User";
 import { createError } from "../middleware/errorUtils";
 import crypto from "crypto";
+import { 
+  generatePasswordResetToken, 
+  generatePasswordResetTokenHash,
+  generateVerifyEmailToken, 
+  generateVerifyEmailTokenHash 
+} from "../middleware/tokenUtils";
 
 const userSchema = new mongoose.Schema<IUser, IUserModel>(
 	{
@@ -63,6 +69,14 @@ const userSchema = new mongoose.Schema<IUser, IUserModel>(
 
     // User's profile picture
     avatar: String,
+
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
+    verifyEmailToken: String,
+    verifyEmailTokenExpires: Date,
+    emailToVerify: String,
 
     passwordResetToken: String,
     passwordResetTokenExpires: Date,
@@ -181,13 +195,30 @@ userSchema.methods.isEmployee = function() {
  * a lot simpler to invalidate any previous password reset tokens.
  */
 userSchema.methods.createPasswordResetToken = function() {
-  const resetToken = crypto.randomBytes(32).toString("hex");
-  const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
+  const resetToken = generatePasswordResetToken();
+  const resetTokenHash = generatePasswordResetTokenHash(resetToken);
   this.passwordResetToken = resetTokenHash;
   this.passwordResetTokenExpires = Date.now() + 15 * 60 * 1000;
   return resetToken;
 }
 
+/**
+ * Handles creating a new email verification token and storing its hash AND expiration in the database. Then it returns the plain-text email
+ * verification token.
+ * 
+ * NOTE: By being able to simply overwrite the verifyEmailToken and verifyEmailTokenExpires fields, it makes it pretty 
+ * easy to invalidate any previous tokens with the new one. 
+ */
+userSchema.methods.createVerifyEmailToken = function() {
+  const token = generateVerifyEmailToken();
+  const tokenHash = generateVerifyEmailTokenHash(token);
+
+  this.verifyEmailToken = tokenHash; // store the token hash
+  this.verifyEmailTokenExpires = Date.now() + 15 * 60 * 1000; // token is valid for 15 minutes after creation
+
+  // return plain-text email verification token 
+  return token;
+}
 
 
 /*
