@@ -1,6 +1,6 @@
 
 import {Router} from "express";
-import {loginUser, logoutUser, signupUser, refresh, forgotPassword, resetPassword, verifyEmail} from "../controllers/authController";
+import {loginUser, logoutUser, signupUser, refresh, forgotPassword, forgotUsername, resetPassword, verifyEmail} from "../controllers/authController";
 import { loginLimiter, signupLimiter } from "../middleware/limiters/authLimiter";
 
 
@@ -19,6 +19,7 @@ router.post("/signup", signupLimiter, signupUser);
 router.get("/refresh", refresh);
 
 router.post("/forgotPassword", forgotPassword);
+router.post("/forgotUsername", forgotUsername);
 router.post("/resetPassword/:passwordResetToken", resetPassword);
 router.post("/verifyEmail/:verifyEmailToken", verifyEmail);
 

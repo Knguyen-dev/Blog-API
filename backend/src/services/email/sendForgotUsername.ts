@@ -5,18 +5,18 @@ import path from "path";
 
 const readFileAsync = fs.promises.readFile;
 
-const sendForgotPasswordEmail = async (email: string, name: string, url: string) => {
-  const templatePath = path.resolve(__dirname, "../../templates/forgotPassword.html")
+const sendForgotUsernameEmail = async (email: string, username: string, name: string) => {
+  const templatePath = path.resolve(__dirname, "../../templates/forgotUsername.html")
   const data = await readFileAsync(templatePath, "utf8");
-
-  const htmlContent = ejs.render(data, {resetLink: url, name: name});
+  
+  const htmlContent = ejs.render(data, {username: username, name: name});
   const mailOptions = {
     from: process.env.EMAIL_FROM,
     to: email,
-    subject: "Reset Password",
+    subject: "Forgot Username",
     html: htmlContent
   }
   await mailTransporter.sendMail(mailOptions);
 }
 
-export default sendForgotPasswordEmail;
+export default sendForgotUsernameEmail;
