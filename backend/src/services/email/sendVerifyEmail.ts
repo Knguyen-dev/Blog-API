@@ -12,7 +12,7 @@ export default async function sendVerifyEmail( username: string, email: string, 
   const htmlContent = ejs.render(data, {username: username, name: name, verifyLink: url});
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: process.env.EMAIL_FROM,
     to: email,
     subject: "Verify Your Email",
     html: htmlContent

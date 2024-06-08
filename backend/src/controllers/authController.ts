@@ -5,8 +5,10 @@ import userValidators from "../middleware/validators/userValidators";
 import {body} from "express-validator";
 import { createError, handleValidationErrors } from "../middleware/errorUtils";
 import {generateAccessToken, setRefreshTokenCookie, generateVerifyEmailTokenHash, generatePasswordResetTokenHash} from "../middleware/tokenUtils";
-import { generatePasswordResetUrl, generatePasswordHash, generateVerifyEmailUrl } from "../middleware/passwordUtils";
+import { generatePasswordResetUrl, generatePasswordHash } from "../middleware/passwordUtils";
 import sendForgotPasswordEmail from "../services/email/sendForgotPassword";
+import sendForgotUsernameEmail from "../services/email/sendForgotUsername"
+
 import {Request, Response, NextFunction} from "express";
 import authServices from "../services/auth.services";
 import employeeCache from "../services/caches/EmployeeCache";
@@ -162,31 +164,35 @@ const logoutUser = async (req: Request, res: Response) => {
 
 /**
  * Sends a password reset email to the user
+ * 
  */
-const forgotPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const user = await User.findOne({email: req.body.email});
-  if (!user) {
-    throw createError(404, "An account wasn't found with the given email!");
-  }
+const forgotPassword = [
+  body("email").isEmail().withMessage("Please enter a valid email!"),
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const user = await User.findOne({email: req.body.email});
+    if (!user) {
+      throw createError(404, "An account wasn't found with the given email!");
+    }
 
-  // Save password reset token in the database, and return plain-text version here
-  const resetToken = user.createPasswordResetToken();
-  await user.save();
-  
-  const resetUrl = generatePasswordResetUrl(resetToken);
-
-  try {
-    await sendForgotPasswordEmail(user.email, user.fullName, resetUrl);
-  } catch (err) {
-    // If there was an error sending the email, clear the password reset token 
-    user.passwordResetToken = undefined;
-    user.passwordResetTokenExpires = undefined;
+    // Save password reset token in the database, and return plain-text version here
+    const resetToken = user.createPasswordResetToken();
     await user.save();
-    throw err;
-  }
+    
+    const resetUrl = generatePasswordResetUrl(resetToken);
 
-  res.status(200).json({message: `Password reset link sent to email '${user.email}'! Link will be valid for 15 minutes!`});
-})
+    try {
+      await sendForgotPasswordEmail(user.email, user.fullName, resetUrl);
+    } catch (err) {
+      // If there was an error sending the email, clear the password reset token 
+      user.passwordResetToken = undefined;
+      user.passwordResetTokenExpires = undefined;
+      await user.save();
+      throw err;
+    }
+
+    res.status(200).json({message: `Password reset link sent to email '${user.email}'! Link will be valid for 15 minutes!`});
+  })
+]
 
 /**
  * Handles verifying the password reset token given by the user and updating the user's password
@@ -248,8 +254,6 @@ const verifyEmail = asyncHandler(async(req: Request, res: Response, next: NextFu
     throw createError(404, "Email verification link was invalid or expired!");
   }
 
-  
-
   /*
   - If the user's email is the same as the email being verified, that just means the user is verifying 
     the current email on their account. As a result, we know the email is unique and there wasn't the 
@@ -298,6 +302,22 @@ const verifyEmail = asyncHandler(async(req: Request, res: Response, next: NextFu
   res.status(200).json({message: `Email '${user.email}' was successfully verified! Please log in!`});
 })
 
+const forgotUsername = [
+  body("email").isEmail().withMessage("Please enter a valid email!"),
+  asyncHandler(async(req,res) => {
+
+    // Attempt to find a user wtih the given email
+    const user = await User.findOne({email: req.body.email});
+    if (!user) {
+      throw createError(404, `No account associated with the email '${req.body.email}'! Please check that you typed in the correct email!`);
+    }
+
+    await sendForgotUsernameEmail(user.email, user.username, user.fullName);
+
+    res.status(200).json({message: `Email was sent to '${user.email}' with your account username. Please check your inbox!`});
+  })
+]
+
 export {
   refresh,
   signupUser,
@@ -306,4 +326,5 @@ export {
   forgotPassword,
   resetPassword,
   verifyEmail, 
+  forgotUsername
 }

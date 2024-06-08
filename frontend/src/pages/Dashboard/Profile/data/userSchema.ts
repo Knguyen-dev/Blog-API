@@ -81,6 +81,13 @@ const resetPasswordSchema = yup.object().shape({
   confirmPassword: confirmPasswordSchema,
 });
 
+const forgotUsernameSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Not a valid email format")
+    .required("Please enter the email of your account"),
+});
+
 export {
   emailSchema,
   usernameSchema,
@@ -94,4 +101,5 @@ export {
   deleteAccountSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  forgotUsernameSchema,
 };

@@ -50,6 +50,7 @@ import LoginForm from "./pages/Auth/LoginForm";
 import SignupForm from "./pages/Auth/SignupForm";
 import ForgotPasswordForm from "./pages/Auth/ForgotPasswordForm";
 import ResetPasswordForm from "./pages/Auth/ResetPasswordForm";
+import ForgotUsernameForm from "./pages/Auth/ForgotUsernameForm";
 
 import PersistLogin from "./components/PersistLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -73,6 +74,7 @@ function App() {
             <Route path="signup" element={<SignupForm />} />
             <Route path="login" element={<LoginForm />} />
             <Route path="forgotPassword" element={<ForgotPasswordForm />} />
+            <Route path="forgotUsername" element={<ForgotUsernameForm />} />
             <Route
               path="resetPassword/:passwordResetToken"
               element={<ResetPasswordForm />}
