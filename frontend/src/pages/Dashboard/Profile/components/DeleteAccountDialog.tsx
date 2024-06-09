@@ -3,7 +3,13 @@ import CustomDialog from "../../../../components/dialog/CustomDialog";
 import DeleteAccountForm from "./DeleteAccountForm";
 import { useState } from "react";
 
-export default function DeleteAccountDialog() {
+interface IDeleteAccountDialogProps {
+  disabled: boolean;
+}
+
+export default function DeleteAccountDialog({
+  disabled,
+}: IDeleteAccountDialogProps) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -16,7 +22,11 @@ export default function DeleteAccountDialog() {
 
   return (
     <Box>
-      <Button variant="outlined" color="warning" onClick={handleOpen}>
+      <Button
+        variant="outlined"
+        color="warning"
+        onClick={handleOpen}
+        disabled={disabled}>
         Delete Account
       </Button>
       <CustomDialog

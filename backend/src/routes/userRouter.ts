@@ -28,15 +28,13 @@ router.use(verifyJWT);
 router.get("/", verifyAdmin, getUsers);
 
 // Get user by id
-router.get("/:id", getUserById)
+router.get("/:id", verifyAdmin, getUserById)
 
 // Get user's posts
 router.get("/:id/posts", getPostsByUser);
 
-
 // Limit amount of requests for editing a user account
 router.use(editUserLimiter)
-
 
 // Apply 'canModifyUser' middleware to all of the below routes
 router.use("/:id", canModifyUser);

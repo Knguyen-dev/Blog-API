@@ -23,6 +23,8 @@ import EditFullNameDialog from "./components/EditFullNameDialog";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import DeleteAccountDialog from "./components/DeleteAccountDialog";
 
+import { verifyAdmin } from "../../../utils/roleUtils";
+
 export default function ProfilePage() {
   const { auth } = useAuthContext();
   const { preferences, toggleColorMode, toggleAnimations } =
@@ -184,11 +186,20 @@ export default function ProfilePage() {
       <Divider className="tw-my-5" />
       {/* Account removal: Delete acccount */}
       <Box component="section">
-        <Box component="header" className="tw-mb-3">
+        <Box component="header" className="tw-mb-2">
           <Typography variant="h4">Account Removal</Typography>
         </Box>
         <Box>
-          <DeleteAccountDialog />
+          {/* Admins can't delete their own accounts, so disable this */}
+          <DeleteAccountDialog disabled={verifyAdmin(auth.user.role)} />
+
+          {verifyAdmin(auth.user.role) && (
+            <Typography className="tw-mt-2" color="text.secondary">
+              Admins cannot remove their own accounts due to how important
+              administrator accounts are. If you want to delete your account,
+              please ask another admin to delete your account!
+            </Typography>
+          )}
         </Box>
       </Box>
     </Container>

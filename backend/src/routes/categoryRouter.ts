@@ -3,6 +3,14 @@ import {verifyEditorOrAdmin, verifyAdmin} from "../middleware/roleVerification";
 import {verifyJWT} from "../middleware/tokenUtils";
 import {getCategories, getCategoryAndPublishedPosts, createCategory, getCategoryAndPosts, deleteCategory, updateCategory} from "../controllers/categoryController";
 
+import {
+  createCategoryLimiter,
+  updateCategoryLimiter,
+  deleteCategoryLimiter
+} from "../middleware/limiters/categoryLimiter";
+
+
+
 const router = Router();
 
 // Get all categories; should be public
@@ -15,11 +23,12 @@ router.get("/:id/posts/published", getCategoryAndPublishedPosts);
 router.use(verifyJWT);
 
 // Create create category
-router.post("/", verifyEditorOrAdmin, createCategory);
+router.post("/", verifyEditorOrAdmin, createCategoryLimiter, createCategory);
 
-// Get, delete, and updating categories via id
 router.get("/:id/posts", verifyAdmin, getCategoryAndPosts);
-router.delete("/:id", verifyEditorOrAdmin, deleteCategory);
-router.patch("/:id", verifyEditorOrAdmin, updateCategory);
+
+// delete, and updating categories via id
+router.delete("/:id", verifyEditorOrAdmin, deleteCategoryLimiter, deleteCategory);
+router.patch("/:id", verifyEditorOrAdmin, updateCategoryLimiter, updateCategory);
 
 export default router;

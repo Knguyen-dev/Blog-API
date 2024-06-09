@@ -31,7 +31,7 @@ router.patch("/add", addEmployee);
 // Delete a user that's an employee
 router.delete("/remove/:id", removeEmployee);
 
-// Route for updating an employee, for admins.
+// Route for updating an employee
 router.patch("/:id", updateEmployee);
 
 export default router;
