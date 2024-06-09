@@ -1,7 +1,14 @@
 
 import {Router} from "express";
 import {loginUser, logoutUser, signupUser, refresh, forgotPassword, forgotUsername, resetPassword, verifyEmail} from "../controllers/authController";
-import { loginLimiter, signupLimiter } from "../middleware/limiters/authLimiter";
+import { 
+  loginLimiter, 
+  signupLimiter, 
+  forgotPasswordLimiter, 
+  forgotUsernameLimiter, 
+  resetPasswordLimiter, 
+  verifyEmailLimiter
+} from "../middleware/limiters/authLimiter";
 
 
 const router = Router();
@@ -18,9 +25,11 @@ router.post("/signup", signupLimiter, signupUser);
 // Refresh access tokens route
 router.get("/refresh", refresh);
 
-router.post("/forgotPassword", forgotPassword);
-router.post("/forgotUsername", forgotUsername);
-router.post("/resetPassword/:passwordResetToken", resetPassword);
-router.post("/verifyEmail/:verifyEmailToken", verifyEmail);
+
+
+router.post("/forgotPassword", forgotPasswordLimiter, forgotPassword);
+router.post("/forgotUsername", forgotUsernameLimiter, forgotUsername);
+router.post("/resetPassword/:passwordResetToken", resetPasswordLimiter, resetPassword);
+router.post("/verifyEmail/:verifyEmailToken", verifyEmailLimiter, verifyEmail);
 
 export default router;

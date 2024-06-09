@@ -59,8 +59,6 @@ const updateEmployee = async (id: string, userId: string, username: string, full
       throw createError(400, "User being updated isn't an employee since they have role 'user'!");
     }
 
-    
-
     // Attempt to update the username attribute on our instance; not saved in db yet 
     await user.updateUsername(username);
     

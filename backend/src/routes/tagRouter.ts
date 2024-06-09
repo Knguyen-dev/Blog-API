@@ -7,6 +7,7 @@ import {
   getTagAndPosts,
   getTagAndPublishedPosts
 } from "../controllers/tagController";
+import { createTagLimiter, updateTagLimiter, deleteTagLimiter } from "../middleware/limiters/tagLimiter";
 import {verifyEditorOrAdmin} from '../middleware/roleVerification';
 import {verifyJWT} from "../middleware/tokenUtils";
 
@@ -26,16 +27,17 @@ router.use(verifyEditorOrAdmin);
 // Will likely make this isAdmin later.
 router.get("/:id/posts", getTagAndPosts);
 
-
 // Create new tag
-router.post("/", createTag);
+router.post("/", createTagLimiter, createTag);
 
 // Get, delete, and update tag via id
 router.delete("/:id", 
+  deleteTagLimiter,
   deleteTag
 );
 
 router.patch("/:id", 
+  updateTagLimiter,
   updateTag
 );
 

@@ -9,11 +9,9 @@ export default function VerifyEmailPage() {
 
   useEffect(() => {
     if (verifyEmailToken) {
-      console.log("Verifying email");
       verifyEmail(verifyEmailToken);
     }
 
-    // It does an extra and unnecessary request if we include verifyEmailToken
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verifyEmailToken]);
 
