@@ -268,26 +268,6 @@ userSchema.virtual("avatarSrc").get(function() {
   }
 })
 
-userSchema.virtual("avatarInitials").get(function() {  
-
-  // Split the name into an array based on spaces, which represent sections of the name
-  const nameArr = this.fullName.split(" ");
-  let initials = ""
-
-  // Get the first letter of the first section of the name, represents our starting initial.
-  initials += nameArr[0][0];
-
-  // If they have more than one part to their name, then we can get 
-  // a second letter for their initials. We do nameArr.length - 1 to target the last section of 
-  // their name. As a result we aim to get their first and last initials.
-  if (nameArr.length > 1) {
-      initials += nameArr[nameArr.length - 1][0]
-  }
-  
-  // Return the uppercased version of the initials.
-  return initials.toUpperCase();   
-})
-
 /*
 - Situation: When sending back a user as json, we don't want to include fields such as 
   'password' or 'refreshToken', and any critically sensitive data such as that. We want

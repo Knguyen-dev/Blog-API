@@ -4,7 +4,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import {
   Box,
   Typography,
-  Avatar,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -18,6 +17,8 @@ import useManagePostsNavigation from "../pages/Dashboard/ManagePosts/hooks/useMa
 import useLogout from "../hooks/useLogout";
 import useAuthContext from "../hooks/useAuthContext";
 import { verifyEditor, verifyAdmin } from "../utils/roleUtils";
+
+import UserAvatar from "../components/img/UserAvatar";
 
 /*
 - Define the width of the menu. Then define a width for the text, and if the 
@@ -131,9 +132,10 @@ export default function AccountMenu() {
               we have problems loading hte image, then we'll use the initials.
             
             */}
-            <Avatar src={auth.user.avatarSrc} alt="">
-              {auth.user.avatarInitials}
-            </Avatar>
+            <UserAvatar
+              fullName={auth.user.fullName}
+              src={auth.user.avatarSrc}
+            />
           </IconButton>
         </Tooltip>
       </Box>
@@ -181,9 +183,7 @@ export default function AccountMenu() {
           }}
           tabIndex={-1}
           aria-label="Account Menu header">
-          <Avatar src={auth.user.avatarSrc} alt="">
-            {auth.user.avatarInitials}
-          </Avatar>
+          <UserAvatar fullName={auth.user.fullName} src={auth.user.avatarSrc} />
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             {/* 
             - if you want typographies to wrap around, do whiteSpace: normal on sx

@@ -5,7 +5,6 @@ import {
   CardHeader,
   CardActionArea,
   Typography,
-  Avatar,
   IconButton,
   Stack,
 } from "@mui/material";
@@ -17,6 +16,8 @@ import BasicMenu, {
 import { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IPost } from "../../../../types/Post";
+
+import UserAvatar from "../../../../components/img/UserAvatar";
 
 interface IBlogPostCardProps {
   post: IPost;
@@ -54,12 +55,11 @@ export default function BlogPostCard({
     >
       <CardHeader
         avatar={
-          <Avatar
-            alt={post.user.username}
+          <UserAvatar
+            fullName={post.user.fullName}
             src={post.user.avatarSrc}
-            className="tw-mr-2 tw-text-black">
-            {post.user.avatarInitials}
-          </Avatar>
+            className="tw-mr-2"
+          />
         }
         action={
           <IconButton aria-label="settings" onClick={handleOpenMenu}>

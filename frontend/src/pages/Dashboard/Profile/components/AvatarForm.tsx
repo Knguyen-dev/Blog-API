@@ -1,10 +1,11 @@
-import { Button, Box, Avatar, Typography } from "@mui/material";
+import { Button, Box, Typography } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useEffect, useState, useRef, ChangeEvent, FormEvent } from "react";
 import useChangeAvatar from "../hooks/useChangeAvatar";
 import AlertDialog from "../../../../components/dialog/AlertDialog";
 import { IUser } from "../../../../types/Post";
 import FormError from "../../../../components/Input/FormError";
+import UserAvatar from "../../../../components/img/UserAvatar";
 
 /*
 + Handling an image form:
@@ -136,11 +137,11 @@ export default function AvatarForm({ user }: IAvatarFormProps) {
     <form onSubmit={onSubmit}>
       {/* Avatar image preview */}
       <Box sx={{ display: "flex", justifyContent: "center", marginY: 2 }}>
-        <Avatar
+        <UserAvatar
           sx={{ height: 125, width: 125, fontSize: "3.5rem" }}
-          src={imagePreview}>
-          {user.avatarInitials}
-        </Avatar>
+          src={imagePreview}
+          fullName={user.fullName}
+        />
       </Box>
 
       <Box

@@ -81,8 +81,6 @@ export default function SettingsProvider({ children }: SettingsProviderProps) {
   );
 
   const theme = useMemo(() => {
-    console.log("Recomputing theme since things changed!");
-
     return getTheme(preferences);
   }, [preferences]);
 

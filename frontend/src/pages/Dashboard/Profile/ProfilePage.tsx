@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Typography,
   Button,
   Container,
@@ -14,6 +13,8 @@ import useAuthContext from "../../../hooks/useAuthContext";
 import useSettingsContext from "../../../hooks/useSettingsContext";
 import useLogout from "../../../hooks/useLogout";
 import useRequestEmailVerification from "./hooks/useRequestEmailVerification";
+
+import UserAvatar from "../../../components/img/UserAvatar";
 
 // Import dialogs for editing various aspects of a user profile
 import EditAvatarDialog from "./components/EditAvatarDialog";
@@ -49,12 +50,12 @@ export default function ProfilePage() {
       <Box
         component="section"
         className="tw-flex xs:max-sm:tw-flex-col tw-items-center tw-justify-center tw-gap-x-5">
-        <Avatar
+        <UserAvatar
           className="tw-h-20 tw-w-20 xs:max-sm:tw-mb-1 tw-text-4xl"
           src={auth.user.avatarSrc}
-          alt="">
-          {auth.user.avatarInitials}
-        </Avatar>
+          fullName={auth.user.fullName}
+        />
+
         <Box className="tw-flex tw-flex-col tw-items-center tw-gap-y-1">
           <Typography variant="h5">{auth.user.fullName}</Typography>
           <EditAvatarDialog user={auth.user} />

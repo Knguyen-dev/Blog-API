@@ -29,7 +29,7 @@ export default function BasicMenu({
       anchorEl={anchorEl}
       open={open}
       onClose={handleClose}
-      // slotProps.paper doesn't seem to work with TypeScript, so we'll keep this for nwo
+      // slotProps.paper doesn't seem to work with TypeScript, so we'll keep this for now
       PaperProps={{
         style: {
           maxHeight: ITEM_HEIGHT * 4.5,

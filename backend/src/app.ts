@@ -64,8 +64,6 @@ app.use(function (req, res, next) {
 
 // Error handler
 app.use(function (err: Error | CustomError, req: Request, res: Response, next: NextFunction) {
-  
-  console.log("Error: ", err.message)
   /*
   - Errors that are thrown can be CustomErrors (errors that we expect and have thrown manually), or builtin/native errors (unexpected errors).
 
