@@ -1,11 +1,15 @@
 import { CustomValidationError } from "../types/CustomValidationError";
 
-// Create custom error class that builds upon JavaScript's built-in error class
+
+/**
+ * Create a custom error class that will be used to describe any error processed by the 
+ * application
+ */
 class CustomError extends Error {
-  // Add two new properties
+  
   // Response status code
   public statusCode: number;
-  // Optional details array
+  // Optional details array; this describes potential fields that were invalid and their error message
   public details?: CustomValidationError[];
 
   constructor(message: string, statusCode: number, details?: CustomValidationError[]) {

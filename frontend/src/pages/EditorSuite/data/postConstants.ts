@@ -43,4 +43,4 @@ const initialPostState: IPostState = {
   createdAt: todayStr, // default value is iso string representing today/now
 };
 
-export { minWordCount, postStatuses, initialPostState };
+export { minWordCount, postStatuses, initialPostState, todayStr };

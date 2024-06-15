@@ -10,7 +10,8 @@ import EditPostAccordion from "./components/EditPostAccordion";
 import NewPostPreview from "../Browse/NewPostPreview";
 import useNewEditorContext from "./hooks/useNewEditorContext";
 import { IPostState } from "../../types/Post";
-import { initialPostState } from "./data/postConstants";
+import { initialPostState, todayStr } from "./data/postConstants";
+import { useEffect } from "react";
 
 export default function CreatePostPage() {
   const { auth } = useAuthContext();
@@ -33,8 +34,26 @@ export default function CreatePostPage() {
       // Default to true for the validation for right now;
       () => true
     );
-
   const { showToast } = useToast();
+
+  /**
+   * + Effects: Updates the createdAt date for the post data we got from local storage
+   *
+   * - ISSUE: A user could have started working on an unsaved post on 'May 12th, 2020', but then came
+   * back to it on 'May 14th, 2020'. As a result, even though they are creating the post on the current date,
+   * the post data's createdAt is still May 12th.
+   *
+   * - SOLUTION: To fix this, we'll run an effect after we render and after the state values are defined.
+   * In this effect we updated the 'createdAt' property to include today's date.
+   */
+  useEffect(() => {
+    setPostData((prev) => {
+      return {
+        ...prev,
+        createdAt: todayStr,
+      };
+    });
+  }, [setPostData]);
 
   // Handle submitting a post for the createPostPage
   const handleSubmitPost = async () => {

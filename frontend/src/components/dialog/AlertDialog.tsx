@@ -1,3 +1,10 @@
+/**
+ * A flexible controlled component for showing an alert dialog. You'd be able to pass in your own
+ * actions and text related content as well that's associated with the alert dialog.
+ *
+ * An example: https://mui.com/material-ui/react-dialog/#alerts
+ */
+
 import {
   Dialog,
   DialogContent,

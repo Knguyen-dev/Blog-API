@@ -10,6 +10,10 @@ import FilteredAutoSelect from "../../components/autocomplete/FilteredAutoSelect
 import useGetTags from "../EditorSuite/hooks/useGetTags";
 import useGetCategories from "../EditorSuite/hooks/useGetCategories";
 
+/**
+ * The primary 'Blog page' that the user will see when they enter the site. Here we let the user
+ * see our published blog posts. They'll be able to filter blog posts via certain categories, tags, and titles.
+ */
 export default function BlogPage() {
   // Fetch all posts
   const {

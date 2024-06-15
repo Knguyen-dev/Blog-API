@@ -20,6 +20,9 @@ import useToast from "../../hooks/useToast";
 import { ISignupFormData } from "../../types/Auth";
 import FormError from "../../components/Input/FormError";
 
+/**
+ * Form for signing up and registering a new user account
+ */
 export default function SignupForm() {
   const { control, handleSubmit } = useForm<ISignupFormData>({
     resolver: yupResolver(signupSchema),

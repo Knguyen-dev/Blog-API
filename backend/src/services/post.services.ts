@@ -13,7 +13,6 @@ import { canUpdatePost, canDeletePost } from "../middleware/permissions/postPerm
  * 
  * @param id - String that may or may not be the objectId of a document
  * @param populateOptions 
- * @returns 
  */
 const findPostByID = async (id: string, populateOptions: string = "") => {
   if (!isValidObjectId(id)) {
@@ -38,7 +37,6 @@ const findPostByID = async (id: string, populateOptions: string = "") => {
  * @param status - The status of the post
  * @param wordCount - Number of words on the post
  * @param userId - User who created the post (the author)
- * @returns 
  */
 const createPost = async (title: string, body: string, categoryID: string, tagIDs: string[], imgSrc: string, imgCredits: string, status: string, wordCount: number, userId: string) => {
 
@@ -279,21 +277,25 @@ const getPostsByUser = async (id: string) => {
   return posts;
 }
 
-const getPublishedPostByID = async(id: string) => {
-  if (!isValidObjectId(id)) {
-    throw createError(400, "Post ID was invalid!");
-  } 
-  
-  // Attempt to find post with the matching object id and it must be published
-  const post = await Post.findOne({_id: id, isPublished: true}).populate("user category, tags");
-  if (!post) {
-    throw createError(404, "Post not found!");
+
+const getPostBySlug = async (slug: string, isPublished?: boolean) => {
+  const postQuery: any = {
+    slug: slug
+  }
+  if (isPublished !== undefined) {
+    postQuery.isPublished = isPublished;
   }
 
-  // Return the post
+  const post = await Post.findOne(postQuery).populate("user category tags");
+  if (!post) {
+    throw createError(404, "Post not found!");  
+  }
   return post;
 }
 
+/**
+ * Gets a published post with its slug
+ */
 const getPublishedPostBySlug = async (slug: string) => {
   const post = await Post.findOne({slug: slug, isPublished: true}).populate("user category tags");
   if (!post) {
@@ -312,7 +314,7 @@ const postServices = {
   getAllPosts,
   getPublishedPosts,
   getPostsByUser,
-  getPublishedPostByID,
+  getPostBySlug,
   getPublishedPostBySlug
 };
 

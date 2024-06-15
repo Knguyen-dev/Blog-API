@@ -1,8 +1,3 @@
-/*
-- Making a global snackbar. Essentially we want a snackbar can persist across 
-  pages at times.
-*/
-
 import { createContext, useState, useEffect, SyntheticEvent } from "react";
 import AlertToast from "../components/notifications/AlertToast";
 import { SnackbarOrigin, AlertColor, SnackbarCloseReason } from "@mui/material";
@@ -35,6 +30,11 @@ const DEFAULTS = {
   severity: "info",
 };
 
+/**
+ * A global snackbar or notification provider. This allows us to send notifications on any component in the app tree,
+ * and as well as this, due to it being a provider, the notifications can persist on the user's page, even if the user
+ * is being redirected from one route to another, hence 'global' snackbar.
+ */
 export default function ToastProvider({ children }: ToastProviderProps) {
   /*
   + States:

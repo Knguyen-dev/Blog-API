@@ -8,6 +8,7 @@ import { ILoginFormData } from "../../../types/Auth";
 
 const endpoint = "/auth/login";
 
+// Hook for logging in the current user
 export default function useLogin() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

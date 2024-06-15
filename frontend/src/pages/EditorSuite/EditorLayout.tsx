@@ -12,9 +12,9 @@ import { Outlet } from "react-router-dom";
 import NewEditorProvider from "./NewEditorProvider";
 
 export default function EditorLayout() {
-	return (
-		<NewEditorProvider>
-			<Outlet />
-		</NewEditorProvider>
-	);
+  return (
+    <NewEditorProvider>
+      <Outlet />
+    </NewEditorProvider>
+  );
 }

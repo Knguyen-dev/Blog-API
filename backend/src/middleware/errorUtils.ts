@@ -17,7 +17,6 @@ const handleValidationErrors = (req: Request, res: Response, next: NextFunction)
   - Error data will be a map with field names as keys, and objects with error information as values. We'll
   create an array of objects with field name and an appropriate error message.
   */
-
   const errorData = validationResult(req).mapped();
   const errorList: CustomValidationError[] = Object.keys(errorData).map(field => ({
       field,
@@ -81,14 +80,12 @@ function createError(statusCode: number, message: string, data?: CustomValidatio
 
 
 /**
- * Creates json format from an a given error object.
- * 
- * 
+ * Creates json format from a CustomError object
  * 
  * NOTE: We should be able to support unexpected errors and the CustomError instances we create.
  * Which is why we conditionally check statusCode and details
  * 
- * @param {Error} err - Error object.
+ * @param {CustomError} err - Error object.
  * @returns object - JSON format that we want to send errors back in
  */
 function jsonifyError(err: CustomError): ErrorJson {

@@ -15,7 +15,7 @@ import Post from "../models/Post"
 import mongoose from "mongoose"
 import { createError } from "../middleware/errorUtils"
 import { isValidObjectId } from "mongoose"
-import { generatePasswordHash, verifyPassword, generateVerifyEmailUrl } from "../middleware/passwordUtils"
+import { generatePasswordHash, verifyPassword } from "../middleware/passwordUtils"
 import { deleteFromDisk, imageDirectory } from "../middleware/fileUpload";
 import { roles_map } from "../config/roles_map"
 import { IUserDoc } from "../types/User"
@@ -200,18 +200,18 @@ const deleteAvatar = async(id: string) => {
  * Update username of a user
  * 
  * @param id - Id of the user being updated
- * @param username - The new username that they want to change to.
+ * @param username - The new username that they want to change to; assumed to be lowercased already
  */
 const updateUsername = async (id: string, username: string) => {
   // Attempt to find user from database
   const user = await findUserByID(id);
 
-  // Call instance method which goes through the complex logic for updating username on the 
-  // instance only, so it doesn't to the database.
-  await user.updateUsername(username);
-
-  // At this point, username change was successful on the user instance, so save the changes to the database
-  await user.save();
+  // If username is new, attempt to update it
+  if (user.username !== username) {
+    await user.updateUsername(username);
+    // At this point, username change was successful on the user instance, so save the changes to the database
+    await user.save();
+  }
 
   // Return the user
   return user; 

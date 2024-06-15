@@ -19,8 +19,9 @@ const categorySchema = new mongoose.Schema<ICategory, ICategoryModel>({
 
   /*
   - Slug we generated for the category. Aside from the objectId, we want the slug
-  to be able to uniquely identify a category.
-  
+    to be able to uniquely identify a category. 
+
+  - NOTE: For future implementations, you can use the slug for finding categories and whatnot
   */
   slug: {
     type: String,

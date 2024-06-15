@@ -1,6 +1,9 @@
 import { Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
+/**
+ * Page that you'll redirect the user to when they enter a bad client route.
+ */
 export default function NotFoundPage() {
   return (
     <div className="full-background-page">

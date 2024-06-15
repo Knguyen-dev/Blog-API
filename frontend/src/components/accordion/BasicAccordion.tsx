@@ -1,6 +1,7 @@
-/*
-+ BasicAccordion: Simple accordion component that allows us to create one accordion.
-*/
+/**
+ * BasicAccordion: Simple accordion component that allows us to create one accordion. This is a controlled
+ * accordion component.
+ */
 import {
   Accordion,
   AccordionDetails,

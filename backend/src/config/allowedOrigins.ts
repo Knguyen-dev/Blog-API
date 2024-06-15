@@ -1,6 +1,7 @@
+/**
+ * Defines the origins that are allowed to make requests to this express server
+ */
 const allowedOrigins: string[] = [
-
-  // Defined when the server starts and environment variables are available
   process.env.CLIENT_URL as string,
 ]
 

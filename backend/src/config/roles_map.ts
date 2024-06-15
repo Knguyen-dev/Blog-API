@@ -1,8 +1,6 @@
 /*
-
 - It's common to use numeric identifiers for roles. Here are some 
   benefits of doing so:
-
 1. scalability: As number of roles grow, numeric representations can
   help managing them and make processing efficient.
 2. security: Provides a level of obfuscation or abstraction, making 
@@ -14,9 +12,7 @@
   you should probably transfer their roles. For example, user's role user as  '1020' and 
   your new admin role is '1030', use a script to update that stuff in the 
   database.
-
 2. Then update your environment variables on the frontend to match the new role vlaues.
-
 
 + Changing role values to strings or adding new roles:
 - If you've created a new type of role that isn't an 'admin', 'editor', or 'user', then the big

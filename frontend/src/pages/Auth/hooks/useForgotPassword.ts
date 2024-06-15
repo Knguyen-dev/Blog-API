@@ -6,6 +6,9 @@ import { IForgotPasswordFormData } from "../../../types/Auth";
 
 const endpoint = "/auth/forgotPassword";
 
+/**
+ * Custom hook for handling the forgot password request.
+ */
 export default function useForgotPassword() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

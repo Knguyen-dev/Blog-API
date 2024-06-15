@@ -7,6 +7,7 @@ import {
   Typography,
   IconButton,
   Stack,
+  useTheme,
 } from "@mui/material";
 import { MouseEvent } from "react";
 import { formatBlogPostDate } from "../../../../api/intl";
@@ -39,6 +40,8 @@ export default function BlogPostCard({
 }: IBlogPostCardProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
+  const theme = useTheme();
+
   // Turn open into a boolean
   const open = !!anchorEl;
 
@@ -51,8 +54,7 @@ export default function BlogPostCard({
   return (
     <Card
       className="tw-overflow-hidden tw-shadow-2xl tw-rounded-lg tw-max-w-96"
-      // sx={{ background: theme.palette.cardBg }}
-    >
+      sx={{ background: theme.palette.background.paper }}>
       <CardHeader
         avatar={
           <UserAvatar

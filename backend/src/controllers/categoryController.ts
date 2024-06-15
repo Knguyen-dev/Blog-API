@@ -70,9 +70,6 @@ const updateCategory = [
 /**
  * Gets all categories
  * 
- * @param (express.Request) req - The request object
- * @param (express.Response) res - The response object
- * 
  * NOTE: In the case that there are no categories, we will still return a 200 ot indicate
  * that their request went through and was successful, it's just that none were available.
  */
@@ -88,8 +85,6 @@ const getCategories = asyncHandler(async(req, res) => {
 /**
  * Get the category details
  * 
- * @param (express.Request) req - The request object
- * @param (express.Response) res - The response object
  */
 const getCategoryAndPosts = asyncHandler(async(req, res) => {
   // Fetch category and posts
@@ -105,8 +100,6 @@ const getCategoryAndPosts = asyncHandler(async(req, res) => {
 /**
  * Get the category details
  * 
- * @param (express.Request) req - The request object
- * @param (express.Response) res - The response object
  */
 const getCategoryAndPublishedPosts = asyncHandler(async(req, res) => {
 

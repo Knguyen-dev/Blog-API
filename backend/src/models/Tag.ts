@@ -9,7 +9,11 @@ const tagSchema = new mongoose.Schema<ITag, ITagModel>({
     maxLength: 50,
   },
 
-  // Slug will be the other attribute that uniquely identifies a tag
+  /**
+   * Slug will be the other attribute that uniquely identifies a tag
+   * 
+   * NOTE: For future considerations you should be able to search for tags with slugs
+   */
   slug: {
     type: String,
     required: true,

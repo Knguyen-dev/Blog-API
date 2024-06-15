@@ -1,32 +1,11 @@
 import Redis from "ioredis";
 
 /*
-- Create a Redis instance, which will by default connect to localhost:6379. If you
-  have an online redis server, then you probbaly pass your URI here.
-
-+ Publish-Subscribe pattern: A pattern commonly used for real-time messing and data transfer. It allows 
-  for different parts of a system to communicate asynchronous. However in our case, we just want to cache
-  data, and this doesn't pertain to us.
-
-+ Situation: 
-- I'm looking to implement redis into my application. Operations such as setting cache keys and getting cached data. However this is just a personal project, which
-  and while we'd like there to always be a redis server, there may be times where our app doesn't connect to a Redis server or has issues getting cached 
-  data from it. This is most likely going to happen when I go over my data limit for my free redis server. It could also happen when my Redis server gets 
-  shut down due to me not using it much, the website not getting connections since it's a personal website (I think they shut the redis down if no activity anyways?).
-  In any case, if we can't access the redis, then we should still have the app running and operating like normal, it's just we don't have our server-side caching
-  anymore. In any case, I wonder if it's possible to set up my controllers so that in the case that accessing the redis fails, then simply just rely on getting 
-  fresh data from the database (doing it the traditional and old fashioend way!).
-
-+ Solution
-Since we want this application to work even without a Redis cache, make sure the errors thrown 
-by our functions aren't being sent our main error handling function. If that happens our error 
-handling middleware would and send back a 500 server error to the user, and completely 
-mess up our request-response simply due to a redis issue on our end, which is something the user
-shouldn't care about. So the idea is that your redis functions shouldn't propagate their redis 
-related errors up into the controllers. 
++ Create a redis instance:
+We'll use Redis as an in-memory cache.
 
 
-+ appRedis.get() and the Error:
++ Notes about appRedis.get() and the Error:
 The error paraemter in the callback represents any errors that could occr while atetmpting to access the Redis server. Here are some of the most common cases:
 1. Connection issues: If your app can't connect to the Redis server due to network issues, faulty connection settings, 
    the redis server is down, etc. then an error is thrown.
@@ -50,10 +29,6 @@ The error paraemter in the callback represents any errors that could occr while 
   If we just passed in the JSON string, then res.json treats it as a normal 
   string, and so when the receives and 'parses' the data, it'll still be 
   in string form?
-
-
-
-
 */
 
 

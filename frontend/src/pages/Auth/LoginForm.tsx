@@ -9,6 +9,9 @@ import FormError from "../../components/Input/FormError";
 import { ILoginFormData } from "../../types/Auth";
 import { loginSchema } from "../Dashboard/Profile/data/userSchema";
 
+/**
+ * Form that handles logging in a user
+ */
 export default function LoginForm() {
   const location = useLocation();
   const navigate = useNavigate();

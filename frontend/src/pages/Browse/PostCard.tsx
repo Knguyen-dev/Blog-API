@@ -21,6 +21,10 @@ interface PostCardProps {
   postObj: IPost;
 }
 
+/**
+ * Card that renders information for a blog post. This card should be used for
+ * on the Blog page, and the average unauthenticated user will be able to see it.
+ */
 export default function PostCard({ postObj }: PostCardProps) {
   const goToTagPage = useTagNavigation();
   const { goToPostPage } = usePostNavigation();

@@ -25,11 +25,16 @@ router.post("/signup", signupLimiter, signupUser);
 // Refresh access tokens route
 router.get("/refresh", refresh);
 
-
-
+// Route for sending a forgot password link to the user's email
 router.post("/forgotPassword", forgotPasswordLimiter, forgotPassword);
+
+// Route for sending a forgot username email to the user's email
 router.post("/forgotUsername", forgotUsernameLimiter, forgotUsername);
+
+// Route for confirming a password reset 
 router.post("/resetPassword/:passwordResetToken", resetPasswordLimiter, resetPassword);
+
+// Route for confirming an email verification
 router.post("/verifyEmail/:verifyEmailToken", verifyEmailLimiter, verifyEmail);
 
 export default router;

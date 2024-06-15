@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 
 /*
-+ Simple alert snackbar: A reusable alert snackbar.
++ Simple alert snackbar: A reusable and controlled alert snackbar component that allows us to send notifications to the user. 
 */
 
 interface AlertToastProps {

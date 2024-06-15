@@ -47,20 +47,20 @@ const deleteUser = [
       in the delete account operation, an error would be thrown and this code won't be reached. We 
 
     + Deleting the employee cache:
-    In our controllers deleteUser, updateAvatar, deleteAvatar, updateUsername, updateEmail,
-    and updateFullName, if the user being updated is an employee, we want to delete the 
-    employees cache. 
+      In our controllers deleteUser, updateAvatar, deleteAvatar, updateUsername, updateEmail,
+      and updateFullName, if the user being updated is an employee, we want to delete the 
+      employees cache. 
 
-    We use the employee cache to display dashboard data for our administrators about our current
-    employees, and so we want it to be as fresh information as possible. So when an employee's 
-    information changes, we invalidate the current cache, forcing the request to get fresh data 
-    from our database. So if employees have no changes to their avatar, username, email, name, role,
-    or the time they last logged in, then we can continue to serve cached data, and our cache 
-    is insync with the database; the ideal which is fresh cached data.
+      We use the employee cache to display dashboard data for our administrators about our current
+      employees, and so we want it to be as fresh information as possible. So when an employee's 
+      information changes, we invalidate the current cache, forcing the request to get fresh data 
+      from our database. So if employees have no changes to their avatar, username, email, name, role,
+      or the time they last logged in, then we can continue to serve cached data, and our cache 
+      is insync with the database; the ideal which is fresh cached data.
 
-    One more thing to note is that if a service function fails it would throw an
-    error which would be caught and sent to the error handling middleware. In essence
-    in our controllers, if those functions succeed our 'user' is guaranteed to be defined.
+      One more thing to note is that if a service function fails it would throw an
+      error which would be caught and sent to the error handling middleware. In essence
+      in our controllers, if those functions succeed our 'user' is guaranteed to be defined.
     */
     if (user.isEmployee()) {
       await employeeCache.deleteCachedEmployees();
@@ -182,8 +182,6 @@ const sendVerifyCurrentEmail = asyncHandler(async(req, res) => {
 
 /**
  * Middleware for updating the full name of a user
- * @param (express.Request) req - The request object
- * @param (express.Response) res - The response object
  */
 const updateFullName = [
   userValidators.fullName,

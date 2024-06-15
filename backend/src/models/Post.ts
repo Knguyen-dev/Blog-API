@@ -37,7 +37,8 @@ const postSchema = new mongoose.Schema<IPost, IPostModel>(
 			default: false,
 		},
 
-    // The broad category that the post is in.
+    // The broad category that the post is in; all posts should have a category, but 
+    // the exception would be when a category is deleted itself, and so there would be some posts without a category.
     category: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "Category",

@@ -41,5 +41,4 @@ export interface IUserDoc extends IUser, Document {
 
 // The model which contains the static methods of the model
 export interface IUserModel extends Model<IUserDoc> {
-  isUsernameAvailable(username: string): Promise<boolean>;
 }

@@ -1,26 +1,8 @@
-/*
-+ AuthLayout: Layout for the signup and login pages. Essentially the 
-  only thing that's going to change is that we're going to switch
-  out the form component that we're going to use
-
-
-*/
-
 import { Typography, Grid } from "@mui/material";
 import { Outlet } from "react-router-dom";
-/*
-+ Styling:
-- Have the layout's height 100vh. By doing this we can center 
-  the content on the screen.
-
-
-- NOTE: Notice about snackbar. If you
-  want the snackbar to be more reusable, you can
-  also have the message and severity of the snackbar 
-  in different states. Then you'd pass down the state
-  setting functions through Outlet context. 
-*/
-
+/**
+ * AuthLayout: Layout that renders auth related forms. Such as login or sign up fomr.
+ */
 export default function AuthLayout() {
   return (
     // For smaller sizes flex col, but above mobile it's flex row
@@ -38,6 +20,8 @@ export default function AuthLayout() {
             </Typography>
           </div>
         </Grid>
+
+        {/* This is where a given form is rendered. */}
         <Grid item xs={8} md={4}>
           <Outlet />
         </Grid>

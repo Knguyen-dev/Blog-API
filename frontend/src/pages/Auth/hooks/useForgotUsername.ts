@@ -6,6 +6,9 @@ import { IForgotUsernameFormData } from "../../../types/Auth";
 
 const endpoint = "/auth/forgotUsername";
 
+/**
+ * Custom hook for handling the forgot username request.
+ */
 export default function useForgotUsername() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

@@ -1,6 +1,7 @@
 import { Menu, MenuItem } from "@mui/material";
 const ITEM_HEIGHT = 48;
 
+//
 export interface MenuItemProps {
   label: string;
   onClick: () => void;
@@ -14,6 +15,9 @@ interface BasicMenuProps {
   handleClose: () => void;
 }
 
+/**
+ * Controlled component for showing menus and menu options.
+ */
 export default function BasicMenu({
   open,
   anchorEl,

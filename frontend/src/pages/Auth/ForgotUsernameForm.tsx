@@ -9,6 +9,7 @@ import { IForgotUsernameFormData } from "../../types/Auth";
 import useToast from "../../hooks/useToast";
 import FormError from "../../components/Input/FormError";
 
+// Form for sending a user their username
 export default function ForgotUsernameForm() {
   const { showToast } = useToast();
 

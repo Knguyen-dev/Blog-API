@@ -4,9 +4,10 @@ import { getRoleString } from "../middleware/roleUtils";
 import User from "../models/User";
 import userServices from "./user.services";
 
+/**
+ * Finds all users that are either editors or admins (employees).
+ */
 const getAllEmployees = async () => {
-
-  // Find all users, 
   const users = await User.find({
     $or: [
       // With an OR statement, put the most likely option first, so a given user 
