@@ -1,9 +1,3 @@
-/*
-+ SettingsProvider: Going to be our 'theme' provider for allowing us 
-  to control when our application is using dark or light mode.
-+ Credit: https://mui.com/material-ui/customization/dark-mode/#dark-mode-by-default
-*/
-
 import { createContext, useMemo, ReactNode } from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { getTheme } from "../theme/appTheme";
@@ -27,9 +21,10 @@ export const SettingsContext = createContext<
   | undefined
 >(undefined);
 
+// Default preferences that are applied to the app, if we don't find that the user has any saved preferences.
 const DEFAULT_PREFERENCES = {
-  darkMode: true,
-  animations: false,
+  darkMode: true, // whether or not app is using dark mode
+  animations: false, // whether or not app has animations turned  on
 };
 
 /*
@@ -45,7 +40,16 @@ const isValidPreferences = (value: any): value is IPreferences => {
   );
 };
 
+/**
+ * Context provider for providing the app's current settings/themes and also functions to modify
+ * those. Currently it provides information on whether the app us using dark mode or not
+ * and also information on whether animations are turned on for the app.
+ *
+ * + Credit: https://mui.com/material-ui/customization/dark-mode/#dark-mode-by-default
+ */
 export default function SettingsProvider({ children }: SettingsProviderProps) {
+  // We'll try to get any saved settings from local storage, if none exist we fallback to default settings
+  // As well as this we pass a function to validate whether or not the saved settings are valid, and if they're not, we use the default settings.
   const { value: preferences, setValue: setPreferences } =
     useLocalStorage<IPreferences>(
       "preferences",
@@ -53,12 +57,9 @@ export default function SettingsProvider({ children }: SettingsProviderProps) {
       isValidPreferences
     );
 
-  /*
-  - toggleColorMode: Toggles the color mode. If 'prev' is 'dark' then we 
-    go light mode. Else if prev is 'light' or any other value, we go dark mode.
-  */
   const themeControl = useMemo(
     () => ({
+      // For toggling the dark mode
       toggleColorMode: () =>
         setPreferences((prev: IPreferences) => {
           const newPreferences = {
@@ -68,6 +69,7 @@ export default function SettingsProvider({ children }: SettingsProviderProps) {
           return newPreferences;
         }),
 
+      // For toggling animations
       toggleAnimations: () =>
         setPreferences((prev: IPreferences) => {
           const newPreferences = {
@@ -81,8 +83,6 @@ export default function SettingsProvider({ children }: SettingsProviderProps) {
   );
 
   const theme = useMemo(() => {
-    console.log("Recomputing theme since things changed!");
-
     return getTheme(preferences);
   }, [preferences]);
 

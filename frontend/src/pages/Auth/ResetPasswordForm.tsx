@@ -9,6 +9,10 @@ import useResetPassword from "./hooks/useResetPassword";
 import { IResetPasswordFormData } from "../../types/Auth";
 import useToast from "../../hooks/useToast";
 
+/**
+ * Form for resetting a user's password. So the user willl enter a new password in
+ * for their account here.
+ */
 export default function ResetPasswordForm() {
   const navigate = useNavigate();
   const { showToast } = useToast();

@@ -20,6 +20,9 @@ import useContactNavigation from "../pages/Contact/useContactNavigation";
 import { useNavigate } from "react-router-dom";
 import { companyInfo } from "../constants/companyInfo";
 
+/**
+ * Header component for the application.
+ */
 export default function Header() {
   const theme = useTheme();
   const { auth } = useAuthContext();
@@ -100,7 +103,6 @@ export default function Header() {
 
         <Grid item xs={12} md={4}>
           <div className="tw-flex xs:max-md:tw-justify-center tw-justify-end tw-items-center tw-gap-x-6">
-            {/* If authenticated render the menu, else redner sign in button */}
             <Tooltip
               title={`Appearance: ${preferences.darkMode ? "Dark" : "Light"}`}>
               <Fab size="small" onClick={toggleColorMode}>
@@ -108,6 +110,7 @@ export default function Header() {
               </Fab>
             </Tooltip>
 
+            {/* If authenticated render the menu, else redner sign in button */}
             {auth.user ? (
               <AccountMenu />
             ) : (

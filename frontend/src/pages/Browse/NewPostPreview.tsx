@@ -4,7 +4,7 @@
 */
 
 import { Box, Typography, Divider } from "@mui/material";
-import { formatBlogDate } from "../../api/intl";
+import { formatBlogPostDate } from "../../api/intl";
 import { TagContainer } from "../../components/styles/TagContainer.styled";
 import useTagRedirect from "./hooks/useTagNavigation";
 import useCategoryNavigation from "./hooks/useCategoryNavigation";
@@ -21,6 +21,12 @@ interface INewPostPreviewProps {
   tags?: ITag[];
 }
 
+/**
+ * Component used to render a post in a readable format for users to send the post in detail.
+ * This is used for the 'PostPage' which is for fetching a given post to be viewed, but it is also used
+ * in the Editor suite, so that editors are able to see what their post will look like when it's published
+ * and displayed for users to view.
+ */
 export default function NewPostPreview({
   title,
   category,
@@ -34,7 +40,6 @@ export default function NewPostPreview({
   const handleTagRedirect = useTagRedirect();
   const goToCategoryPage = useCategoryNavigation();
 
-  const dateObj = new Date(dateStr);
   return (
     <Box className="tw-p-4">
       {/* Header of the post:  has title, date published, category, author*/}
@@ -55,7 +60,7 @@ export default function NewPostPreview({
         </Typography>
         <Box className="tw-flex tw-justify-center">
           <Typography>
-            Published on {formatBlogDate(dateObj)} | by {authorName}
+            Published on {formatBlogPostDate(dateStr)} | by {authorName}
           </Typography>
         </Box>
 

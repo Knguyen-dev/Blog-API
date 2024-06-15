@@ -25,12 +25,16 @@ const footerLinks = [
   },
 ];
 
+// Uniform fontisze
 const sectionTitleFontSize = 22;
 
 interface FooterProps {
   className: string;
 }
 
+/**
+ * Footer component for the app
+ */
 export default function Footer({ className }: FooterProps) {
   const goToHomePage = useHomeNavigation();
   const goToAboutPage = useAboutNavigation();

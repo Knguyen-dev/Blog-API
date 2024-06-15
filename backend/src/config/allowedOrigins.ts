@@ -1,5 +1,8 @@
+/**
+ * Defines the origins that are allowed to make requests to this express server
+ */
 const allowedOrigins: string[] = [
-  "http://localhost:5173"
+  process.env.CLIENT_URL as string,
 ]
 
 export default allowedOrigins;

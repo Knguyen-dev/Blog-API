@@ -63,8 +63,6 @@ const updateTag = [
 /**
  * Get all existing tags
  * 
- * @param (express.Request) req - The request object
- * @param (express.Response) res - The response object
  */
 const getTags = asyncHandler(async(req, res) => {
 
@@ -80,9 +78,6 @@ const getTags = asyncHandler(async(req, res) => {
 
 /**
  * Gets the tag and posts that have that tag
- * 
- * @param (express.Request) req - The request object
- * @param (express.Response) res - The response object
  * 
  * NOTE: When using await Promise.all for a concurrency, we need to ensure that 
  * req.params.id is a valid object id. While dbUtils.findDocByID checks it, Post.find does

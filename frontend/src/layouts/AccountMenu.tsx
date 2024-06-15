@@ -4,7 +4,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import {
   Box,
   Typography,
-  Avatar,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -18,6 +17,7 @@ import useManagePostsNavigation from "../pages/Dashboard/ManagePosts/hooks/useMa
 import useLogout from "../hooks/useLogout";
 import useAuthContext from "../hooks/useAuthContext";
 import { verifyEditor, verifyAdmin } from "../utils/roleUtils";
+import UserAvatar from "../components/img/UserAvatar";
 
 /*
 - Define the width of the menu. Then define a width for the text, and if the 
@@ -27,6 +27,12 @@ import { verifyEditor, verifyAdmin } from "../utils/roleUtils";
 const menuWidth = 275;
 const truncateWidth = menuWidth - 75;
 
+/**
+ * Custom menu to show a user's account and related pages to go to a user's profile,
+ * create a post, or signout.
+ *
+ * NOTE: Design inspiration is taken from Youtube's account menu.
+ */
 export default function AccountMenu() {
   const { auth } = useAuthContext();
 
@@ -63,6 +69,7 @@ export default function AccountMenu() {
   // Additional menu tabs after the header containing the user's information
   const menuArr = [
     [
+      // All logged in users will see a profile page
       {
         icon: <PersonIcon fontSize="small" />,
         text: "My Account",
@@ -81,6 +88,7 @@ export default function AccountMenu() {
         // Only visible when you're an editor or admin
         visible: verifyAdmin(auth.user.role) || verifyEditor(auth.user.role),
       },
+      // Logout button is always visible
       {
         icon: <Logout fontSize="small" />,
         text: "Sign out",
@@ -131,9 +139,10 @@ export default function AccountMenu() {
               we have problems loading hte image, then we'll use the initials.
             
             */}
-            <Avatar src={auth.user.avatarSrc} alt="">
-              {auth.user.avatarInitials}
-            </Avatar>
+            <UserAvatar
+              fullName={auth.user.fullName}
+              src={auth.user.avatarSrc}
+            />
           </IconButton>
         </Tooltip>
       </Box>
@@ -181,9 +190,7 @@ export default function AccountMenu() {
           }}
           tabIndex={-1}
           aria-label="Account Menu header">
-          <Avatar src={auth.user.avatarSrc} alt="">
-            {auth.user.avatarInitials}
-          </Avatar>
+          <UserAvatar fullName={auth.user.fullName} src={auth.user.avatarSrc} />
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             {/* 
             - if you want typographies to wrap around, do whiteSpace: normal on sx

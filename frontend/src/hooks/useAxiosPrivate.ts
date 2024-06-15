@@ -10,7 +10,6 @@ import useAuthContext from "./useAuthContext";
   the axiosPrivate instance that we returned will have those 
   interceptors, which will make it ready for essentially immediate use.
   
-  
 - NOTE: 
   1. Adding the interceptors inside a component body could lead to 
   inconsistent behavior, allowing duplicate interceptors, while 
@@ -18,10 +17,9 @@ import useAuthContext from "./useAuthContext";
   modification of our axiosPrivate instance. 
 
   2. When working with Axios, it seems that when we retry requests with 
-    FormData object, that object won't be available in the next request.
-    It's annoying, but a safe way to get around this is to ensure that 
-    the access token is valid before we make the request.
-
+  FormData object, that object won't be available in the next request.
+  It's annoying, but a safe way to get around this is to ensure that 
+  the access token is valid before we make the request.
 */
 
 export default function useAxiosPrivate() {
@@ -29,6 +27,7 @@ export default function useAxiosPrivate() {
   const { auth } = useAuthContext();
 
   useEffect(() => {
+    // Create 'interceptor' that ensures the request has an 'Authorization' header with an access token for we send the request.
     const requestIntercept = axiosPrivate.interceptors.request.use(
       async (request) => {
         if (!request.headers["Authorization"]) {
@@ -41,6 +40,7 @@ export default function useAxiosPrivate() {
       }
     );
 
+    // Create a response interceptor that re-tries the fetch request under certain circumstances.
     const responseIntercept = axiosPrivate.interceptors.response.use(
       (response) => {
         return response;

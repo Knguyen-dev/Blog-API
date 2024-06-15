@@ -42,6 +42,9 @@ const companyValues = [
   },
 ];
 
+/**
+ * 'About Us' page for the website.
+ */
 export default function AboutPage() {
   const theme = useTheme();
 
@@ -195,7 +198,10 @@ export default function AboutPage() {
         <Stack direction="column" spacing={4}>
           {companyValues.map((value, index) => (
             <Box key={index} className="tw-flex tw-gap-6">
-              <Box fontSize={48} color="text.secondary">
+              <Box
+                fontSize={48}
+                color="text.secondary"
+                className="tw-hidden sm:tw-inline">
                 {value.icon}
               </Box>
               <Box>

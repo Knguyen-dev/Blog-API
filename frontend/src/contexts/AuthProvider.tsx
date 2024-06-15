@@ -47,6 +47,15 @@ const authReducer = (state: AuthState, action: any): AuthState => {
   }
 };
 
+/**
+ * Context provider for providing the authentication state of the current user.
+ *
+ * - User: Used to mainly show the user's current information such as their username, email, etc.
+ * - accessToken: Used for making authenticated requests (requests whree an access token is need).
+ *
+ * NOTE: So when user isn't logged in, both of these are nulled, so you can easily say that a user is
+ * authenticated when either the auth.user value is null or the auth.accessToken value is null.
+ */
 export default function AuthProvider({ children }: AuthProviderProps) {
   const [auth, dispatch] = useReducer(authReducer, {
     user: null,

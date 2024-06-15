@@ -3,7 +3,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { styled } from "@mui/material/styles";
 import { ChangeEvent } from "react";
 
-// Contains the input element and button
+// Wrapper that contains and positions the input element and button
 const Search = styled("div")(() => ({
   position: "relative", // For search icon positioning
   display: "flex",
@@ -12,7 +12,7 @@ const Search = styled("div")(() => ({
   columnGap: "4px",
 }));
 
-// Search icon
+// Search icon stylings
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
   height: "100%",
@@ -24,6 +24,7 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
   justifyContent: "center",
 }));
 
+// Styling the actual input component
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
@@ -39,12 +40,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   flex: "auto",
 }));
 
-/*
-- NOTE: You don't need to do useTheme() and pass in the theme prop to your components for 
-  your theme to work. As long as you passed in the theme prop to Mui's ThemeProvider, then 
-  you should be all good.
-*/
-
 interface SearchBarProps {
   onSubmit: () => void;
   placeholder?: string;
@@ -54,6 +49,9 @@ interface SearchBarProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
+/**
+ * Controlled component for showing a search bar.
+ */
 export default function SearchBar({
   onSubmit,
   placeholder = "Search",

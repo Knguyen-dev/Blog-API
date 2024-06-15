@@ -24,6 +24,9 @@ const convertToPostState = (post: IPost): IPostState => ({
   _id: post._id,
 });
 
+/**
+ * Page used for editing an existing post
+ */
 export default function EditPostPage() {
   const { id } = useParams(); // id of the post
   const { showToast } = useToast();
@@ -96,7 +99,7 @@ export default function EditPostPage() {
             />
           )}
         </Grid>
-        <Grid item xs={12} sm={7} className="tw-h-full tw-overflow-y-auto">
+        <Grid item xs={12} sm={7} className="tw-h-screen tw-overflow-y-auto">
           {/* Only render once we have the data. We can do this by checking one of the properties of 
           the state to be truthy. We will check 'authorName' since that is truthy when we actually got
           a post, and the user can't make it falsy. We don't is a 'isLoading' state because if isLoading=false,

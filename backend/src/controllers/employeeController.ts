@@ -1,9 +1,3 @@
-
-/**
- * Yeah this part 
- */
-
-
 import userValidators from "../middleware/validators/userValidators";
 import asyncHandler from "express-async-handler";
 import { body } from "express-validator";

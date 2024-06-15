@@ -1,4 +1,4 @@
-import { Box, Avatar } from "@mui/material";
+import { Box } from "@mui/material";
 import { useEffect, useCallback, useState } from "react";
 import { AxiosError } from "axios";
 import EditSelectGrid from "./EditSelectGrid";
@@ -12,6 +12,7 @@ import useToast from "../../../../hooks/useToast";
 import getErrorData from "../../../../utils/getErrorData";
 import { IUser } from "../../../../types/Post";
 import { roleMap } from "../../../../utils/roleUtils";
+import UserAvatar from "../../../../components/img/UserAvatar";
 
 export default function EmployeeGrid() {
   const { state, dispatch } = useEmployeeContext();
@@ -156,9 +157,7 @@ const columns = [
     headerName: "Avatar",
     width: 100,
     renderCell: ({ row }: { row: IUser }) => (
-      <Avatar alt="Avatar" sx={{ color: "black" }} src={row.avatarSrc}>
-        {row.avatarInitials}
-      </Avatar>
+      <UserAvatar fullName={row.fullName} src={row.avatarSrc} />
     ),
   },
   { field: "username", headerName: "Username", width: 125, editable: true },

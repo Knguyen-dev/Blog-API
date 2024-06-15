@@ -31,7 +31,6 @@ export interface IUser {
 // The UserDoc, but it also contains virtuals and instance methods; teh representation of what's going to be returned from mongoose
 export interface IUserDoc extends IUser, Document {
   avatarSrc: string;
-  avatarInitials: string;
   updateUsername(username: string): Promise<void>;
   isEmployee(): boolean;
   createPasswordResetToken(): string;
@@ -42,5 +41,4 @@ export interface IUserDoc extends IUser, Document {
 
 // The model which contains the static methods of the model
 export interface IUserModel extends Model<IUserDoc> {
-  isUsernameAvailable(username: string): Promise<boolean>;
 }

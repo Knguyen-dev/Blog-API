@@ -12,8 +12,9 @@ export default function VerifyEmailPage() {
       verifyEmail(verifyEmailToken);
     }
 
+    // Email verification should only run once; use this to prevent it running extra times
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [verifyEmailToken]);
+  }, []);
 
   return (
     <Box component="section" className="tw-text-center full-background-page">

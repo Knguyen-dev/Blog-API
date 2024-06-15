@@ -2,9 +2,12 @@ import useAxiosPrivate from "./useAxiosPrivate";
 import { useState, useEffect, useCallback } from "react";
 import handleRequestError from "../utils/handleRequestError";
 import { AxiosError } from "axios";
-/*
-- usePrivateFetchData: Fetches data for routes where user authentication is needed.
-*/
+
+/**
+ * Calls effect to fetch data for routes where user authentication is needed.
+ *
+ * @param url - Url of the route that we're making the endpoint request to
+ */
 export default function usePrivateFetchData<T>(url: string) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [data, setData] = useState<T | undefined>();

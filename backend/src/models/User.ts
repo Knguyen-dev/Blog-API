@@ -13,6 +13,10 @@ import sendVerifyEmail from "../services/email/sendVerifyEmail";
 
 const userSchema = new mongoose.Schema<IUser, IUserModel>(
 	{
+    /**
+     * Email of the user. This should be unique, meaning a given email can only be associated 
+     * with one user.
+     */
 		email: {
 			type: String,
 			required: true,
@@ -20,6 +24,12 @@ const userSchema = new mongoose.Schema<IUser, IUserModel>(
 			maxLength: 64,
       unique: true
 		},
+    /**
+     * Username of the user. A given username can only be associated with one user. In our validation
+     * we will also lowercase them and check for uniqueness.
+     * 
+     * For example, "MyUser123" and 'myuser123' will be the same username
+     */
 		username: {
 			type: String,
 			required: true,
@@ -28,61 +38,102 @@ const userSchema = new mongoose.Schema<IUser, IUserModel>(
       minLength: 6,
 			maxLength: 32,
 		},
+
+    /**
+     * The first time the user has changed their username, within a defined period, e.g. a 7 day
+     * period.
+     * 
+     */
     initialUsernameChangeDate: {
       type: Date,
       default: Date.now(),
     },
+
+    /**
+     * The number of times the user has changed their username within a defined period, e.g.
+     * a 7 day period.
+     */
     usernameChangeCount: {
       type: Number,
       default: 0,
     },
+
+    // The hashed version of the user's plaintext password
 		password: {
 			type: String,
 			required: true,
 		},
+
+    // The full name of the user
     fullName: {
       type: String,
       required: true,
       maxLength: 64
     },
 
-    /*
-    - Roles: One role per user
-    1. user: can read data (The default value indicated in our signup function)
-    2. editor: Can write and editor posts, probably just their own though.
-    3. admin: Can read, edit, and even archive or delete posts.
-    */
+    // The role of the user; by default when a user registers, they are given the 'user' role.
     role: {
       type: Number,
       default: roles_map.user
     },
     
+    // Date at which the last time the user has logged into their account
     lastLogin: {
       type: Date
     },
 
-    /*
-    - Storing refresh tokens in the database allows hte server to revoke or 
-      invalidate tokens before their natural expiration time. Useful in scenarios 
-      where the user wants to logout or delete their account.
-    */
+    /**
+     * The refresh jwt token associated with their account. This is used for refreshing a user's access token
+     * and also storing refresh tokens in the database allow us to revoke them.
+     */
     refreshToken: String,
 
     // User's profile picture
     avatar: String,
 
+    /**
+     * Boolean indicating whether or not the email associated with the user's account has been confirmed/verified.
+     * 
+     * NOTE: By default this is false because when a user signs up and logs in their email won't be verified yet.
+     */
     isVerified: {
       type: Boolean,
       default: false
     },
+
+    /**
+     * Token hash, used to verify a user's email.
+     * 
+     * NOTE: The token hash is stored in the database, whilst the unhashed token is used to generate an 
+     * email verification url, and sent to the user via their email.
+     */
     verifyEmailToken: String,
+
+    // Date at which the email verification token is no longer valid
     verifyEmailTokenExpires: Date,
+
+    /**
+     * Field representing the email that's being verified when a email verification token is active and the 
+     * verification link has been sent to the user 
+     * 
+     * Then the user will hit the email verification reset endpoint with the link we sent them, and we'll 
+     * see if when we hash the unhashed token, if it will match the token hash in the database.
+     */
     emailToVerify: String,
 
+    /**
+     * Token hash for resetting a user's password. The token hash is stored in the database, whlist the 
+     * unhashed password reset token is used to create a password reset link that we will send to the user.
+     * 
+     * Then the user will hit the password reset endpoint when they click on the link, and we'll 
+     * see if when we hash the unhashed token, if it will match the token hash in the database.
+     */
     passwordResetToken: String,
+
+    /**
+     * Date at which the password reset token is no longer valid
+     */
     passwordResetTokenExpires: Date,
-
-
 	},
 	{
     /*
@@ -105,13 +156,6 @@ const userSchema = new mongoose.Schema<IUser, IUserModel>(
 	}
 );
 
-/*
-+ Checks if a username is available. If user doesn't exist return true, else return false.
-*/
-userSchema.statics.isUsernameAvailable = async function (username) {
-  const existingUser = await this.findOne({username});
-  return !existingUser;
-}
 
 /**
  * Checks username, and if successful, updates the username attribute of 
@@ -125,16 +169,18 @@ userSchema.statics.isUsernameAvailable = async function (username) {
  * @param username - New username that user wants to change to
  */
 userSchema.methods.updateUsername = async function(username: string) {
-  // Early return if the username is the same as the current one; we aren't going to use 
-  // database resources when it doesn't change the username
+  
+  // If username hasn't changed, stop execution early.
   if (this.username === username) {
     return;
   }
 
-  // Username is different, check it's availablility
-  // If not available, throw an error to be caught in the route-handler
-  const isAvailable = await User.isUsernameAvailable(username);
-  if (!isAvailable) {
+  // Username is different, so check if another user already has this username (checking availability)
+  // If another user exists, then the username isn't available
+  const existingUser = await User.findOne({
+    username: username
+  })
+  if (existingUser) {
     throw createError(400, "Username is already taken!");
   };
 
@@ -268,26 +314,6 @@ userSchema.virtual("avatarSrc").get(function() {
   }
 })
 
-userSchema.virtual("avatarInitials").get(function() {  
-
-  // Split the name into an array based on spaces, which represent sections of the name
-  const nameArr = this.fullName.split(" ");
-  let initials = ""
-
-  // Get the first letter of the first section of the name, represents our starting initial.
-  initials += nameArr[0][0];
-
-  // If they have more than one part to their name, then we can get 
-  // a second letter for their initials. We do nameArr.length - 1 to target the last section of 
-  // their name. As a result we aim to get their first and last initials.
-  if (nameArr.length > 1) {
-      initials += nameArr[nameArr.length - 1][0]
-  }
-  
-  // Return the uppercased version of the initials.
-  return initials.toUpperCase();   
-})
-
 /*
 - Situation: When sending back a user as json, we don't want to include fields such as 
   'password' or 'refreshToken', and any critically sensitive data such as that. We want
@@ -307,13 +333,10 @@ userSchema.methods.toJSON = function() {
   delete userObj.__v; // not needed on frontend
   delete userObj.initialUsernameChangeDate; // The rest of these are just used on the backend
   delete userObj.usernameChangeCount;
-
   delete userObj.passwordResetToken;
   delete userObj.passwordResetTokenExpires;
-
   delete userObj.createdAt;
   delete userObj.updatedAt;
-  
   return userObj;
 }
 

@@ -1,7 +1,10 @@
 import { getCache, setCache, deleteCache } from "./redis.services";
 
+/**
+ * Class for managing our cache for all available tags
+ */
 class TagCache {
-  // For GET '/tags' rout
+  // For GET '/tags' route
   private tagsKey: string;
 
   constructor() {

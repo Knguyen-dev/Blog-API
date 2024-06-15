@@ -5,18 +5,21 @@ import { Divider, CircularProgress } from "@mui/material";
 import { Suspense } from "react";
 
 export default function AppLayout() {
-	return (
-		<div className="tw-min-h-screen tw-flex tw-flex-col">
-			{/* Navbar */}
-			<Header />
-			<main className="tw-flex-1 tw-flex tw-justify-center tw-items-center">
-				<Suspense fallback={<CircularProgress />}>
-					<Outlet />
-				</Suspense>
-			</main>
+  return (
+    <div className="tw-min-h-screen tw-flex tw-flex-col">
+      {/* Header and Navbar */}
+      <Header />
 
-			<Divider className="tw-mt-16" />
-			<Footer className="tw-py-4 tw-px-8" />
-		</div>
-	);
+      {/* Outlet has suspense since we do lazy-loading on some of the pages that will render in the outlet */}
+      <main className="tw-flex-1 tw-flex tw-justify-center tw-items-center">
+        <Suspense fallback={<CircularProgress />}>
+          <Outlet />
+        </Suspense>
+      </main>
+
+      {/* Divider and footer */}
+      <Divider className="tw-mt-16" />
+      <Footer className="tw-py-4 tw-px-8" />
+    </div>
+  );
 }

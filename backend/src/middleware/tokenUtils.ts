@@ -9,9 +9,6 @@ import {Request, Response, NextFunction} from "express";
 
 /**
  * Function to create access token for a user.
- * 
- * @param {Object} user - A user object 
- * @returns {string} The access token
  */
 function generateAccessToken(user: IUserDoc): string {
 
@@ -26,8 +23,6 @@ function generateAccessToken(user: IUserDoc): string {
 /**
  * Function to create the refresh token for a user.
  * 
- * @param {Object} user - A user object.
- * @returns {string} The refresh token
  */
 function generateRefreshToken(user: IUserDoc): string {
 	return jwt.sign({id: user.id}, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: "1d" });

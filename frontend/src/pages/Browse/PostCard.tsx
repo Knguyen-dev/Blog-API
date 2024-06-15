@@ -1,7 +1,6 @@
 import {
   Box,
   Typography,
-  Avatar,
   Stack,
   Card,
   CardActionArea,
@@ -12,17 +11,25 @@ import { formatBlogPostDate } from "../../api/intl";
 import useTagNavigation from "./hooks/useTagNavigation";
 import usePostNavigation from "./hooks/usePostNavigation";
 import { TagContainer } from "../../components/styles/TagContainer.styled";
-
+import UserAvatar from "../../components/img/UserAvatar";
 import { IPost } from "../../types/Post";
 import { MouseEvent } from "react";
+
+import { useTheme } from "@mui/material";
 
 interface PostCardProps {
   postObj: IPost;
 }
 
+/**
+ * Card that renders information for a blog post. This card should be used for
+ * on the Blog page, and the average unauthenticated user will be able to see it.
+ */
 export default function PostCard({ postObj }: PostCardProps) {
   const goToTagPage = useTagNavigation();
   const { goToPostPage } = usePostNavigation();
+
+  const theme = useTheme();
 
   const handleClick = () => {
     goToPostPage(postObj.slug);
@@ -35,11 +42,7 @@ export default function PostCard({ postObj }: PostCardProps) {
 
   return (
     <Card
-      sx={
-        {
-          // background: theme.palette.cardBg,
-        }
-      }
+      sx={{ background: theme.palette.background.paper }}
       className="tw-max-w-96 tw-shadow-2xl">
       <CardMedia
         component="img"
@@ -67,15 +70,11 @@ export default function PostCard({ postObj }: PostCardProps) {
             {postObj.title}
           </Typography>
           <Box className="tw-font-medium tw-flex tw-items-center">
-            <Avatar
+            <UserAvatar
+              fullName={postObj.user.fullName}
               src={postObj.user.avatarSrc}
-              alt=""
               className="tw-mr-2"
-              sx={{
-                color: "black",
-              }}>
-              {postObj.user.avatarInitials}
-            </Avatar>
+            />
             <Stack>
               <Typography className="tw-font-bold">
                 {postObj.user.username}

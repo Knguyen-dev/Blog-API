@@ -4,6 +4,7 @@ import { IResetPasswordFormData } from "../../../types/Auth";
 import handleRequestError from "../../../utils/handleRequestError";
 import { axiosPublic } from "../../../api/axios";
 
+// Custom hook for handling the reset of a user's password
 export default function useResetPassword() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

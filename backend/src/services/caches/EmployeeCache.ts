@@ -17,20 +17,15 @@ class EmployeeCache {
 
   /*
   - When do we invalidate
-
   1. Update employee, add employee, and remove employee in teh employee controller.
-
   2. Login route, if the person who logged in is an employee
-    
-  
+  3. When a user that's an employee is updated, we invalidate the cache as well.
   - NOTE: Since we're using a data-grid, and also only admins are going to see, we 
     should focus and prioritize this idea of very fresh data from our cache. And so 
     can happen frequently. Also since we're only delaing with users, and we aren't 
     referencing other entities, it's al ot easier to manage the cache.
   */
   async deleteCachedEmployees() {
-
-    console.log("Employee cache deleted!");
     await deleteCache(this.employeesKey);
   }
 }

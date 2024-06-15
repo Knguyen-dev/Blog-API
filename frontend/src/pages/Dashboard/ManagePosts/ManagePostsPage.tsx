@@ -1,14 +1,12 @@
 import { Typography, Box, Button } from "@mui/material";
 import { useState } from "react";
 import BlogPostCard from "./components/BlogPostCard";
-
 import DeletePostDialog from "./components/DeletePostDialog";
 import EditPostStatusDialog from "./components/EditPostStatusDialog";
 import usePostNavigation from "../../Browse/hooks/usePostNavigation";
 import usePrivateFetchData from "../../../hooks/usePrivateFetchData";
 import useAuthContext from "../../../hooks/useAuthContext";
 import { verifyAdmin } from "../../../utils/roleUtils";
-
 import { IPost } from "../../../types/Post";
 
 export default function ManagePostsPage() {
@@ -19,11 +17,13 @@ export default function ManagePostsPage() {
   /*
   - ManagePostPage is behind a protected route component, guaranteeing that 
     auth.user is defined. So we'll do non-null assertion here
-  */
 
-  // Check if the user is an admin; if not they're an editor
+  - Check if the user is an admin; if not they're an editor
+  */
   const isAdmin = verifyAdmin(auth.user!.role);
 
+  // If the user is an admin, let them see all of the post's that have been created, else
+  // just let them see the post's they've created
   let endPoint = "";
   if (isAdmin) {
     endPoint = "/posts";
@@ -112,10 +112,10 @@ export default function ManagePostsPage() {
               ];
 
               /*
-            - If an admin, but isn't author of the post, the edit button will open
-              the a dialog to edit the post's status, rather than redirecting the user 
-              to the editor suite.
-            */
+              - If an admin, but isn't author of the post, the edit button will open
+                the a dialog to edit the post's status, rather than redirecting the user 
+                to the editor suite.
+              */
               if (isAdmin && auth.user!._id != post.user._id) {
                 cardActions[0] = {
                   label: "Edit Status",

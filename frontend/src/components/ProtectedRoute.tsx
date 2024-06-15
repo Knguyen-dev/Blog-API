@@ -7,12 +7,10 @@ import { ReactNode } from "react";
   At minimum this makes it so a user has to be authenticated before being able 
   to go to those routes. Then with our 'allowedRoles' array, even if they are 
   authenticated, we can choose which roles are able to access that route!
-- allowedRoles: An array of roles. By default if nothing is passed, then it becomes 
-  an empty array.
 */
 
 interface ProtectedRouteProps {
-  allowedRoles?: string[];
+  allowedRoles?: string[]; // An array of roles. By default if nothing is passed, then it becomes an empty array.
   children: ReactNode;
 }
 

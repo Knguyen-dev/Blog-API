@@ -30,12 +30,13 @@ router.get("/:id/posts", getTagAndPosts);
 // Create new tag
 router.post("/", createTagLimiter, createTag);
 
-// Get, delete, and update tag via id
+// delete tag by id
 router.delete("/:id", 
   deleteTagLimiter,
   deleteTag
 );
 
+// update tag by id
 router.patch("/:id", 
   updateTagLimiter,
   updateTag

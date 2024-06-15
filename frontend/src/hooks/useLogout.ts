@@ -5,6 +5,10 @@ import { useNavigate } from "react-router-dom";
 import authActions from "../constants/authActions";
 const endpoint = "/auth/logout";
 
+/**
+ * Custom hook that's used for logging out the current user.
+ *
+ */
 export default function useLogout() {
   const { dispatch } = useAuthContext();
   const navigate = useNavigate();
@@ -28,6 +32,7 @@ export default function useLogout() {
 
     NOTE: This prevents the 'postData' from transferring when a user on the same 
     computer AND they log out from one account and login to another account.
+    You can also use the useLocalStorage hook as well if you want.
     */
     localStorage.removeItem("postData");
 

@@ -5,9 +5,9 @@ import {
   CardHeader,
   CardActionArea,
   Typography,
-  Avatar,
   IconButton,
   Stack,
+  useTheme,
 } from "@mui/material";
 import { MouseEvent } from "react";
 import { formatBlogPostDate } from "../../../../api/intl";
@@ -17,6 +17,8 @@ import BasicMenu, {
 import { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { IPost } from "../../../../types/Post";
+
+import UserAvatar from "../../../../components/img/UserAvatar";
 
 interface IBlogPostCardProps {
   post: IPost;
@@ -38,6 +40,8 @@ export default function BlogPostCard({
 }: IBlogPostCardProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
+  const theme = useTheme();
+
   // Turn open into a boolean
   const open = !!anchorEl;
 
@@ -50,16 +54,14 @@ export default function BlogPostCard({
   return (
     <Card
       className="tw-overflow-hidden tw-shadow-2xl tw-rounded-lg tw-max-w-96"
-      // sx={{ background: theme.palette.cardBg }}
-    >
+      sx={{ background: theme.palette.background.paper }}>
       <CardHeader
         avatar={
-          <Avatar
-            alt={post.user.username}
+          <UserAvatar
+            fullName={post.user.fullName}
             src={post.user.avatarSrc}
-            className="tw-mr-2 tw-text-black">
-            {post.user.avatarInitials}
-          </Avatar>
+            className="tw-mr-2"
+          />
         }
         action={
           <IconButton aria-label="settings" onClick={handleOpenMenu}>

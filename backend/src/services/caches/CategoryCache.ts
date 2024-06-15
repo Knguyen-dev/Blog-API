@@ -6,21 +6,14 @@
   of categories is updated. So invalidate the cache when they 
   add new categories, remove old ones, or update ones.
 
-  This helps because let's say an editor creates a category on the front-end
+  As a result, we don't have to do a database operation to get 
+  available categories everytime. As well being able to update and invalidate 
+  the cache is very useful as it helps us keep the categories cache fresh in the 
+  case where categories are added, updated, or removed.
+  
+  For example, this helps because let's say an editor creates a category on the front-end
   and they refresh. If we didn't invalidate the cache, they would simply
   not see their newly created category because they're seeing old data.
-
-  Well have this same idea when talking about caching 'tags'. If the user 
-  updates the name of the tag on the front-end, we'll have to invalidate 
-  our 'tags' key (containing our list of tags in the redis), so that 
-  the user fetches fresh data containing our tags.
-
-  As well as this what if a tag or category is deleted, are we going to 
-  invalidate the 'posts' that have those tags. Of course this is all complex
-  but it's made easier if we organized our code and operations
-
-- 
-
 */
 
 import { getCache, setCache, deleteCache } from "./redis.services"
@@ -29,19 +22,22 @@ class CategoryCache {
   private categoriesKey: string;
 
   constructor () {
-    // For GET '/categories' route
+    // Cache key for GET '/categories' route
     this.categoriesKey = "/categories"
   }
 
+  // Gets the cached categories
   async getCachedCategories() {  
     return await getCache(this.categoriesKey);
   }
   
+  // Updates the key-value pair in the redis cache for our categories
   async setCachedCategories(categories: any[]) {
     const expiration = 60 * 60; // 1 hour 
     await setCache(this.categoriesKey, expiration, categories);
   }
 
+  // Deletes/invalidates key-value pair for the categories cache
   async deleteCachedCategories() {
     await deleteCache(this.categoriesKey);
   }

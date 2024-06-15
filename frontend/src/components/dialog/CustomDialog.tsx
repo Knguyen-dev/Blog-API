@@ -1,12 +1,9 @@
-/*
-- Improvements: Hey is this a pretty good dialog component, but you don't need
-  to have 'form' prop. Literally this component is able to contain anything, so 
-  replace 'form' with children, to make this more flexible.
-
-  As well as this you could replace quite a bit of this with 'children' prop
-
-
-*/
+/**
+ * A boostrap styled dialog that we use specifically for displaying forms.
+ *
+ * NOTE: While it does have prop 'CustomForm', realistically you can put anything
+ * in this dialog.
+ */
 
 import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";

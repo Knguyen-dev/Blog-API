@@ -123,17 +123,19 @@ const updateCategory = async(id: string, title: string, description: string, use
   return category;
 }
 
-// Create a service for getting both categories and posts? which would 
+// Database function for getting all categories available in the database
 const getAllCategories = async () => {
   const categories = await Category.find();
   return categories;
 }
 
 /**
+ * Database function for handling getting a category and posts that have that category.
  * 
  * @param id - Id of the category we want to fetch, and the posts related to it 
- * @param options 
- * @returns 
+ * @param options - You can specify whether we want only published posts, and you can also specify an array 
+ *                  of strings, which would make the title have to match at atleast one of those strings to 
+ *                  get returned back
  */
 const getCategoryAndPosts = async (id: string, options: { publishedOnly?: boolean, titles?: string[] } = {}) => {
 

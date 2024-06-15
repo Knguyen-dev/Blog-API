@@ -4,10 +4,8 @@ interface IUser {
   username: string;
   fullName: string;
   role: number;
-  lastLogin: string;
+  lastLogin?: string;
   avatarSrc?: string;
-  avatarInitials: string;
-
   isVerified: boolean;
 }
 

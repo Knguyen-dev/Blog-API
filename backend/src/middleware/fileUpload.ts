@@ -14,7 +14,6 @@ if (!fs.existsSync(imageDirectory)) {
 
 
 // Create storage and logic for uploading user avatars/profile pictures to our disk.
-
 const storage = multer.diskStorage({
   destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
     cb(null, imageDirectory)

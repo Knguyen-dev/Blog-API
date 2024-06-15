@@ -9,6 +9,7 @@ import { IForgotPasswordFormData } from "../../types/Auth";
 import useToast from "../../hooks/useToast";
 import FormError from "../../components/Input/FormError";
 
+// Form for sending a password reset request
 export default function ForgotPasswordForm() {
   const { showToast } = useToast();
 

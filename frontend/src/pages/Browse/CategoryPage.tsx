@@ -45,7 +45,9 @@ export default function CategoryPage() {
               <Typography className="tw-mb-2" variant="h4">
                 Category: {data.category.title}
               </Typography>
-              <Typography>{data.category.description}</Typography>
+              <Typography className="tw-hidden sm:tw-inline">
+                {data.category.description}
+              </Typography>
             </>
           )}
           <SearchBar

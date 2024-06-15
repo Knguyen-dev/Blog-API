@@ -1,6 +1,11 @@
 import { reverse_role_map } from "../config/roles_map"
 
-const getRoleString = (roleNumber: number) => {
+/**
+ * 
+ * @param roleNumber - Given a number, return the role associated with it.
+ * @returns 
+ */
+const getRoleString = (roleNumber: number): string | undefined  => {
   return reverse_role_map[roleNumber]
 }
 

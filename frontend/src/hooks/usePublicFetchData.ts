@@ -1,11 +1,13 @@
-/*
-Custom hook for fetching data from our backend, that doesn't require the user to login (a jwt).
-*/
 import { axiosPublic } from "../api/axios";
 import { AxiosError } from "axios";
 import handleRequestError from "../utils/handleRequestError";
 import { useState, useEffect } from "react";
 
+/**
+ * Custom hook for fetching data from our backend, that doesn't require the user to login (a jwt).
+ *
+ * @param url
+ */
 export default function usePublicFetchData<T>(url: string) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [data, setData] = useState<T | undefined>();

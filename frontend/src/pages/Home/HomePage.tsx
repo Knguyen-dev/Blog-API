@@ -1,5 +1,4 @@
 import {
-  Grid,
   Typography,
   Button,
   Link,
@@ -80,18 +79,52 @@ export default function HomePage() {
   const theme = useTheme();
 
   return (
-    <div className="tw-flex tw-flex-col tw-gap-y-20">
-      {/* Intro secution  */}
-      <Grid id="intro" container alignItems="center" justifyContent="center">
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          className="xs:max-sm:tw-text-center xs:max-sm:tw-mt-8">
-          <Typography variant="h2" component="h1" gutterBottom>
+    <div className="tw-flex tw-flex-col tw-gap-y-20 tw-flex-auto">
+      {/* Intro section: Hero  */}
+      <Box
+        id="intro"
+        sx={{
+          position: "relative",
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay color with 50% opacity
+          },
+        }}>
+        <img
+          src="/game_streamer_bg.jpg"
+          alt="Hero Background"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            zIndex: -1, // Ensure the image is behind the content
+          }}
+        />
+        <Box
+          sx={{
+            position: "absolute",
+            zIndex: 1, // Ensure the content is above the image
+            textAlign: "center",
+            color: "white",
+          }}>
+          <Typography variant="h2" fontSize={{ xs: 48, md: 72, lg: 92 }}>
             Welcome to {companyInfo.name}
           </Typography>
-          <Typography color="text.secondary" className="sm:tw-w-2/3" paragraph>
+          <Typography color="textSecondary" paragraph>
             Stay updated on endless topics from gaming to science, curated for
             the curious mind. Explore a new world!
           </Typography>
@@ -103,60 +136,53 @@ export default function HomePage() {
             onClick={goToBlogPage}>
             Read More
           </Button>
-        </Grid>
-        <Grid item xs={12} sm={4} className="xs:max-sm:tw-hidden">
-          <ResponsiveImg
-            src="/people-working-graphic.png"
-            alt=""
-            rounded="lg"
-          />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       {/* Services section */}
-      <Box
-        sx={{ background: theme.palette.background.neutral }}
-        className="tw-py-4">
-        <Container maxWidth="xl" id="services">
-          {/* Header  */}
-          <Box className="tw-text-center tw-mb-6" component="header">
-            <Typography variant="h2" gutterBottom>
-              Our Services
-            </Typography>
-            <Typography className="tw-w-1/2 tw-mx-auto tw-font-light">
-              Our range of services caters to diverse needs, whether you&apos;re
-              representing a large corporation, a prominent content creator, or
-              simply an inquisitive individual. Get in touch with us to explore
-              potential collaborations!
-            </Typography>
-          </Box>
-          <Box>
-            {siteServices.map((service, index) => (
-              <Box key={index} className="tw-mb-2">
-                {/* Content */}
-                <Box className="tw-flex tw-items-center tw-justify-between">
-                  <Box>
-                    <Typography variant="h4" component="h1" gutterBottom>
-                      {service.title}
-                    </Typography>
-                    <Typography variant="body1" paragraph className="tw-w-5/6">
-                      {service.description}
-                    </Typography>
-                  </Box>
-
-                  <Link href={service.href} aria-label={service.ariaLabel}>
-                    <IconButton aria-label={service.ariaLabel} tabIndex={-1}>
-                      <ArrowOutwardIcon />
-                    </IconButton>
-                  </Link>
+      <Container
+        sx={{ background: theme.palette.background.paper }}
+        className="tw-py-4"
+        maxWidth="xl"
+        id="services">
+        {/* Header  */}
+        <Box className="tw-text-center tw-mb-6" component="header">
+          <Typography variant="h2" gutterBottom>
+            Our Services
+          </Typography>
+          <Typography className="sm:tw-w-2/3 tw-mx-auto tw-font-light">
+            Our range of services caters to diverse needs, whether you&apos;re
+            representing a large corporation, a prominent content creator, or
+            simply an inquisitive individual. Get in touch with us to explore
+            potential collaborations!
+          </Typography>
+        </Box>
+        <Box>
+          {siteServices.map((service, index) => (
+            <Box key={index} className="tw-mb-2">
+              {/* Content */}
+              <Box className="tw-flex tw-items-center tw-justify-between">
+                <Box>
+                  <Typography variant="h4" component="h1" gutterBottom>
+                    {service.title}
+                  </Typography>
+                  <Typography variant="body1" paragraph className="tw-w-5/6">
+                    {service.description}
+                  </Typography>
                 </Box>
 
-                <Divider />
+                <Link href={service.href} aria-label={service.ariaLabel}>
+                  <IconButton aria-label={service.ariaLabel} tabIndex={-1}>
+                    <ArrowOutwardIcon />
+                  </IconButton>
+                </Link>
               </Box>
-            ))}
-          </Box>
-        </Container>
-      </Box>
+
+              <Divider />
+            </Box>
+          ))}
+        </Box>
+      </Container>
 
       {/* About section: About the website */}
       <Container

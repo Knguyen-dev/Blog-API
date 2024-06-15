@@ -5,6 +5,12 @@ interface IFormErrorProps {
   sx?: object;
 }
 
+/**
+ * Custom component that we use ot render errors on a form
+ *
+ * @param message - The error message that's going to be displayed on the component
+ * @returns
+ */
 export default function FormError({ message, className, sx }: IFormErrorProps) {
   const theme = useTheme();
   return (

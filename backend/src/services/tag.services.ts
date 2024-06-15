@@ -135,7 +135,6 @@ const getTags = async () => {
  * @param {boolean} [options.publishedOnly] - Whether to fetch only published posts.
  * @param {string[]} [options.titles] - An array of keywords to match against post titles. So we'll return a post 
  *                                      if it has one of these keywords somewhere in the title
- * @returns {Promise<{tag: TagType, posts: PostType[]}>} The tag details and associated posts.
  */
 const getTagAndPosts = async (id: string, options: { publishedOnly?: boolean, titles?: string[] } = {}) => {
   

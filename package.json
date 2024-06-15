@@ -6,12 +6,13 @@
 	"scripts": {
 		"client": "cd frontend && npm run dev",
 		"server": "cd backend && npm run dev",
-		"appStart": "concurrently \"npm run client\" \"npm run server\""
+		"appDev": "concurrently \"npm run client\" \"npm run server\""
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
-		"concurrently": "^8.2.2"
+		"concurrently": "^8.2.2",
+		"prettier": "2.7.1"
 	}
 }

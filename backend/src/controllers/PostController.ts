@@ -190,6 +190,20 @@ const getPostByID = asyncHandler(async(req, res) => {
 
 
 /**
+ * Get any post via its slug
+ * 
+ */
+const getPostBySlug = asyncHandler(async(req, res) => {
+  // Attempt to find post with matching slug and is published
+  const post = await postServices.getPostBySlug(req.params.slug);
+
+  // Verify whether the user can view this particular post; if not we'll throw an error and stop tihs response  
+  canViewPost(req.user!.id, req.user!.role, post.user._id.toString());
+
+  res.status(200).json(post);
+})
+
+/**
  * Get a published post via its slug
  * 
  */
@@ -209,5 +223,6 @@ export {
   getPostsByUser,
   getPublishedPosts,
   getPostByID,
+  getPostBySlug,
   getPublishedPostBySlug
 }

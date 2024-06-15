@@ -5,7 +5,7 @@ import { generateRefreshToken } from "../middleware/tokenUtils";
 import { roles_map } from "../config/roles_map";
 
 /**
- * Attempts to sign up a user given some user information
+ * Attempts to sign up a user given some user information; main function used in the signup controller
  * 
  * NOTE: Information such as email and username are assumed to be lowercased before-hand.
  */
@@ -50,7 +50,7 @@ const signupUser = async (email: string, username: string, password: string, ful
 /**
  * Handles doing database check for the user being logged in. If successful,
  * we should be returned a user, with updated lastLogin attribute, and the 
- * updated refresh token attribute.
+ * updated refresh token attribute; used in the login controller
  * 
  * @param username - username associated with the user account
  * @param password - plaintext password associated with user
