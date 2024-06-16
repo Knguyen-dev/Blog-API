@@ -108,7 +108,7 @@ SEND_GRID_API_KEY = <your-sendgrid-api-key>
 # Redis url; I used a redis database provided by upstash.
 REDIS_URL = <your-redis-url>;
 
-<!-- Set this to development by default. In production, `npm run start` the command sets NODE_ENV to production for you-->
+<!-- Set this to development by default. If you want production, set this to 'production' when you do `npm run start`-->
 NODE_ENV=development
 ```
 

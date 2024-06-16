@@ -9,7 +9,7 @@
 		"dev": "nodemon ./src/server.ts",
     "clean": "rimraf ./dist",
 		"build": "npm run clean && tsc",
-		"start": "set NODE_ENV=production && node ./dist/src/server.js"
+		"start": "node ./dist/src/server.js"
 	},
 	"keywords": [],
 	"author": "",
