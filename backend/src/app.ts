@@ -1,7 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
-
-import path from "path";
 import logger from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -28,18 +24,25 @@ const app = express();
 
 /*
 + Serving static files:
-- __dirname: The directory/location or our app.ts file
-- '..': We want to go up one directory, so we go out of the 'src' directory
 - 'public': Now that we're up one directory we want to go into the 'public' directory.
 As a result, we serve static files from our public directory. For example to access one of the 
 avatars from an http request: 'http://localhost:3000/avatars/some_avatar_name.jpg'
+
+- NOTE: When you use a relative path like "public", it is resolved relative to the directory from which
+ you run your Node.js process. For example, if you start your application with node app.js from the 
+ project root, Express will look for a "public" folder in the project root.
 */
-app.use(express.static(path.join(__dirname, "..", "public")));
+app.use(express.static("public"));
 
 
 app.use(verifyCredentials(allowedOrigins)); // credentials/cookies configuration
 app.use(cors(corsOption)); // cors configuration
-app.use(logger("dev")); // logs out requests in the console
+
+if (process.env.NODE_ENV === 'development') {
+  app.use(logger('dev')); 
+}
+
+
 app.use(express.json());  // json from request body
 app.use(express.urlencoded({ extended: true })); // json from forms
 app.use(cookieParser()); // let's us access cookies from request object

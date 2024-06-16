@@ -1,5 +1,5 @@
 import { Button, Divider, Typography } from "@mui/material";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useLogin from "./hooks/useLogin";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,6 +8,7 @@ import FormPasswordField from "../../components/Input/FormPasswordField";
 import FormError from "../../components/Input/FormError";
 import { ILoginFormData } from "../../types/Auth";
 import { loginSchema } from "../Dashboard/Profile/data/userSchema";
+import MuiRouterLink from "../../components/MuiRouterLink";
 
 /**
  * Form that handles logging in a user
@@ -75,24 +76,26 @@ export default function LoginForm() {
       <div>
         <Typography className="tw-text-center">
           Don&apos;t have an account?{" "}
-          <Link to="/auth/signup" aria-label="Go to user registration page">
+          <MuiRouterLink
+            to="/auth/signup"
+            aria-label="Go to user registration page">
             Sign Up
-          </Link>
+          </MuiRouterLink>
         </Typography>
 
         <Typography className="tw-text-center">
           Forgot your{" "}
-          <Link
+          <MuiRouterLink
             to="/auth/forgotUsername"
             aria-label="Go to forgot username page">
             username
-          </Link>{" "}
+          </MuiRouterLink>{" "}
           or your{" "}
-          <Link
+          <MuiRouterLink
             to="/auth/forgotPassword"
             aria-label="Go to forgot password page">
             password
-          </Link>
+          </MuiRouterLink>
           ?
         </Typography>
       </div>

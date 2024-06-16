@@ -1,4 +1,5 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import MuiRouterLink from "../components/MuiRouterLink";
 import { Box, Typography } from "@mui/material";
 import useVerifyEmail from "./Dashboard/Profile/hooks/useVerifyEmail";
 import { useEffect } from "react";
@@ -41,7 +42,9 @@ export default function VerifyEmailPage() {
         {/* Link back to the profile page of the dashboard */}
 
         <Typography fontSize={24}>
-          <Link to="/dashboard">Back to dashboard</Link>
+          <MuiRouterLink to="/dashboard" aria-label="Go to profile page">
+            Go to profile page
+          </MuiRouterLink>
         </Typography>
       </Box>
     </Box>

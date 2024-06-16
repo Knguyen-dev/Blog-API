@@ -4,9 +4,17 @@
 	"description": "- Create a blog fullstack blog application. Have a front end application for viewing and\r   editing posts. Let people read and comment on posts. Basically the blog should make it \r   so only you, imagine like the 'guardian' or 'the atlantic'. So I guess there should \r   be a section that allows users. Some inspirations to take from that are similar \r   are reddit, dogonews, ign, or something similar. It just has to involve posts, authors, comments,\r   etcetera. Just takes things one at a time.",
 	"main": "index.js",
 	"scripts": {
-		"client": "cd frontend && npm run dev",
-		"server": "cd backend && npm run dev",
-		"appDev": "concurrently \"npm run client\" \"npm run server\""
+		"clientDev": "cd frontend && npm run dev",
+    "serverDev": "cd backend && npm run dev",
+    "appDev": "concurrently \"npm run clientDev\" \"npm run serverDev\"",
+
+    "clientProd": "cd frontend && npm run preview",
+    "serverProd": "cd backend && npm run start",
+    "appStart": "concurrently \"npm run clientProd\" \"npm run serverProd\"",
+
+    "clientBuild": "cd frontend && npm run build",
+    "serverBuild": "cd backend && npm run build",
+    "appBuild": "npm run clientBuild && npm run serverBuild"
 	},
 	"keywords": [],
 	"author": "",

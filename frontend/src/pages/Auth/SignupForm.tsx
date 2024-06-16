@@ -9,7 +9,8 @@
 */
 
 import { Button, Divider, Typography } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import MuiRouterLink from "../../components/MuiRouterLink";
 import { useForm } from "react-hook-form";
 import useSignup from "./hooks/useSignup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -117,9 +118,9 @@ export default function SignupForm() {
       <div>
         <Typography className="tw-text-center">
           Already a user?{" "}
-          <Link to="/auth/login" aria-label="Go to login page">
+          <MuiRouterLink to="/auth/login" aria-label="Go to login page">
             Login
-          </Link>
+          </MuiRouterLink>
         </Typography>
       </div>
     </form>

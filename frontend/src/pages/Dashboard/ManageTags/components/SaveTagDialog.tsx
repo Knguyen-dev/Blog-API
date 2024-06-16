@@ -7,7 +7,7 @@ import { ITag } from "../../../../types/Post";
 interface ISaveTagDialogProps {
   open: boolean;
   handleClose: () => void;
-  selectedTag: ITag;
+  selectedTag?: ITag;
   setTags: Dispatch<SetStateAction<ITag[] | undefined>>;
 }
 

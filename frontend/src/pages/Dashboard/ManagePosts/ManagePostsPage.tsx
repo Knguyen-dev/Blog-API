@@ -65,7 +65,7 @@ export default function ManagePostsPage() {
           Manage Posts
         </Typography>
         <Button
-          variant="outlined"
+          variant="contained"
           aria-label="Go to create post page"
           onClick={goToCreatePostPage}>
           Create Post
@@ -128,7 +128,7 @@ export default function ManagePostsPage() {
                 <BlogPostCard
                   key={index}
                   post={post}
-                  // Don't allow user (editors/admins in this case) to be able to click/view published post
+                  // Don't allow user (editors/admins in this case) to be able to click/view the post if it isn't published
                   disabled={!post.isPublished}
                   onCardClick={() => goToPostPage(post.slug)}
                   // Change the label depending on if the post is published
