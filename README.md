@@ -148,7 +148,9 @@ If you have a suggestion that would make this better, please fork the repo and c
 Distributed under the MIT License
 
 ## Gallery and Demo
-For photos of the application, please refer to the `assets` directory on the root of the project. Here it contains not only the public pages that every user can go on, but also the protected pages that only authenticated and certain authorized users can see. To see a video demonstration of the application click [here](https://drive.google.com/file/d/11CuJi-uZI2nx3lPSGIeIjtti3V3KPv3j/view?usp=sharing)
+Using the link below, you'll be redirected to a Google Drive folder that has a video demonstration of the BlogSphere application directed by me. As well as this, it will have a folder containing pictures of all of the pages on the application!
+
+[BlogSphere gallery and video demo](https://drive.google.com/drive/folders/1RphX8IARVdJZ05YsenugrtBrdtYihrhI?usp=sharing)
 
 ## Acknowledgements
 #### Jwt and authentication:
