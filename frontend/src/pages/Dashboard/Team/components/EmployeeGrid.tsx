@@ -61,8 +61,6 @@ export default function EmployeeGrid() {
   // Handles updating a row in our employee grid
   const processRowUpdate = useCallback(
     async (newRow: IUser): Promise<IUser> => {
-      console.log("New Row: ", newRow);
-
       const response = await axiosPrivate.patch(
         `/employees/${newRow._id}`,
         newRow

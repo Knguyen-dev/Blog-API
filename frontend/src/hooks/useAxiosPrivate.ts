@@ -77,8 +77,6 @@ export default function useAxiosPrivate() {
           prevRequest.sent = true;
           const newAccessToken = await refresh();
           prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-
-          console.log("Retrying request!");
           return axiosPrivate(prevRequest);
         }
         /*

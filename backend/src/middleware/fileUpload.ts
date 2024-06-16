@@ -4,8 +4,9 @@ import fs from "fs";
 import { Request, Response, NextFunction } from "express";
 import { createError } from "./errorUtils";
 
-// Define the directory where you want to store images
-const imageDirectory = "public/avatars";
+// Define the directory where you want to store images; relative to the project root
+const imageDirectory = path.join(process.cwd(), "public/avatars");
+
 
 // Check if the directory exists, if not, create it
 if (!fs.existsSync(imageDirectory)) {

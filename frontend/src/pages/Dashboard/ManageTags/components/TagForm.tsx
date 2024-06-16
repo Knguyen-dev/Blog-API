@@ -96,7 +96,7 @@ export default function TagForm({
 
       {error && <FormError message={error} />}
 
-      <Button type="submit" variant="outlined" disabled={isLoading}>
+      <Button type="submit" variant="contained" disabled={isLoading}>
         Submit
       </Button>
     </Box>

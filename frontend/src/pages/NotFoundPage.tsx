@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import MuiRouterLink from "../components/MuiRouterLink";
 
 /**
  * Page that you'll redirect the user to when they enter a bad client route.
@@ -11,7 +11,11 @@ export default function NotFoundPage() {
         Sorry we couldn&apos;t find that page!
       </Typography>
       <Typography variant="h4">
-        Return to the <Link to="/">home page</Link>!
+        Return to the{" "}
+        <MuiRouterLink to="/" aria-label="Go to home page">
+          home page
+        </MuiRouterLink>
+        !
       </Typography>
     </div>
   );

@@ -119,7 +119,6 @@ export default function CategoryForm({
         required
       />
 
-      <FormError message="Sample Category Form" />
       {error && <FormError message={error} />}
 
       <Button type="submit" variant="contained" disabled={isLoading}>

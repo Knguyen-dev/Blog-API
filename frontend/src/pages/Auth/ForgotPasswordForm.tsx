@@ -1,5 +1,6 @@
 import { Box, Typography, Button, Divider } from "@mui/material";
-import { Link } from "react-router-dom";
+import MuiRouterLink from "../../components/MuiRouterLink";
+
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FormInputField from "../../components/Input/FormInputField";
@@ -67,7 +68,10 @@ export default function ForgotPasswordForm() {
 
       <Box className="tw-text-center">
         <Typography variant="body1" component="p">
-          Go back to <Link to="/auth/login">Login</Link>
+          Go back to{" "}
+          <MuiRouterLink to="/auth/login" aria-label="Go to login page">
+            Login
+          </MuiRouterLink>
         </Typography>
       </Box>
     </Box>

@@ -6,7 +6,7 @@
 import { createTheme, responsiveFontSizes } from "@mui/material";
 import breakpoints from "./breakpoints";
 import palette from "./palette";
-import disabledStyles from "./effects";
+import getComponentsTheme from "./components";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getTheme = (preferences: any) => {
@@ -14,7 +14,7 @@ export const getTheme = (preferences: any) => {
     breakpoints: breakpoints,
     palette: preferences.darkMode ? palette.dark : palette.light,
 
-    components: preferences.animations ? {} : disabledStyles,
+    components: getComponentsTheme(preferences.animations),
   });
   return responsiveFontSizes(theme);
 };

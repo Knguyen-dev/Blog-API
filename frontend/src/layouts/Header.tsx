@@ -47,45 +47,24 @@ export default function Header() {
       <Grid component="nav" container className="tw-items-center">
         <Grid item xs={12} md={3} className="xs:max-md:tw-mb-4">
           <Box className="xs:max-md:tw-text-center">
-            <Typography variant="h4">
-              <Link
-                component="button"
-                underline="none"
-                color="inherit"
-                onClick={goToHomePage}>
-                {companyInfo.name}
-              </Link>
-            </Typography>
+            <Typography variant="h4">{companyInfo.name}</Typography>
           </Box>
         </Grid>
 
         <Grid item xs={10} md={5} className="tw-mx-auto xs:max-md:tw-mb-2">
           <ul className="tw-list-none tw-flex tw-flex-wrap tw-items-center tw-justify-evenly tw-gap-2 tw-p-0 tw-m-0">
             <li>
-              <Link
-                component="button"
-                // style={{ color: theme.palette.brandColor }}
-                underline="none"
-                color="inherit"
-                onClick={goToHomePage}>
+              <Link color="inherit" component="button" onClick={goToHomePage}>
                 Home
               </Link>
             </li>
             <li>
-              <Link
-                component="button"
-                color="inherit"
-                underline="none"
-                onClick={goToAboutPage}>
+              <Link component="button" color="inherit" onClick={goToAboutPage}>
                 About
               </Link>
             </li>
             <li>
-              <Link
-                component="button"
-                color="inherit"
-                underline="none"
-                onClick={goToBlogPage}>
+              <Link component="button" color="inherit" onClick={goToBlogPage}>
                 Blog
               </Link>
             </li>
@@ -93,7 +72,6 @@ export default function Header() {
               <Link
                 component="button"
                 color="inherit"
-                underline="none"
                 onClick={goToContactPage}>
                 Contact
               </Link>
@@ -116,7 +94,8 @@ export default function Header() {
             ) : (
               <Button
                 variant="outlined"
-                onClick={() => navigate("/auth/login")}>
+                onClick={() => navigate("/auth/login")}
+                aria-label="Go to login page">
                 Sign In
               </Button>
             )}
