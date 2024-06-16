@@ -82,6 +82,7 @@ VITE_ROLE_ADMIN=5150
 VITE_ROLE_EDITOR=1984
 VITE_ROLE_USER=2001
 
+VITE_SERVER_URL = "http://localhost:3000"
 <!-- Api key you get from TinyMCE -->
 VITE_TINYMCE_API_KEY = <your_tinymce_api_key>
 ```
@@ -112,10 +113,16 @@ REDIS_URL = <your-redis-url>;
 NODE_ENV=development
 ```
 
-#### Starting servers
-In the root directory start the development server with:
+#### Important Scripts
 ```
+<!-- Starts the application in development mode -->
 npm run appDev
+
+<!-- Builds both applications for production -->
+npm run appBuild
+
+<!-- Starts application in production mode; be sure to set NODE_ENV to production on the backend before doing this -->
+npm run appStart
 ```
 
 
@@ -132,6 +139,14 @@ If you have a suggestion that would make this better, please fork the repo and c
 5. Open a Pull Request
 
 ## Deployment:
+We're going to be deploying on `Render.com`
+
+#### Deploying the react application
+1. Create a new static site. Set teh root directory to `frontend`
+2. Build command is `npm run build` and publish directory is `dist`
+3. Enter in all of your environment variables. An important thing to note is that `VITE_SERVER_URL` will eventually be the link to your server when you deploy it on Render. So hold off on this for now, and after you deploy your Node server, come back here and set it to that node server's Render URL.
+4. Go to `Redirects/Rewrites` and create a rule where `Source` is `/*` and `Destination` is `/index.html`, and finally `Action` is `Rewrite`. This just makes it so reloading on your React app works.
+
 1. Go to render.com and create or login to an account.
 2. First deploy the react application. Create a new static site and select this repo to connect to. I'd then set the 'Root Directory' to frontend since that's where the vite project really is. Then the build command `npm run build`. The publish directory should be `dist`, since that's where all of the output files go.
 3. You can then add your environment variables line by line or use a .env file.
@@ -179,3 +194,9 @@ Using the link below, you'll be redirected to a Google Drive folder that has a v
 - [Mohammad Faisal's Blog, design inspiration](https://www.mdfaisal.com/projects)
 - ['Denizen' an additional design inspiration](https://dezien-blog.vercel.app/)
 - [Deploying a Mern Stack App - Dave Gray](https://youtu.be/l134cBAJCuc?si=RzkOwffO7dXypRo1)
+
+
+## BOOK mark:
+- Client is not connecting to the server properly
+- Reloading on client pages gets a 404 not found, which is horrible: Under Redirects/Rewrites on your project dashboard set the source to be '/*' and then 
+  the destination to be '/index.html'.

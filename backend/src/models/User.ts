@@ -308,7 +308,7 @@ userSchema.methods.sendEmailVerification = async function (emailToVerify: string
 */
 userSchema.virtual("avatarSrc").get(function() {
   if (this.avatar) {
-    return `http://localhost:${process.env.PORT}/avatars/${this.avatar}`;
+    return `${process.env.SERVER_URL}/avatars/${this.avatar}`;
   } else {
     return ""
   }
