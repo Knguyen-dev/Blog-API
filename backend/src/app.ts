@@ -22,17 +22,16 @@ import CustomError from "./config/CustomError";
 
 const app = express();
 
-/*
-+ Serving static files:
-- 'public': Now that we're up one directory we want to go into the 'public' directory.
-As a result, we serve static files from our public directory. For example to access one of the 
-avatars from an http request: 'http://localhost:3000/avatars/some_avatar_name.jpg'
 
-- NOTE: When you use a relative path like "public", it is resolved relative to the directory from which
- you run your Node.js process. For example, if you start your application with node app.js from the 
- project root, Express will look for a "public" folder in the project root.
-*/
-app.use(express.static("public"));
+/**
+ * In production environments like 'Render.com' requests often pass through 
+ * proxy servers before reaching your app. So we'll configure Express to trust 
+ * said proxy servers, so that 'express-rate-limit' works correctly.
+ */
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
 
 
 app.use(verifyCredentials(allowedOrigins)); // credentials/cookies configuration
