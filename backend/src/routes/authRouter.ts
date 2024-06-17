@@ -29,7 +29,8 @@ router.get("/refresh", refresh);
 router.post("/forgotPassword", forgotPasswordLimiter, forgotPassword);
 
 // Route for sending a forgot username email to the user's email
-router.post("/forgotUsername", forgotUsernameLimiter, forgotUsername);
+// router.post("/forgotUsername", forgotUsernameLimiter, forgotUsername);
+router.post("/forgotUsername", forgotUsername);
 
 // Route for confirming a password reset 
 router.post("/resetPassword/:passwordResetToken", resetPasswordLimiter, resetPassword);

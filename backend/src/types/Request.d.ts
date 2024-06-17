@@ -47,5 +47,6 @@ is less straight forward.
 declare module "express-serve-static-core" {
   interface Request {
     user?: RequestUser;
+    cloudinaryFileUrl?: string;
   }
 }

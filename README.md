@@ -2,6 +2,10 @@
 ## Introduction
 This is a full-stack blog application that has been created under the assumption that a company or selected team of people/users would manaage and make posts on it. Unauthenticated users are able to search for and view published posts. Then authenticated users, that have roles of an editor or admin, can create posts. These posts can have varying categories, and various tags displayed on them. Think of a site such as IGN, The Atlantic, or The Guardian, where it's a team of employees from a company are making posts for everyone to see.
 
+- Site preview: https://blog-api-ez61.onrender.com/
+
+- Note: The site is hosted on Render and may take up to a minute to load if it hasn't been used recently. If you see a black screen or encounter a network error, please wait a moment for the backend to start up and complete its user check and refresh process.
+
 ## Technologies
 #### Frontend
 - ReactJS
@@ -13,6 +17,7 @@ This is a full-stack blog application that has been created under the assumption
 - Redis (Database provided by Upstash)
 - MongoDB
 - SendGrid
+- Cloudinary
 #### MISC
 - TypeScript
 - Vite
@@ -36,6 +41,8 @@ This is a full-stack blog application that has been created under the assumption
   7. isVerified: Whether or not a user's email is verified.
 - Responsive Design: Each page of the front-end supports mobile to desktop screens.
 
+- NOTE: Just to be clear, and for future reference, there's no 'email subscription' feature. The App's footer with the email input and subscribe button is just for show. Other than that, the rest of the email features are real and implemented.
+
 ## Project Structure
 ### Backend
 - **controllers/**: Top level  logic for handling incoming requests and sending responses. So most of the time, here you'd call a function (a 'service' function) to do the database related operations. Then you'll put the logic here for handling request and response related stuff.
@@ -44,7 +51,7 @@ This is a full-stack blog application that has been created under the assumption
 - **middleware/**: Contains middleware functions for tasks like authentication, input validation, permissions middleware, role verification, password, tokens, and other utilities.
 - **services/**: Mostly database related functions that abstract the database and backend logic. For example, the getPostByID(id) service function, and you'd plug it into your getPost controller function so the service function handled the database operations. Then the controller itself would send the response. Then you have the 'caches' and 'email' directories, which are more so for 'caching' services or 'email' sending services.
 - **.env**: Environment variables for backend configuration.
-- **templates/**: Html template files that we'll send in email for stuff such as password reset, email verification, etc.
+- **/publictemplates/**: Html template files that we'll send in email for stuff such as password reset, email verification, etc.
 - **tests/**: Contains all tests created for the backend application.
 - **app.ts**: Create the app, routes, and error handling middleware
 - **server.ts**: The main entry point for the backend server. Here you start the MongoDB, Express, and Redis servers.
@@ -106,8 +113,16 @@ SERVER_URL = "http://localhost:3000"
 # Api key for send-grid
 SEND_GRID_API_KEY = <your-sendgrid-api-key>
 
+# Verified sender email that you created with sendgrid
+SEND_GRID_VERIFIED_EMAIL=<your-verified-sendgrid-sender-email>
+
 # Redis url; I used a redis database provided by upstash.
 REDIS_URL = <your-redis-url>;
+
+# Cloudinary info
+CLOUDINARY_CLOUD_NAME=<your-cloudinary-cloud-name>
+CLOUDINARY_API_KEY=<your-cloudinary-api-key>
+CLOUDINARY_API_SECRET=<your-cloudinary-api-secret->
 
 <!-- Set this to development by default. If you want production, set this to 'production' when you do `npm run start`-->
 NODE_ENV=development
@@ -124,8 +139,6 @@ npm run appBuild
 <!-- Starts application in production mode; be sure to set NODE_ENV to production on the backend before doing this -->
 npm run appStart
 ```
-
-
 
 ## Contributing
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
@@ -146,18 +159,17 @@ We're going to be deploying on `Render.com`
 2. Build command is `npm run build` and publish directory is `dist`
 3. Enter in all of your environment variables. An important thing to note is that `VITE_SERVER_URL` will eventually be the link to your server when you deploy it on Render. So hold off on this for now, and after you deploy your Node server, come back here and set it to that node server's Render URL.
 4. Go to `Redirects/Rewrites` and create a rule where `Source` is `/*` and `Destination` is `/index.html`, and finally `Action` is `Rewrite`. This just makes it so reloading on your React app works.
-
-1. Go to render.com and create or login to an account.
-2. First deploy the react application. Create a new static site and select this repo to connect to. I'd then set the 'Root Directory' to frontend since that's where the vite project really is. Then the build command `npm run build`. The publish directory should be `dist`, since that's where all of the output files go.
-3. You can then add your environment variables line by line or use a .env file.
-4. Now let's deploy the Express server on Render. Create a new `Web service` since this is a Node API that we're deploying. Connect to the Github repo that you've created for the project.
-5. Set the root directory to be `backend` since that's the project root for our backend API. It's a Node runtime and the build command is `npm run build`. Your start command is `npm run start`. Then add your .env file for your environment variables. HOWEVER, this time set NODE_ENV=production to ensure your app is run in production (I know the npm run start script already does that, but make doubly sure). As well as this, set `CLIENT_URL` to the URL created by render for your frontend.
-
+5. Now you want to deploy the node app. Create a new 'web service'. You're building and deploying from a github repo.
+6. Root directory is `backend` and build command is `npm install && npm run build`
+7. Start command is `npm run start`
+8. Set your environment variables, ensure `NODE_ENV=production`. 
+9. Choose your service type, here I choose the free tier. Of course with the free tier, if your backend is inactive for a while, it's take like a minute for it to spin up. So as a result, if you revisit your site after like an hour (assuming no activity from other users within that hour), then your frontend will be a loading or black screen since it's trying to refresh you via the backend.
+10. Once you've deployed you should have gotten your api's render url, so plug that into `SERVER_URL` in your api's environment variables. Then plug that into `VITE_SERVER_URL` for your frontend's environment variables. With this you should be done.
 
 ## Future considerations and improvements
 - Add a reason for common users (users with role 'user') to sign up and login. Right now you can log in, which allows you to create your own profile. However, since they aren't an editor or admin, they can't create posts, categories, tags, etc. Maybe for people of role 'user', allow them to make comments. This or you create another client site just for editors and admins!
-- Online image hosting with Amazon S3?
 - Implemment some production grade logging with Winston. Though since this site isn't going to be getting a lot of traction, using production grade logging is pretty overkill.
+
 
 ## License
 Distributed under the MIT License
@@ -178,6 +190,7 @@ Using the link below, you'll be redirected to a Google Drive folder that has a v
 #### Email-related functionality:
 - [Implementing email verification](https://youtu.be/T6rElSLldyc?si=QxCcr5wOVI1fp1wV)
 - [Implementing password reset (spans over 3 videos)](https://youtu.be/4ML_j17jsVg?si=jn9XXPn_5jiW-cKV)
+- [Quick SendGrid Tutorial](https://www.youtube.com/watch?v=qFDgH6dHRA4)
 
 #### Implementing an WYSIWYG Editor:
 - [Cross site scripting explained](https://youtu.be/EoaDgUgS6QA?si=pWsgoUszv1Dd4RcB)
@@ -189,14 +202,10 @@ Using the link below, you'll be redirected to a Google Drive folder that has a v
 - [File uploads with Node, Express, and Multer](https://youtu.be/i8yxx6V9UdM?si=RlvFww6LOcItUn0r)
 
 #### MISC
+- [Quick Cloudinary tutorial with Mern Stack](https://youtu.be/FsD_gUbYsb8?si=ulFdGg_x3-4VHczn)
 - [Caching with Redis](https://youtu.be/jgpVdJB2sKQ?si=IIzot2SFTOLbS91d)
 - [Jest with TypeScript; here we did ts-jest and jest globals](https://jestjs.io/docs/getting-started#using-babel)
+- [Deploying a Mern Stack App - Dave Gray](https://youtu.be/l134cBAJCuc?si=RzkOwffO7dXypRo1)
 - [Mohammad Faisal's Blog, design inspiration](https://www.mdfaisal.com/projects)
 - ['Denizen' an additional design inspiration](https://dezien-blog.vercel.app/)
-- [Deploying a Mern Stack App - Dave Gray](https://youtu.be/l134cBAJCuc?si=RzkOwffO7dXypRo1)
-
-
-## BOOK mark:
-- Client is not connecting to the server properly
-- Reloading on client pages gets a 404 not found, which is horrible: Under Redirects/Rewrites on your project dashboard set the source to be '/*' and then 
-  the destination to be '/index.html'.
+- Also the website `Youtube` played a huge role in some of the design, especially the account menu and dropdown.

@@ -7,9 +7,10 @@
 		"test": "jest ./tests",
 		"test:file": "jest --",
 		"dev": "nodemon ./src/server.ts",
-    "clean": "rimraf ./dist",
+		"clean": "rimraf ./dist",
 		"build": "npm run clean && tsc",
-		"start": "node ./dist/src/server.js"
+		"start": "node ./dist/src/server.js",
+    "sendGrid": "ts-node ./src/config/sendGrid.ts"
 	},
 	"keywords": [],
 	"author": "",
@@ -43,6 +44,7 @@
 	"dependencies": {
 		"@sendgrid/mail": "^8.1.3",
 		"bcrypt": "^5.1.1",
+		"cloudinary": "^2.2.0",
 		"cookie-parser": "^1.4.6",
 		"cors": "^2.8.5",
 		"dompurify": "^3.0.9",

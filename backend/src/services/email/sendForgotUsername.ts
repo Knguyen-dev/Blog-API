@@ -1,7 +1,7 @@
 import ejs from "ejs";
 import fs from "fs";
 import path from "path";
-import sendEmail from "./sgMail";
+import sendEmail from "../../config/sendGrid";
 
 const readFileAsync = fs.promises.readFile;
 
@@ -13,10 +13,16 @@ const readFileAsync = fs.promises.readFile;
  * @param name - Name of the user we are emailing to
  */
 const sendForgotUsernameEmail = async (email: string, username: string, name: string) => {
-  const templatePath = path.resolve(__dirname, "../../templates/forgotUsername.html")
+  const templatePath = path.resolve(process.cwd(), "public/templates/forgotUsername.html");
   const data = await readFileAsync(templatePath, "utf8");
   const htmlContent = ejs.render(data, {username: username, name: name});
-  await sendEmail(email, "Forgot Username?", htmlContent);
+
+  try {
+    await sendEmail(email, "Forgot Username?", htmlContent);
+  } catch (err: any) {
+    console.log("Send email error:", err);
+  }
+  
 }
 
 export default sendForgotUsernameEmail;

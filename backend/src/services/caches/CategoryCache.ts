@@ -16,7 +16,7 @@
   not see their newly created category because they're seeing old data.
 */
 
-import { getCache, setCache, deleteCache } from "./redis.services"
+import { getCache, setCache, deleteCache } from "../../config/redis"
 
 class CategoryCache {
   private categoriesKey: string;

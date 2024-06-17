@@ -302,13 +302,16 @@ userSchema.methods.sendEmailVerification = async function (emailToVerify: string
 /*
 + Returns the url link for getting the avatar. 
 
-- NOTE: Virtual property so it's very flexible. We should only return the 
-  string when avatar is defined. Else, return an empty string to indicate 
-  that the user doesn't have an image for their avatar yet.
+- NOTE: Virtual property so it's very flexible. So this.avatar and this.avatarSrc are 
+  actually the same thing. The only reason that I'm keeping it as a virtual property is 
+  because maybe in the future, if you're going to do changes, then having a virtual property 
+  is more flexible. For example, if you decide to store the files locally or if where your files 
+  being served may change, then storing the file_name and constructing the location would be ideal
+  with a virtual property. Or if you planned to server different sizes of the same avatar, etc.
 */
 userSchema.virtual("avatarSrc").get(function() {
   if (this.avatar) {
-    return `${process.env.SERVER_URL}/avatars/${this.avatar}`;
+    return this.avatar;
   } else {
     return ""
   }

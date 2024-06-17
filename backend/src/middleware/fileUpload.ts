@@ -3,6 +3,9 @@ import path from "path";
 import fs from "fs";
 import { Request, Response, NextFunction } from "express";
 import { createError } from "./errorUtils";
+import { uploadToCloudinary, deleteFromCloudinary } from "../config/cloudinary";
+
+
 
 // Define the directory where you want to store images; relative to the project root
 const imageDirectory = path.join(process.cwd(), "public/avatars");
@@ -75,10 +78,10 @@ const uploadFile = multer({
  * didn't send a file, then we throw an error.
  * 
  */
-const saveFileToDisk = (req: Request, res: Response, next: NextFunction) => {
+const saveFile = (req: Request, res: Response, next: NextFunction) => {
   
   // Evoke multer middleware immediately, our third parameter is the file filter callback
-  uploadFile.single("file")(req, res, (err: any) => {
+  uploadFile.single("file")(req, res, async (err: any) => {
     if (err) {
       return next(err);
     }
@@ -89,7 +92,14 @@ const saveFileToDisk = (req: Request, res: Response, next: NextFunction) => {
       return next(fileError);
     }
 
-    // Successful file upload; go to the next middleware after saveFileToDIsk
+    const uploadResult = await uploadToCloudinary(req.file.path);
+    req.cloudinaryFileUrl = uploadResult.secure_url;
+
+
+    // Delete that uploaded avatar from our local disk
+    await deleteFromDisk(req.file.path);
+
+    // Successful file upload; go to the next middleware after saveFile
     next();
   })
 }
@@ -111,7 +121,7 @@ const deleteFromDisk = (filePath: string): Promise<void | Error> => {
 }
 
 export {
-  saveFileToDisk,
+  saveFile,
   deleteFromDisk,
   imageDirectory
 };

@@ -1,4 +1,4 @@
-import { getCache, setCache, deleteCache } from "./redis.services";
+import { getCache, setCache, deleteCache } from "../../config/redis";
 
 /**
  * Class for managing our cache for all available tags

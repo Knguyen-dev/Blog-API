@@ -1,6 +1,5 @@
-import sgMail from "@sendgrid/mail";
-
-sgMail.setApiKey(process.env.SEND_GRID_API_KEY as string);
+import sendGrid from "@sendgrid/mail";
+sendGrid.setApiKey(process.env.SEND_GRID_API_KEY as string);
 
 /**
  * Function used to send emails with send grid
@@ -12,15 +11,13 @@ sgMail.setApiKey(process.env.SEND_GRID_API_KEY as string);
 const sendEmail = (to: string, subject: string, html: string) => {  
   const msg = {
     to,
-    from: process.env.EMAIL_FROM as string,
+    from: process.env.SEND_GRID_VERIFIED_EMAIL as string,
     subject,
     html,
   };
 
-  return sgMail.send(msg);
+  return sendGrid.send(msg);
 };
-
-
 
 export default sendEmail;
 

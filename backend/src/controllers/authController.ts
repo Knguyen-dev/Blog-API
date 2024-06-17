@@ -304,6 +304,7 @@ const verifyEmail = asyncHandler(async(req: Request, res: Response, next: NextFu
 
 const forgotUsername = [
   body("email").isEmail().withMessage("Please enter a valid email!"),
+  handleValidationErrors,
   asyncHandler(async(req,res) => {
 
     // Attempt to find a user wtih the given email

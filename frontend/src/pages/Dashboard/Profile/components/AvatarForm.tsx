@@ -189,7 +189,7 @@ export default function AvatarForm({ user }: IAvatarFormProps) {
         open={open}
         title="Delete Your Avatar?"
         dialogText={
-          <Typography color="text.primary">
+          <Typography color="text.primary" component="span">
             By agreeing, you confirm the permanent deletion of your avatar from
             your account. Please note that once deleted, your avatar cannot be
             recovered.

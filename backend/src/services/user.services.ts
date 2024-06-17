@@ -7,16 +7,13 @@ level of abstraction. For example, a service could be a 'loginUser(username, pas
 This function is very human-readable, you know what it does, and it relates to the business
 logic of your code, it logs in a user to your application. In contrast something like get.
 */
-
-
-import path from "path"
 import User from "../models/User"
 import Post from "../models/Post"
 import mongoose from "mongoose"
 import { createError } from "../middleware/errorUtils"
 import { isValidObjectId } from "mongoose"
 import { generatePasswordHash, verifyPassword } from "../middleware/passwordUtils"
-import { deleteFromDisk, imageDirectory } from "../middleware/fileUpload";
+import { deleteFromCloudinary } from "../config/cloudinary";
 import { roles_map } from "../config/roles_map"
 import { IUserDoc } from "../types/User"
 
@@ -61,8 +58,7 @@ const findUserByID = async (id: string, populateOptions: string = "") => {
 const deleteUser = async (user: IUserDoc) => {  
   // If the user has an avatar registered, delete it from our disk
   if (user.avatar) {
-    const avatarPath = path.join(imageDirectory, user.avatar);
-    await deleteFromDisk(avatarPath);
+    await deleteFromCloudinary(user.avatar);
   }
 
   /*
@@ -144,23 +140,16 @@ const deleteAccount = async (id: string, password: string) => {
  * @param id - Id of the user that we're updating
  * @param avatarFileName - The name of the image file that we saved for this user
  */
-const updateAvatar = async(id: string, avatarFileName: string) => {
+const updateAvatar = async(id: string, avatarUrl: string) => {
 
   const user = await findUserByID(id);
 
   // If user has an old avatar, delete it
   if (user.avatar) {      
-    const oldAvatarPath = path.join(imageDirectory, user.avatar);
-    try {
-      await deleteFromDisk(oldAvatarPath);
-    } catch (err) {
-      // Small error could happen during development where we're deleting 
-      // an avatar that doesn't exist in our own personal folder.
-      console.log("Avatar deletion error: ", err)
-    }
+    await deleteFromCloudinary(user.avatar);
   }
 
-  user.avatar = avatarFileName;
+  user.avatar = avatarUrl;
   await user.save();
   return user;
 }
@@ -175,25 +164,17 @@ const deleteAvatar = async(id: string) => {
   // Attempt to find user, if the user has an avatar recorded, then delete it
   const user = await findUserByID(id);
   if (user.avatar) {
-    const oldAvatarPath = path.join(imageDirectory, user.avatar);
 
-    /*
-    - Delete avatar file from the disk
-    - If we failed to delete file because there wasn't a file like that in our directory,
-      then we can easily just catch the error here. No need to stop the server, if there 
-      was no file in our dir, just delete the avatar the user reported! 
-    */
-    try {
-      await deleteFromDisk(oldAvatarPath);
-    } catch (err) {
-      console.log("Avatar deletion error: ", err);
-    }
+    // Attempt to delete image file from cloudinary
+    await deleteFromCloudinary(user.avatar);
     
-    // Delete avatar file name stored in the database
+    // Delete avatar file name stored in the database, and save changes
     user.avatar = "";
     await user.save();
-    return user;
   }
+
+  // Regardless return the user; we want to return the user as json later in the request-response cycle
+  return user;
 }
 
 /**

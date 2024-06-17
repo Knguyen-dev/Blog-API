@@ -1,7 +1,7 @@
 import User from "../models/User";
 import asyncHandler from "express-async-handler";
 import userValidators from "../middleware/validators/userValidators";
-import { saveFileToDisk} from "../middleware/fileUpload";
+import { saveFile} from "../middleware/fileUpload";
 import { body } from "express-validator";
 import { handleValidationErrors } from "../middleware/errorUtils";
 import userServices from "../services/user.services";
@@ -76,19 +76,12 @@ const deleteUser = [
  * 
  */
 const updateAvatar = [
-  saveFileToDisk,
+  saveFile,
   asyncHandler(async(req, res) => {
-    
-     /*
-    - If previous middleware finds that req.file doesn't exist, then it throws an error 
-      and this middleware function doesn't run. However if saveFileToDisk runs successfully, 
-      then this middleware will run, and req.file is guaranteed to exist.
-    - Summary: req.file is guaranteed to exist due to previous middleware.
-    */
-    const fileName = req.file!.filename;
 
+    // At this point, saveFile worked and we should have a cloudinaryFileUrl in our request object!
     // Attempt to update the avatar of the user; 
-    const user = await userServices.updateAvatar(req.params.id, fileName);
+    const user = await userServices.updateAvatar(req.params.id, req.cloudinaryFileUrl as string);
 
     // If the user who updated their avatar was an employee
     // Invalidate the employee cache; 

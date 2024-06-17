@@ -1,7 +1,7 @@
-import sendEmail from "./sgMail";
+import path from "path";
+import sendEmail from "../../config/sendGrid";
 import ejs from "ejs";
 import fs from "fs";
-import path from "path";
 
 const readFileAsync = fs.promises.readFile;
 
@@ -16,7 +16,7 @@ const readFileAsync = fs.promises.readFile;
  *              to will trigger the email verification request.
  */
 export default async function sendVerifyEmail( username: string, email: string, name: string, url: string) {
-  const templatePath = path.resolve(__dirname, "../../templates/verifyEmail.html")
+  const templatePath = path.resolve(process.cwd(), "public/templates/verifyEmail.html");
   const data = await readFileAsync(templatePath, "utf8");
   const htmlContent = ejs.render(data, {username: username, name: name, verifyLink: url});
   await sendEmail(email, "Verify Email", htmlContent);
